@@ -1,0 +1,47 @@
+#
+# Description
+# -----------
+# This table stores the information about courses, lectures etc for a business.
+#
+# Fields
+# ------
+# id:					The ID assigned to the course.
+# uuid:					The Universal Unique ID.
+# business_id:			The business the course is attached to.
+#
+# name:					The name for the course.
+# code:					The code for the course.  Typically something CS404, Psych101
+# type:					The type of the course.  This can act as a high level category list.
+# category:				The category for the course.  When combined with type it acts like a sub category.
+# level:				The level of course (beginner, intermediate, advanced)
+# webflags:				Control what is visible on the website.
+#
+#						0x01 - Hidden from the website
+#
+# url:					The URL for more information on the event.
+# short_description:	The short description of the event (optional).
+# full_description:		The longer text description of the event (optional).
+# start_date:			The UTC date and time of the start of the event.
+# end_date:				The UTC date and time of the end of the event.
+#
+# date_added:			The UTC date and time the record was added.
+# last_updated:			The UTC date and time the record was last updated.
+#
+CREATE TABLE ciniki_courses (
+	id int not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
+	name varchar(150) not null,
+	code varchar(50) not null,
+	permalink varchar(150) not null,
+	primary_image_id int not null,
+	level varchar(150) not null,
+	type varchar(150) not null,
+	category varchar(150) not null,
+	short_description varchar(2000) not null,
+	long_description varchar(20000) not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	index sync (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

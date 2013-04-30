@@ -1,0 +1,37 @@
+#
+# Description
+# -----------
+# This table stores the class dates for a course.  Other class specific
+# information can be stored in this table.
+#
+# Fields
+# ------
+# id:				The ID of the instructor image.
+# uuid:				The Universal Unique ID.
+# business_id:		The ID of the business the date is for.
+#
+# course_id:		The ID of the course the date is for.
+# offering_id:		The ID of the course offering the date is for.
+# course_date:		The date of the course.
+# description:		The description for this course date.
+# start_time:		The start time on the date for the course.
+# end_time:			The end time of the date for the course.
+#
+# date_added:		The UTC date and time the record was added.
+# last_updated:		The UTC date and time the record was last changed;
+#
+CREATE TABLE ciniki_course_offering_classes (
+	id int not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
+	course_id int not null,
+	offering_id int not null,
+	class_date date not null,
+	start_time time not null,
+	end_time time not null,
+	notes text not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	index business_uuid (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
