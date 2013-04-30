@@ -21,7 +21,7 @@ function ciniki_courses_instructorUpdate(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-        'instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
+        'instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'), 
         'first'=>array('required'=>'no', 'blank'=>'no', 'name'=>'First Name'), 
         'last'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Last Name'), 
         'webflags'=>array('required'=>'no', 'name'=>'Webflags'), 
@@ -75,7 +75,7 @@ function ciniki_courses_instructorUpdate(&$ciniki) {
 	//
 	$strsql = "SELECT uuid, primary_image_id FROM ciniki_course_instructors "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
+		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['instructor_id']) . "' "
 		. "";
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'instructor');
 	if( $rc['stat'] != 'ok' ) {
