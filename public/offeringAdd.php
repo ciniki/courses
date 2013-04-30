@@ -33,10 +33,10 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Web Flags'), 
-		'class_date'=>array('required'=>'no', 'blank'=>'no', 'type'=>'date', 'name'=>'Class Date'),
-		'start_time'=>array('required'=>'no', 'blank'=>'no', 'type'=>'time', 'name'=>'Start Time'),
-		'end_time'=>array('required'=>'no', 'blank'=>'no', 'type'=>'time', 'name'=>'End Time'),
-		'num_weeks'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Num Weeks'),
+		'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Class Date'),
+		'start_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Start Time'),
+		'end_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'End Time'),
+		'num_weeks'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Num Weeks'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
