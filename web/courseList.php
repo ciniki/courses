@@ -45,8 +45,12 @@ function ciniki_courses_web_courseList($ciniki, $settings, $business_id, $type, 
 			. "AND end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
 			. "ORDER BY ciniki_courses.category, ciniki_courses.code, ciniki_courses.name "
 			. "";
-	} elseif( $when == 'past' ) {
+	} elseif( $when == 'currentpast' ) {
 		$strsql .= "HAVING start_date_ts < UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
+			. "ORDER BY ciniki_courses.category, ciniki_courses.code, ciniki_courses.name "
+			. "";
+	} elseif( $when == 'past' ) {
+		$strsql .= "HAVING end_date_ts < UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
 			. "ORDER BY ciniki_courses.category, ciniki_courses.code, ciniki_courses.name "
 			. "";
 	}
