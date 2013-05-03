@@ -65,7 +65,7 @@ function ciniki_courses_fileDelete(&$ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['file']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1095', 'msg'=>'Unable to find existing item'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1270', 'msg'=>'Unable to find existing item'));
 	}
 	$uuid = $rc['file']['uuid'];
 
@@ -84,7 +84,7 @@ function ciniki_courses_fileDelete(&$ciniki) {
 	}
 	if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1096', 'msg'=>'Unable to delete art'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1271', 'msg'=>'Unable to delete art'));
 	}
 
 	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', 

@@ -61,7 +61,7 @@ function ciniki_courses_fileUpdate(&$ciniki) {
 			return $rc;
 		}
 		if( $rc['num_rows'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1100', 'msg'=>'You already have an courses with this name, please choose another name.'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1276', 'msg'=>'You already have an courses with this name, please choose another name.'));
 		}
 	}
 
@@ -111,7 +111,7 @@ function ciniki_courses_fileUpdate(&$ciniki) {
 	}
 	if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1101', 'msg'=>'Unable to update courses'));	
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1277', 'msg'=>'Unable to update courses'));	
 	}
 
 	//

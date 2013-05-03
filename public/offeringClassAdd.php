@@ -93,7 +93,7 @@ function ciniki_courses_offeringClassAdd(&$ciniki) {
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1255', 'msg'=>'Unable to add course'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1264', 'msg'=>'Unable to add course'));
 	}
 	$class_id = $rc['insert_id'];
 

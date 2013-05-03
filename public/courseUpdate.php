@@ -83,7 +83,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['course']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1251', 'msg'=>'Course not found'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1272', 'msg'=>'Course not found'));
 	}
 	$course = $rc['course'];
 
@@ -101,7 +101,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
 			return $rc;
 		}
 		if( $rc['num_rows'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1244', 'msg'=>'You already have an course with this name, please choose another name.'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1278', 'msg'=>'You already have an course with this name, please choose another name.'));
 		}
 	}
 
@@ -154,7 +154,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
 	}
 	if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1245', 'msg'=>'Unable to update course'));	
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1285', 'msg'=>'Unable to update course'));	
 	}
 
 	//

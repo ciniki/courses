@@ -55,7 +55,7 @@ function ciniki_courses_offeringClassUpdate(&$ciniki) {
 	}
 	if( !isset($rc['class']) ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1256', 'msg'=>'Class does not exist'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1282', 'msg'=>'Class does not exist'));
 	}
 	$class = $rc['class'];
 
@@ -103,7 +103,7 @@ function ciniki_courses_offeringClassUpdate(&$ciniki) {
 	}
 	if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1254', 'msg'=>'Unable to update course'));	
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1283', 'msg'=>'Unable to update course'));	
 	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'updateCondensedDate');

@@ -82,7 +82,7 @@ function ciniki_courses_instructorUpdate(&$ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['instructor']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1251', 'msg'=>'Instructor not found'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1284', 'msg'=>'Instructor not found'));
 	}
 	$instructor = $rc['instructor'];
 
@@ -100,7 +100,7 @@ function ciniki_courses_instructorUpdate(&$ciniki) {
 			return $rc;
 		}
 		if( $rc['num_rows'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1267', 'msg'=>'You already have an instructor with this name, please choose another name.'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1244', 'msg'=>'You already have an instructor with this name, please choose another name.'));
 		}
 	}
 

@@ -84,14 +84,14 @@ function ciniki_courses_fileAdd(&$ciniki) {
 		return $rc;
 	}
 	if( $rc['num_rows'] > 0 ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1090', 'msg'=>'You already have a file with this name, please choose another name'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1105', 'msg'=>'You already have a file with this name, please choose another name'));
 	}
 
     //
     // Check to see if an image was uploaded
     //
     if( isset($_FILES['uploadfile']['error']) && $_FILES['uploadfile']['error'] == UPLOAD_ERR_INI_SIZE ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1091', 'msg'=>'Upload failed, file too large.'));
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1106', 'msg'=>'Upload failed, file too large.'));
     }
     // FIXME: Add other checkes for $_FILES['uploadfile']['error']
 
@@ -99,7 +99,7 @@ function ciniki_courses_fileAdd(&$ciniki) {
 	// Make sure a file was submitted
 	//
 	if( !isset($_FILES) || !isset($_FILES['uploadfile']) || $_FILES['uploadfile']['tmp_name'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1092', 'msg'=>'No file specified.'));
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1107', 'msg'=>'No file specified.'));
 	}
 
 	$args['org_filename'] = $_FILES['uploadfile']['name'];
@@ -109,7 +109,7 @@ function ciniki_courses_fileAdd(&$ciniki) {
 	// Check the extension is a PDF, currently only accept PDF files
 	//
 	if( $args['extension'] != 'pdf' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1093', 'msg'=>'The file must be a PDF file.'));
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1108', 'msg'=>'The file must be a PDF file.'));
 		
 	}
 
@@ -154,7 +154,7 @@ function ciniki_courses_fileAdd(&$ciniki) {
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1094', 'msg'=>'Unable to add file'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1109', 'msg'=>'Unable to add file'));
 	}
 	$file_id = $rc['insert_id'];
 
