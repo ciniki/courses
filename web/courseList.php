@@ -28,8 +28,11 @@ function ciniki_courses_web_courseList($ciniki, $settings, $business_id, $type, 
 		. "ciniki_courses.short_description "
 		. "FROM ciniki_course_offerings "
 		. "LEFT JOIN ciniki_courses ON (ciniki_course_offerings.course_id = ciniki_courses.id "
-			. "AND ciniki_courses.type = '" . ciniki_core_dbQuote($ciniki, $type) . "' "
-			. "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "') "
+			. "";
+	if( $type != '' ) {
+		$strsql .= "AND ciniki_courses.type = '" . ciniki_core_dbQuote($ciniki, $type) . "' ";
+	}
+			$strsql .= "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "') "
 		. "LEFT JOIN ciniki_course_offering_classes ON (ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "
 			. "AND ciniki_course_offering_classes.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "') "
 		. "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
