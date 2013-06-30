@@ -55,6 +55,32 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 	}
 	$offering = array_pop($rc['offerings']);
 
+	//
+	// Check if there are files for this course to be displayed
+	//
+	if( ($ciniki['business']['modules']['ciniki.courses']['flags']&0x08) == 0x08 ) {
+		$strsql = "SELECT ciniki_course_files.id, "
+			. "ciniki_course_files.name, "
+			. "ciniki_course_files.permalink, ciniki_course_files.extension "
+			. "FROM ciniki_course_offering_files "
+			. "LEFT JOIN ciniki_course_files ON (ciniki_course_offering_files.file_id = ciniki_course_files.id "
+				. "AND ciniki_course_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' ) "
+			. "WHERE ciniki_course_offering_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "AND ciniki_course_offering_files.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+			. "ORDER BY ciniki_course_files.name "
+			. "";
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
+			array('container'=>'files', 'fname'=>'id', 
+				'fields'=>array('id', 'name', 'permalink', 'extension')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['files']) ) {
+			$offering['files'] = $rc['files'];
+		}
+	}
+
 	return array('stat'=>'ok', 'offering'=>$offering);
 }
 ?>

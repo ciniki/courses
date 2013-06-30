@@ -32,7 +32,7 @@ function ciniki_courses_fileAdd(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-		'type'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('1', '2'), 'name'=>'Type'),
+		'type'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('1', '2', '20'), 'name'=>'Type'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
         'description'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Description'), 
         'webflags'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Web Flags'), 

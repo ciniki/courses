@@ -43,7 +43,7 @@ function ciniki_courses_fileDownload($ciniki) {
 	// Get the uuid for the file
 	//
 	$strsql = "SELECT ciniki_course_files.id, "
-		. "ciniki_course_files.name, ciniki_courses_files.extension, "
+		. "ciniki_course_files.name, ciniki_course_files.extension, "
 		. "ciniki_course_files.binary_content "
 		. "FROM ciniki_course_files "
 		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "

@@ -23,6 +23,7 @@ function ciniki_courses_offeringGet($ciniki) {
 		'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'),
 		'classes'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Classes'),
 		'instructors'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Instructor'),
+		'files'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Files'),
 		'customers'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customers'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -133,6 +134,31 @@ function ciniki_courses_offeringGet($ciniki) {
 			$offering['instructors'] = $rc['instructors'];
 		} else {
 			$offering['instructors'] = array();
+		}
+	}
+
+	if( isset($args['files']) && $args['files'] == 'yes' ) {
+		$strsql = "SELECT ciniki_course_offering_files.id, "
+			. "ciniki_course_files.id AS file_id, "
+			. "ciniki_course_files.name "
+			. "FROM ciniki_course_offering_files "
+			. "LEFT JOIN ciniki_course_files ON (ciniki_course_offering_files.file_id = ciniki_course_files.id "
+				. "AND ciniki_course_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "') "
+			. "WHERE ciniki_course_offering_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_course_offering_files.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+			. "ORDER BY ciniki_course_files.name "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
+			array('container'=>'files', 'fname'=>'id', 'name'=>'file',
+				'fields'=>array('id', 'file_id', 'name')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['files']) ) {
+			$offering['files'] = $rc['files'];
+		} else {
+			$offering['files'] = array();
 		}
 	}
 	

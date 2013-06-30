@@ -15,6 +15,7 @@
 #
 #					0 - unknown
 #					1 - Course Application Form
+#					20 - Course File
 #
 # extension:		The extension from the uploaded file. (.doc, .xls, .pdf, etc)
 #
