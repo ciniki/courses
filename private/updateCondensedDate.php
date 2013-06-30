@@ -20,6 +20,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
 		. "DATE_FORMAT(class_date, '%Y') AS year, "
 		. "DATE_FORMAT(class_date, '%b') AS month, "
 		. "DATE_FORMAT(class_date, '%e') AS day, "
+		. "DATE_FORMAT(class_date, '%u') AS ts, "
 		. "TIME_FORMAT(start_time, '%l:%i %p') AS start_time, "
 		. "TIME_FORMAT(end_time, '%l:%i %p') AS end_time "
 		. "FROM ciniki_course_offering_classes "
@@ -40,8 +41,9 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
 		$prev_dayofweek = '';
 		$sameday = 'yes';
 		$sametime = 'yes';
+		$consecutive = 'yes';
 		foreach($rc['rows'] as $did => $date) {
-			$date = $date;
+//			$date = $date;
 			if( $first_date == null ) {
 				$first_date = $date;
 			}
@@ -50,6 +52,9 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
 			}
 			if( $prev_time != '' && $prev_time != $date['start_time'] . ' - ' . $date['end_time']) {
 				$sametime = 'no';
+			}
+			if( $last_date['ts'] != $date['ts']+86400 ) {
+				$consecutive = 'no';
 			}
 			$prev_dayofweek = $date['dayofweek'];
 			$prev_time = $date['start_time'] . ' - ' . $date['end_time'];
@@ -65,6 +70,15 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
 					. ' - ' . $last_date['month'] . ' ' . $last_date['day'] . ', ' . $last_date['year'];
 			}
 			$condensed_date .= ' ' . $prev_dayofweek . 's ' . $prev_time;
+		} elseif( $consecutive = 'yes' && $sametime == 'yes' ) {
+			if( $first_date['year'] != $last_date['year'] ) {
+				$condensed_date = $first_date['month'] . ' ' . $first_date['day'] . ', ' . $first_date['year'] 
+					. ' - ' . $last_date['month'] . ' ' . $last_date['day'] . ', ' . $last_date['year'];
+			} else {
+				$condensed_date = $first_date['month'] . ' ' . $first_date['day']
+					. ' - ' . $last_date['month'] . ' ' . $last_date['day'] . ', ' . $last_date['year'];
+			}
+			$condensed_date .= ' ' . $prev_time;
 		} else {
 			// Unable to condense the dates
 			$condensed_date = '';
