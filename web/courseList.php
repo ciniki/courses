@@ -41,20 +41,20 @@ function ciniki_courses_web_courseList($ciniki, $settings, $business_id, $type, 
 		. "";
 	if( $when == 'upcoming' ) {
 		$strsql .= "HAVING start_date = 'No dates set' OR start_date_ts > UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
-			. "ORDER BY ciniki_courses.category, start_date_ts, ciniki_courses.code, ciniki_courses.name "
+			. "ORDER BY ciniki_courses.category, start_date_ts, LENGTH(ciniki_courses.code), ciniki_courses.code, ciniki_courses.name "
 			. "";
 	} elseif( $when == 'current' ) {
 		$strsql .= "HAVING start_date_ts <= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
 			. "AND end_date_ts >= UNIX_TIMESTAMP(DATE(UTC_TIMESTAMP())) "
-			. "ORDER BY ciniki_courses.category, start_date_ts, ciniki_courses.code, ciniki_courses.name "
+			. "ORDER BY ciniki_courses.category, start_date_ts, LENGTH(ciniki_courses.code), ciniki_courses.code, ciniki_courses.name "
 			. "";
 	} elseif( $when == 'currentpast' ) {
 		$strsql .= "HAVING start_date_ts < UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
-			. "ORDER BY ciniki_courses.category, start_date_ts, ciniki_courses.code, ciniki_courses.name "
+			. "ORDER BY ciniki_courses.category, start_date_ts, LENGTH(ciniki_courses.code), ciniki_courses.code, ciniki_courses.name "
 			. "";
 	} elseif( $when == 'past' ) {
 		$strsql .= "HAVING end_date_ts < UNIX_TIMESTAMP(DATE(UTC_TIMESTAMP())) "
-			. "ORDER BY ciniki_courses.category, start_date_ts, ciniki_courses.code, ciniki_courses.name "
+			. "ORDER BY ciniki_courses.category, start_date_ts, LENGTH(ciniki_courses.code), ciniki_courses.code, ciniki_courses.name "
 			. "";
 	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
