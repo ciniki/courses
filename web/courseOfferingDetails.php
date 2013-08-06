@@ -38,6 +38,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 		. "AND ciniki_courses.permalink = '" . ciniki_core_dbQuote($ciniki, $course_permalink) . "' "
 		. "AND ciniki_course_offerings.status = 10 "	// Active offering
 		. "AND (ciniki_course_offerings.webflags&0x01) = 0 "	// Visible
+		. "ORDER BY ciniki_course_offering_classes.class_date "
 		. "";
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
