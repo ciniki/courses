@@ -12,7 +12,8 @@
 // type:				The type of file.
 //
 //						1 - Membership Application
-//						2 - Exhibitor Application
+//						2 - Course Catalog
+//						20 - Course File
 //
 // name:				The name of the file.
 // description:			(optional) The extended description of the file, can be much longer than the name.

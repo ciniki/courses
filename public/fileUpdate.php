@@ -22,7 +22,7 @@ function ciniki_courses_fileUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
-		'type'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('1', '2'), 'name'=>'Type'),
+		'type'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('1', '2', '20'), 'name'=>'Type'),
 		'name'=>array('required'=>'no', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Name'),
 		'description'=>array('required'=>'no', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Description'),
 		'webflags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Web Flags'),

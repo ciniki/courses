@@ -14,7 +14,8 @@
 #					class notes, handouts, lectures, powerpoints, etc.
 #
 #					0 - unknown
-#					1 - Course Application Form
+#					1 - Membership Application
+#					2 - Course Calendar
 #					20 - Course File
 #
 # extension:		The extension from the uploaded file. (.doc, .xls, .pdf, etc)
