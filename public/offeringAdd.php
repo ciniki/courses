@@ -121,7 +121,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1258', 'msg'=>'Unable to add offering'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1347', 'msg'=>'Unable to add offering'));
 	}
 	$offering_id = $rc['insert_id'];
 

@@ -120,7 +120,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
 	}
 	if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1263', 'msg'=>'Unable to update course'));	
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1346', 'msg'=>'Unable to update course'));	
 	}
 
 	//
