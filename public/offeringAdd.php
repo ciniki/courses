@@ -57,21 +57,6 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     }   
 	$modules = $rc['modules'];
 
-	//  
-	// Turn off autocommit
-	//  
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.courses');
-	if( $rc['stat'] != 'ok' ) { 
-		return $rc;
-	}   
-
 	//
 	// Check the permalink doesn't already exist
 	//
@@ -88,63 +73,30 @@ function ciniki_courses_offeringAdd(&$ciniki) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1111', 'msg'=>'You already have a course with this name, please choose another name'));
 	}
 
+	//  
+	// Turn off autocommit
+	//  
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.courses');
+	if( $rc['stat'] != 'ok' ) { 
+		return $rc;
+	}   
+
 	//
-	// Get a new UUID
+	// Add the offering
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
-	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.courses');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.courses.offering', $args, 0x04);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
 		return $rc;
 	}
-	$args['uuid'] = $rc['uuid'];
-
-	//
-	// Add the course to the database
-	//
-	$strsql = "INSERT INTO ciniki_course_offerings (uuid, business_id, "
-		. "course_id, name, permalink, status, webflags, "
-		. "date_added, last_updated) VALUES ("
-		. "'" . ciniki_core_dbQuote($ciniki, $args['uuid']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['name']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['status']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['webflags']) . "', "
-		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())"
-		. "";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.courses');
-	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return $rc;
-	}
-	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1347', 'msg'=>'Unable to add offering'));
-	}
-	$offering_id = $rc['insert_id'];
-
-	//
-	// Add all the fields to the change log
-	//
-	$changelog_fields = array(
-		'uuid',
-		'name',
-		'permalink',
-		'status',
-		'webflags',
-		);
-	foreach($changelog_fields as $field) {
-		if( isset($args[$field]) ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 
-				'ciniki_course_history', $args['business_id'], 
-				1, 'ciniki_course_offerings', $offering_id, $field, $args[$field]);
-		}
-	}
-
-	$ciniki['syncqueue'][] = array('push'=>'ciniki.courses.offering', 
-		'args'=>array('id'=>$offering_id));
+	$offering_id = $rc['id'];
 
 	//
 	// Check if we should add some dates
@@ -157,58 +109,11 @@ function ciniki_courses_offeringAdd(&$ciniki) {
 		}
 		$cur_date = date_create('@' . strtotime($args['class_date']));
 		for($i=0;$i<$repeat;$i++) {
-			//
-			// Get a new UUID
-			//
-			ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
-			$rc = ciniki_core_dbUUID($ciniki, 'ciniki.courses');
+			$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.courses.offering_class', $args, 0x04);
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
 				return $rc;
 			}
-			$uuid = $rc['uuid'];
-
-			//
-			// Add the course to the database
-			//
-			$strsql = "INSERT INTO ciniki_course_offering_classes (uuid, business_id, "
-				. "course_id, offering_id, class_date, start_time, end_time, notes, "
-				. "date_added, last_updated) VALUES ("
-				. "'" . ciniki_core_dbQuote($ciniki, $uuid) . "', "
-				. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-				. "'" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "', "
-				. "'" . ciniki_core_dbQuote($ciniki, $offering_id) . "', "
-				. "'" . ciniki_core_dbQuote($ciniki, date_format($cur_date, 'Y-m-d')) . "', "
-				. "'" . ciniki_core_dbQuote($ciniki, $args['start_time']) . "', "
-				. "'" . ciniki_core_dbQuote($ciniki, $args['end_time']) . "', "
-				. "'" . ciniki_core_dbQuote($ciniki, '') . "', "
-				. "UTC_TIMESTAMP(), UTC_TIMESTAMP())"
-				. "";
-			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.courses');
-			if( $rc['stat'] != 'ok' ) { 
-				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-				return $rc;
-			}
-			if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-				return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1255', 'msg'=>'Unable to add course'));
-			}
-			$class_id = $rc['insert_id'];
-
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['business_id'], 
-				1, 'ciniki_course_offering_classes', $class_id, 'uuid', $uuid);
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['business_id'], 
-				1, 'ciniki_course_offering_classes', $class_id, 'course_id', $args['course_id']);
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['business_id'], 
-				1, 'ciniki_course_offering_classes', $class_id, 'offering_id', $offering_id);
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['business_id'], 
-				1, 'ciniki_course_offering_classes', $class_id, 'class_date', date_format($cur_date, 'Y-m-d'));
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['business_id'], 
-				1, 'ciniki_course_offering_classes', $class_id, 'start_time', $args['start_time']);
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['business_id'], 
-				1, 'ciniki_course_offering_classes', $class_id, 'end_time', $args['end_time']);
-			$ciniki['syncqueue'][] = array('push'=>'ciniki.courses.class', 
-				'args'=>array('id'=>$class_id));
 
 			//
 			// Calculate next class date

@@ -61,21 +61,6 @@ function ciniki_courses_courseAdd(&$ciniki) {
     }   
 	$modules = $rc['modules'];
 
-	//  
-	// Turn off autocommit
-	//  
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.courses');
-	if( $rc['stat'] != 'ok' ) { 
-		return $rc;
-	}   
-
 	//
 	// Check the permalink doesn't already exist
 	//
@@ -92,103 +77,9 @@ function ciniki_courses_courseAdd(&$ciniki) {
 	}
 
 	//
-	// Get a new UUID
+	// Add the course
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
-	$rc = ciniki_core_dbUUID($ciniki, 'ciniki.courses');
-	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return $rc;
-	}
-	$args['uuid'] = $rc['uuid'];
-
-	//
-	// Add the course to the database
-	//
-	$strsql = "INSERT INTO ciniki_courses (uuid, business_id, "
-		. "name, code, permalink, primary_image_id, level, type, category, short_description, long_description, "
-		. "date_added, last_updated) VALUES ("
-		. "'" . ciniki_core_dbQuote($ciniki, $args['uuid']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['name']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['code']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['primary_image_id']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['level']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['type']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['category']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['short_description']) . "', "
-		. "'" . ciniki_core_dbQuote($ciniki, $args['long_description']) . "', "
-		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())"
-		. "";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.courses');
-	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return $rc;
-	}
-	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1243', 'msg'=>'Unable to add course'));
-	}
-	$course_id = $rc['insert_id'];
-
-	//
-	// Add all the fields to the change log
-	//
-	$changelog_fields = array(
-		'uuid',
-		'name',
-		'code',
-		'permalink',
-		'primary_image_id',
-		'level',
-		'type',
-		'category',
-		'short_description',
-		'long_description',
-		);
-	foreach($changelog_fields as $field) {
-		if( isset($args[$field]) ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 
-				'ciniki_course_history', $args['business_id'], 
-				1, 'ciniki_courses', $course_id, $field, $args[$field]);
-		}
-	}
-
-	//
-	// Add image reference
-	//
-	if( isset($args['primary_image_id']) && $args['primary_image_id'] > 0 ) {
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'refAdd');
-		$rc = ciniki_images_refAdd($ciniki, $args['business_id'], array(
-			'image_id'=>$args['primary_image_id'], 
-			'object'=>'ciniki.courses.course', 
-			'object_id'=>$course_id,
-			'object_field'=>'primary_image_id'));
-		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-			return $rc;
-		}
-	}
-
-	//
-	// Commit the database changes
-	//
-    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.courses');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-
-	//
-	// Update the last_change date in the business modules
-	// Ignore the result, as we don't want to stop user updates if this fails.
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'courses');
-
-	$ciniki['syncqueue'][] = array('push'=>'ciniki.courses.course', 
-		'args'=>array('id'=>$course_id));
-
-	return array('stat'=>'ok', 'id'=>$course_id);
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+	return ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.courses.course', $args, 0x07);
 }
 ?>
