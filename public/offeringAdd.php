@@ -87,6 +87,11 @@ function ciniki_courses_offeringAdd(&$ciniki) {
 		return $rc;
 	}   
 
+	// 
+	// Set the default condensed date to blank, it will be updated if class_date has been specified
+	//
+	$args['condensed_date'] = '';
+
 	//
 	// Add the offering
 	//
@@ -108,8 +113,16 @@ function ciniki_courses_offeringAdd(&$ciniki) {
 			$repeat = 1;
 		}
 		$cur_date = date_create('@' . strtotime($args['class_date']));
+		$class_args = array(
+			'course_id'=>$args['course_id'],
+			'offering_id'=>$offering_id,
+			'start_time'=>$args['start_time'],
+			'end_time'=>$args['end_time'],
+			'notes'=>'',
+			);
 		for($i=0;$i<$repeat;$i++) {
-			$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.courses.offering_class', $args, 0x04);
+			$class_args['class_date'] = date_format($cur_date, 'Y-m-d');
+			$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.courses.offering_class', $class_args, 0x04);
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
 				return $rc;

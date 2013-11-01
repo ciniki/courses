@@ -1,0 +1,6 @@
+#
+# Change the unique index from course_id, instructor_id to offering_id, instructor_id
+#
+DROP INDEX course_id ON ciniki_course_offering_instructors;
+CREATE UNIQUE INDEX offering_id ON ciniki_course_offering_instructors (offering_id, instructor_id);
+ALTER TABLE ciniki_course_offering_instructors COMMENT='v1.02';

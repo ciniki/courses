@@ -60,7 +60,7 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
 		}
 		$item = $rc['item'];
 
-		if( isset($args['name']) ) {
+		if( $args['name'] != '' ) {
 			$args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['name'])));
 		} else {
 			$args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($item['uuid'])));
