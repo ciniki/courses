@@ -36,7 +36,7 @@ function ciniki_courses_courseTypes($ciniki) {
     // check permission to run this function for this business
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.courseCategories'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.courseTypes'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
