@@ -103,7 +103,7 @@ function ciniki_courses_offeringInstructorGet($ciniki) {
 			if( isset($instructor['images']) ) {
 				foreach($instructor['images'] as $img_id => $img) {
 					if( isset($img['image']['image_id']) && $img['image']['image_id'] > 0 ) {
-						$rc = ciniki_images_loadCacheThumbnail($ciniki, $img['image']['image_id'], 75);
+						$rc = ciniki_images_loadCacheThumbnail($ciniki, $args['business_id'], $img['image']['image_id'], 75);
 						if( $rc['stat'] != 'ok' ) {
 							return $rc;
 						}
