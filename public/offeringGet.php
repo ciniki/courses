@@ -165,7 +165,7 @@ function ciniki_courses_offeringGet($ciniki) {
 	if( isset($args['customers']) && $args['customers'] == 'yes' ) {
 		$strsql = "SELECT ciniki_course_offering_customers.id, "
 			. "ciniki_customers.id AS customer_id, "
-			. "CONCAT_WS(' ', ciniki_customers.first, ciniki_customers.last) AS name "
+			. "ciniki_customers.display_name AS name "
 			. "FROM ciniki_course_offering_customers "
 			. "LEFT JOIN ciniki_customers ON (ciniki_course_offering_customers.customer_id = ciniki_customers.id "
 				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "') "
