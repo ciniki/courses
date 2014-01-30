@@ -23,6 +23,7 @@ function ciniki_courses_offeringGet($ciniki) {
 		'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'),
 		'classes'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Classes'),
 		'instructors'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Instructor'),
+		'prices'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Prices'),
 		'files'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Files'),
 		'customers'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customers'),
         )); 
@@ -40,6 +41,18 @@ function ciniki_courses_offeringGet($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
+
+	//
+	// Load the business intl settings
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_timezone = $rc['settings']['intl-default-timezone'];
+	$intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
+	$intl_currency = $rc['settings']['intl-default-currency'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
@@ -111,7 +124,40 @@ function ciniki_courses_offeringGet($ciniki) {
 			$offering['classes'] = array();
 		}
 	}
-	
+
+	//
+	// Get the list of prices for the course, if requested
+	//
+	if( isset($args['prices']) && $args['prices'] == 'yes' ) {
+		//
+		// Get the price list for the event
+		//
+		$strsql = "SELECT id, name, unit_amount "
+			. "FROM ciniki_course_offering_prices "
+			. "WHERE ciniki_course_offering_prices.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+			. "ORDER BY ciniki_course_offering_prices.name "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
+			array('container'=>'prices', 'fname'=>'id', 'name'=>'price',
+				'fields'=>array('id', 'name', 'unit_amount')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['prices']) ) {
+			$offering['prices'] = $rc['prices'];
+			foreach($offering['prices'] as $pid => $price) {
+				$offering['prices'][$pid]['price']['unit_amount_display'] = numfmt_format_currency(
+					$intl_currency_fmt, $price['price']['unit_amount'], $intl_currency);
+			}
+		} else {
+			$offering['prices'] = array();
+		}
+	}
+
+	//
+	// Get the list of instructors for a course, if requested
+	//
 	if( isset($args['instructors']) && $args['instructors'] == 'yes' ) {
 		$strsql = "SELECT ciniki_course_offering_instructors.id, "
 			. "ciniki_course_instructors.id AS instructor_id, "

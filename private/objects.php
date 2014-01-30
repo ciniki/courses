@@ -129,6 +129,23 @@ function ciniki_courses_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_course_history',
 		);
+	$objects['offering_price'] = array(
+		'name'=>'Course Offering Price',
+		'sync'=>'yes',
+		'table'=>'ciniki_course_offering_prices',
+		'fields'=>array(
+			'offering_id'=>array('ref'=>'ciniki.courses.offering'),
+			'name'=>array(),
+			'valid_from'=>array(),
+			'valid_to'=>array(),
+			'unit_amount'=>array(),
+			'unit_discount_amount'=>array(),
+			'unit_discount_percentage'=>array(),
+			'taxtype_id'=>array('ref'=>'ciniki.taxes.type'),
+			'webflags'=>array(),
+			),
+		'history_table'=>'ciniki_course_history',
+		);
 	$objects['offering_instructor'] = array(
 		'name'=>'Course Offering Instructor',
 		'sync'=>'yes',

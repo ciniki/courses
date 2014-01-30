@@ -76,15 +76,15 @@ function ciniki_courses_offerings() {
 		//
 		this.offering = new M.panel('Course Offering',
 			'ciniki_courses_offerings', 'offering',
-			'mc', 'medium', 'sectioned', 'ciniki.courses.offerings.offering');
+			'mc', 'medium mediumaside', 'sectioned', 'ciniki.courses.offerings.offering');
 		this.offering.data = {};
 		this.offering.offering_id = 0;
 		this.offering.course_id = 0;
 		this.offering.sections = {
-			'_image':{'label':'', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
 				}},
-			'course':{'label':'Course', 'list':{
+			'course':{'label':'Course', 'aside':'yes', 'list':{
 				'course_name':{'label':'Name', 'visible':'yes'},
 				'status_text':{'label':'Status'},
 				'level':{'label':'Level', 'visible':'yes'},
@@ -106,7 +106,14 @@ function ciniki_courses_offerings() {
 				'cellClasses':['multiline'],
 				'noData':'No instructors added',
 				'addTxt':'Add Instructor',
-				'addFn':'M.startApp(\'ciniki.courses.instructors\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_id\':M.ciniki_courses_offerings.offering.offering_id,\'course_id\':M.ciniki_courses_offerings.offering.course_id,\'add\':\'yes\'});',
+				'addFn':'M.startApp(\'ciniki.courses.instructors\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_id\':M.ciniki_courses_offerings.offering.offering_id,\'price_id\':\'0\'});',
+				},
+			'prices':{'label':'Prices', 'type':'simplegrid', 'num_cols':2,
+				'headerValues':null,
+				'cellClasses':['',''],
+				'noData':'No prices',
+				'addTxt':'Add Price',
+				'addFn':'M.startApp(\'ciniki.courses.prices\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_id\':M.ciniki_courses_offerings.offering.offering_id,\'course_id\':M.ciniki_courses_offerings.offering.course_id,\'add\':\'yes\'});',
 				},
 			'files':{'label':'Files', 'visible':'no', 'type':'simplegrid', 'num_cols':1,
 				'headerValues':null,
@@ -163,6 +170,12 @@ function ciniki_courses_offerings() {
 			if( s == 'classes' && j == 0 ) { 
 				return '<span class="maintext">' + d.class.class_date + '</span><span class="subdue"> ' + d.class.start_time + ' - ' + d.class.end_time + '</span>';
 			}
+			if( s == 'prices' ) {
+				switch(j) {
+					case 0: return d.price.name;
+					case 1: return d.price.unit_amount_display;
+				}
+			}
 			if( s == 'instructors' && j == 0 ) { 
 				return '<span class="maintext">' + d.instructor.name + '</span>';
 			}
@@ -176,6 +189,9 @@ function ciniki_courses_offerings() {
 		this.offering.rowFn = function(s, i, d) {
 			if( s == 'classes' ) {
 				return 'M.startApp(\'ciniki.courses.classes\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'class_id\':\'' + d.class.id + '\'});';
+			}
+			if( s == 'prices' ) {
+				return 'M.startApp(\'ciniki.courses.prices\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'price_id\':\'' + d.price.id + '\'});';
 			}
 			if( s == 'instructors' ) {
 				return 'M.startApp(\'ciniki.courses.instructors\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_instructor_id\':\'' + d.instructor.id + '\'});';
@@ -389,7 +405,7 @@ function ciniki_courses_offerings() {
 		if( M.curBusiness.modules['ciniki.courses'].flags != null && (M.curBusiness.modules['ciniki.courses'].flags&0x04) == 0x04 ) { cust = 'yes'; }
 		var rsp = M.api.getJSONCb('ciniki.courses.offeringGet',
 			{'business_id':M.curBusinessID, 'offering_id':this.offering.offering_id,
-			'classes':'yes', 'instructors':inst, 'files':files, 'customers':cust}, function(rsp) {
+			'classes':'yes', 'instructors':inst, 'files':files, 'prices':'yes', 'customers':cust}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
@@ -416,21 +432,9 @@ function ciniki_courses_offerings() {
 		//				p.sections.info.list[fields[i]].visible = 'no';
 		//			}
 		//		}
-				if( inst == 'yes' ) {
-					p.sections.instructors.visible = 'yes';
-				} else {
-					p.sections.instructors.visible = 'no';
-				}
-				if( files == 'yes' ) {
-					p.sections.files.visible = 'yes';
-				} else {
-					p.sections.files.visible = 'no';
-				}
-				if( cust == 'yes' ) {
-					p.sections.customers.visible = 'yes';
-				} else {
-					p.sections.customers.visible = 'no';
-				}
+				p.sections.instructors.visible=(inst=='yes'?'yes':'no');
+				p.sections.files.visible=(files=='yes'?'yes':'no');
+				p.sections.customers.visible=(cust=='yes'?'yes':'no');
 				p.refresh();
 				p.show(cb);
 			});
