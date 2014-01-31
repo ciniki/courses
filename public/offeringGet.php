@@ -25,7 +25,7 @@ function ciniki_courses_offeringGet($ciniki) {
 		'instructors'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Instructor'),
 		'prices'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Prices'),
 		'files'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Files'),
-		'customers'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customers'),
+		'registrations'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registrations'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -70,6 +70,8 @@ function ciniki_courses_offeringGet($ciniki) {
 		. "ciniki_course_offerings.status, "
 		. "ciniki_course_offerings.status AS status_text, "
 		. "ciniki_course_offerings.webflags, "
+		. "ciniki_course_offerings.reg_flags, "
+		. "ciniki_course_offerings.num_seats, "
 		. "IF((ciniki_course_offerings.webflags&0x01)=1,'Hidden', 'Visible') AS web_visible, "
 		. "ciniki_courses.name AS course_name, "
 		. "ciniki_courses.code, "
@@ -88,8 +90,11 @@ function ciniki_courses_offeringGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
-			'fields'=>array('id', 'offering_name', 'permalink', 'status', 'status_text', 'webflags', 'web_visible', 
-				'primary_image_id', 'course_id', 'course_name', 'code', 'level', 'type', 'category', 'short_description', 'long_description'),
+			'fields'=>array('id', 'offering_name', 'permalink', 'status', 'status_text', 
+				'reg_flags', 'num_seats',
+				'webflags', 'web_visible', 
+				'primary_image_id', 'course_id', 'course_name', 'code', 'level', 'type', 
+				'category', 'short_description', 'long_description'),
 			'maps'=>array('status_text'=>array('10'=>'Active', '60'=>'Deleted'))),
 
 		));
@@ -207,28 +212,24 @@ function ciniki_courses_offeringGet($ciniki) {
 			$offering['files'] = array();
 		}
 	}
-	
-	if( isset($args['customers']) && $args['customers'] == 'yes' ) {
-		$strsql = "SELECT ciniki_course_offering_customers.id, "
-			. "ciniki_customers.id AS customer_id, "
-			. "ciniki_customers.display_name AS name "
-			. "FROM ciniki_course_offering_customers "
-			. "LEFT JOIN ciniki_customers ON (ciniki_course_offering_customers.customer_id = ciniki_customers.id "
-				. "AND ciniki_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "') "
-			. "WHERE ciniki_course_offering_customers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "AND ciniki_course_offering_customers.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+
+	//
+	// Get the number of registrations, if set for the offering
+	//
+	if( isset($args['registrations']) && isset($offering['reg_flags']) && ($offering['reg_flags']&0xC0) > 0 ) {
+		$offering['seats_sold'] = 0;
+		$strsql = "SELECT 'num_seats', SUM(num_seats) AS num_seats "	
+			. "FROM ciniki_course_offering_registrations "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_course_offering_registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
 			. "";
-		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
-			array('container'=>'customers', 'fname'=>'id', 'name'=>'customer',
-				'fields'=>array('id', 'customer_id', 'name')),
-			));
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.courses', 'num');
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
-		if( isset($rc['customers']) ) {
-			$offering['customers'] = $rc['customers'];
-		} else {
-			$offering['customers'] = array();
+		if( isset($rc['num']['num_seats']) ) {
+			$offering['seats_sold'] = $rc['num']['num_seats'];
 		}
 	}
 	

@@ -88,6 +88,8 @@ function ciniki_courses_objects($ciniki) {
 			'status'=>array(),
 			'webflags'=>array(),
 			'condensed_date'=>array(),
+			'reg_flags'=>array(),
+			'num_seats'=>array(),
 			),
 		'history_table'=>'ciniki_course_history',
 		);
@@ -105,15 +107,16 @@ function ciniki_courses_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_course_history',
 	 	);
-	$objects['offering_customer'] = array(
-		'name'=>'Course Offering Customer',
+	$objects['offering_registration'] = array(
+		'name'=>'Course Offering Registration',
 		'sync'=>'yes',
-		'table'=>'ciniki_course_offering_customers',
+		'table'=>'ciniki_course_offering_registrations',
 		'fields'=>array(
-			'course_id'=>array('ref'=>'ciniki.courses.course'),
 			'offering_id'=>array('ref'=>'ciniki.courses.offering'),
 			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
-			'status'=>array(),
+			'invoice_id'=>array('ref'=>'ciniki.sapos.invoice'),
+			'num_seats'=>array(),
+			'customer_notes'=>array(),
 			'notes'=>array(),
 			),
 		'history_table'=>'ciniki_course_history',

@@ -1,0 +1,6 @@
+#
+# Add fields for storing registration information
+#
+ALTER TABLE ciniki_course_offerings ADD COLUMN num_seats int not null AFTER condensed_date;
+ALTER TABLE ciniki_course_offerings ADD COLUMN reg_flags tinyint unsigned not null AFTER num_seats;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.02';

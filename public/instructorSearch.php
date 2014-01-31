@@ -41,8 +41,7 @@ function ciniki_courses_instructorSearch($ciniki) {
     }   
 
 	//
-	// Get the number of customers in each status for the business, 
-	// if no rows found, then return empty array
+	// Build the query to search the instructors
 	//
 	$strsql = "SELECT ciniki_course_instructors.id, "
 		. "CONCAT_WS(' ', first, last) AS name "

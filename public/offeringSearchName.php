@@ -41,8 +41,7 @@ function ciniki_courses_offeringSearchName($ciniki) {
     }   
 
 	//
-	// Get the number of customers in each status for the business, 
-	// if no rows found, then return empty array
+	// Build the query to search course offerings
 	//
 	$strsql = "SELECT DISTINCT ciniki_course_offerings.name AS name "
 		. "FROM ciniki_course_offerings "

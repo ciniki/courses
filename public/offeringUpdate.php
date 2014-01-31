@@ -25,6 +25,8 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
         'status'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Web Flags'), 
+		'reg_flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration Flags'),
+		'num_seats'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Number of Seats'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

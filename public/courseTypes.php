@@ -42,8 +42,7 @@ function ciniki_courses_courseTypes($ciniki) {
     }   
 
 	//
-	// Get the number of customers in each status for the business, 
-	// if no rows found, then return empty array
+	// Build the query to get the list of course types
 	//
 	$strsql = "SELECT DISTINCT ciniki_courses.type AS name "
 		. "FROM ciniki_courses "

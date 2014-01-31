@@ -23,6 +23,15 @@
 #
 # condensed_date:	The single string describing the dates for the course.
 #
+# num_seats:		The number of total seats for the course.
+#
+# reg_flags:		The flags to control how registrations are handled.
+#
+#					0x01 - Admin registrations enabled
+#					0x02 - Online registrations enabled
+#					0x04 -
+#					0x08 - 
+#
 # date_added:		The UTC date and time the record was added.
 # last_updated:		The UTC date and time the record was last changed;
 #
@@ -36,8 +45,10 @@ CREATE TABLE ciniki_course_offerings (
 	status tinyint unsigned not null,
 	webflags tinyint unsigned not null,
 	condensed_date varchar(150) not null,
+	num_seats int not null,
+	reg_flags tinyint unsigned not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
 	index business_uuid (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

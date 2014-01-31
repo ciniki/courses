@@ -41,8 +41,7 @@ function ciniki_courses_courseSearch($ciniki) {
     }   
 
 	//
-	// Get the number of customers in each status for the business, 
-	// if no rows found, then return empty array
+	// Build the search query
 	//
 	$strsql = "SELECT ciniki_courses.id, "
 		. "ciniki_courses.name, "

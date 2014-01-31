@@ -33,8 +33,7 @@ function ciniki_courses_courseSearchField($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Make sure this module is activated, and
-    // check permission to run this function for this business
+	// Build the search query
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
     $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.courseSearchField'); 
@@ -43,8 +42,7 @@ function ciniki_courses_courseSearchField($ciniki) {
     }   
 
 	//
-	// Get the number of customers in each status for the business, 
-	// if no rows found, then return empty array
+	// Buid the query to search courses
 	//
 	$strsql = "SELECT DISTINCT ciniki_courses." . $args['field'] . " AS name "
 		. "FROM ciniki_courses "
