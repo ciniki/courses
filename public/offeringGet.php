@@ -216,8 +216,8 @@ function ciniki_courses_offeringGet($ciniki) {
 	//
 	// Get the number of registrations, if set for the offering
 	//
-	if( isset($args['registrations']) && isset($offering['reg_flags']) && ($offering['reg_flags']&0xC0) > 0 ) {
-		$offering['seats_sold'] = 0;
+	$offering['seats_sold'] = 0;
+	if( isset($args['registrations']) && isset($offering['reg_flags']) && ($offering['reg_flags']&0x03) > 0 ) {
 		$strsql = "SELECT 'num_seats', SUM(num_seats) AS num_seats "	
 			. "FROM ciniki_course_offering_registrations "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "

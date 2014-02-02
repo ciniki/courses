@@ -5,8 +5,8 @@ function ciniki_courses_offerings() {
 	this.statusToggles = {'10':'Active', '60':'Deleted'};
 	this.webFlags = {'1':{'name':'Hidden'}};
 	this.regFlags = {
-		'7':{'name':'Track Registrations'},
-		'8':{'name':'Online Registrations'},
+		'1':{'name':'Track Registrations'},
+		'2':{'name':'Online Registrations'},
 		};
 	this.init = function() {
 		//
@@ -459,8 +459,10 @@ function ciniki_courses_offerings() {
 				p.sections.instructors.visible=(inst=='yes'?'yes':'no');
 				p.sections.prices.visible=(prices=='yes'?'yes':'no');
 				p.sections.files.visible=(files=='yes'?'yes':'no');
-				if( (rsp.offering.reg_flags&0xC0) > 0 ) {
+				if( (rsp.offering.reg_flags&0x03) > 0 ) {
 					reg='yes';
+				} else {
+					reg='no';
 				}
 				p.sections._registrations.visible=(reg=='yes'?'yes':'no');
 				p.refresh();

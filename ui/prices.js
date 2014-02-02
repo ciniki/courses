@@ -2,6 +2,9 @@
 // This app will display and update prices for an course
 //
 function ciniki_courses_prices() {
+	this.webFlags = {
+		'1':{'name':'Hidden'},
+		};
 	this.init = function() {
 		//
 		// The panel for editing a registrant
@@ -21,6 +24,7 @@ function ciniki_courses_prices() {
 				'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
 				'unit_discount_percentage':{'label':'Discount Percent', 'type':'text', 'size':'small'},
 				'taxtype_id':{'label':'Taxes', 'active':'no', 'type':'select', 'options':{}},
+				'webflags':{'label':'Web', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.webFlags},
 				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_courses_prices.savePrice();'},
@@ -64,7 +68,6 @@ function ciniki_courses_prices() {
 		if( M.curBusiness.modules['ciniki.taxes'] != null ) {
 			this.edit.sections.price.fields.taxtype_id.active = 'yes';
 			this.edit.sections.price.fields.taxtype_id.options = {'0':'No Taxes'};
-			console.log(M.curBusiness.taxes);
 			if( M.curBusiness.taxes != null && M.curBusiness.taxes.settings.types != null ) {
 				for(i in M.curBusiness.taxes.settings.types) {
 					this.edit.sections.price.fields.taxtype_id.options[M.curBusiness.taxes.settings.types[i].type.id] = M.curBusiness.taxes.settings.types[i].type.name;

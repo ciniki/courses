@@ -25,7 +25,7 @@
 #
 # webflags:					Flags for displaying the file on the website.
 #
-#							0x01 - Hidden, Do now show the file on the website
+#							0x01 - Hidden, Do now show the price on the website.
 #
 # date_added:				The UTC date and time the file was added.
 # last_updated:				The UTC date and time the file was last updated.

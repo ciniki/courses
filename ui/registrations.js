@@ -75,7 +75,7 @@ function ciniki_courses_registrations() {
             };  
 		this.edit.fieldValue = function(s, i, d) { return this.data[i]; }
 		this.edit.fieldHistoryArgs = function(s, i) {
-			return {'method':'ciniki.courses.registrationHistory', 'args':{'business_id':M.curBusinessID, 
+			return {'method':'ciniki.courses.offeringRegistrationHistory', 'args':{'business_id':M.curBusinessID, 
 				'registration_id':this.registration_id, 'offering_id':this.offering_id, 'field':i}};
 		}
 		this.edit.sectionData = function(s) {
@@ -295,8 +295,7 @@ function ciniki_courses_registrations() {
 						return false;
 					} 
 					if( inv != null && inv == 'yes' ) {
-						M.ciniki_courses_registrations.newInvoice('M.ciniki_courses_registration.showEdit(null,null,'+rsp.id+',null);', this.edit.offering_id, this.edit.customer_id, rsp.id, quantity);
-								
+						M.ciniki_courses_registrations.newInvoice(M.ciniki_courses_registrations.edit.cb, M.ciniki_courses_registrations.edit.offering_id, M.ciniki_courses_registrations.edit.customer_id, rsp.id, quantity);
 					} else {
 						M.ciniki_courses_registrations.edit.close();
 					}
@@ -368,8 +367,9 @@ function ciniki_courses_registrations() {
 				items[0].unit_amount = prices[i].price.unit_amount;
 				items[0].unit_discount_amount = prices[i].price.unit_discount_amount;
 				items[0].unit_discount_percentage = prices[i].price.unit_discount_percentage;
+				items[0].taxtype_id = prices[i].price.taxtype_id;
 			}
 		}
-		M.startApp('ciniki.sapos.invoice',null,'M.ciniki_courses_registrations.showEdit(null,null,\'' + this.newinvoice.registration_id + '\',null);','mc',{'customer_id':this.newinvoice.customer_id,'items':items});
+		M.startApp('ciniki.sapos.invoice',null,this.newinvoice.cb,'mc',{'customer_id':this.newinvoice.customer_id,'items':items});
 	};
 }

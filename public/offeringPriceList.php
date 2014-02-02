@@ -62,6 +62,7 @@ function ciniki_courses_offeringPriceList($ciniki) {
 		. "ciniki_course_offering_prices.unit_amount, "
 		. "ciniki_course_offering_prices.unit_discount_amount, "
 		. "ciniki_course_offering_prices.unit_discount_percentage, "
+		. "ciniki_course_offering_prices.taxtype_id, "
 		. "CONCAT_WS(' - ', ciniki_courses.name, ciniki_course_offerings.name) AS course_name "
 		. "FROM ciniki_course_offering_prices "
 		. "LEFT JOIN ciniki_course_offerings ON ("
@@ -80,7 +81,7 @@ function ciniki_courses_offeringPriceList($ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'prices', 'fname'=>'id', 'name'=>'price',
 			'fields'=>array('id', 'course_name', 'name', 
-				'unit_amount', 'unit_discount_amount', 'unit_discount_percentage')),
+				'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
