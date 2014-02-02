@@ -23,7 +23,10 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $start_needle, $
 	// Prepare the query
 	//
 	$strsql = "SELECT ciniki_course_offerings.id, "
-		. "CONCAT_WS(' - ', ciniki_courses.code, ciniki_courses.name, ciniki_course_offerings.name) AS name, "
+		. "ciniki_courses.code AS course_code, "
+		. "ciniki_courses.name AS course_name, "
+		. "ciniki_course_offerings.name AS offering_name, "
+//		. "CONCAT_WS(' - ', ciniki_courses.code, ciniki_courses.name, ciniki_course_offerings.name) AS name, "
 		. "ciniki_course_offering_prices.id AS price_id, "
 		. "ciniki_course_offering_prices.name AS price_name, "
 		. "ciniki_course_offering_prices.unit_amount, "
@@ -46,6 +49,8 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $start_needle, $
 		. "AND (ciniki_course_offerings.reg_flags&0x03) > 0 "
 		. "AND (ciniki_courses.name LIKE '" . ciniki_core_dbQuote($ciniki, $start_needle) . "%' "
 			. "OR ciniki_courses.name LIKE '% " . ciniki_core_dbQuote($ciniki, $start_needle) . "%' "
+			. "OR ciniki_courses.code LIKE '" . ciniki_core_dbQuote($ciniki, $start_needle) . "%' "
+			. "OR ciniki_courses.code LIKE '% " . ciniki_core_dbQuote($ciniki, $start_needle) . "%' "
 			. ") "
 		. "GROUP BY ciniki_course_offerings.id, ciniki_course_offering_prices.id "
 		. "HAVING end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
@@ -54,7 +59,7 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $start_needle, $
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'courses', 'fname'=>'id',
-			'fields'=>array('id', 'name')),
+			'fields'=>array('id', 'course_code', 'course_name', 'offering_name')),
 		array('container'=>'prices', 'fname'=>'price_id',
 			'fields'=>array('id'=>'price_id', 'name'=>'price_name', 'unit_amount'=>'unit_amount', 
 				'unit_discount_amount', 'unit_discount_percentage',
@@ -71,13 +76,19 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $start_needle, $
 
 	$items = array();
 	foreach($courses as $cid => $course) {
+		if( $course['course_code'] != '' ) {
+			$course['course_name'] = $course['course_code'] . ' - ' . $course['course_name'];
+		} 
+		if( $course['offering_name'] != '' ) {
+			$course['course_name'] .= ' - ' . $course['offering_name'];
+		}
 		if( isset($course['prices']) && count($course['prices']) > 1 ) {
 			foreach($course['prices'] as $pid => $price) {
 				$details = array(
 					'status'=>0,
 					'object'=>'ciniki.courses.offering',
 					'object_id'=>$course['id'],
-					'description'=>$course['name'],
+					'description'=>$course['course_name'],
 					'quantity'=>1,
 					'unit_amount'=>$price['unit_amount'],
 					'unit_discount_amount'=>$price['unit_discount_amount'],

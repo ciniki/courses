@@ -63,7 +63,10 @@ function ciniki_courses_offeringPriceList($ciniki) {
 		. "ciniki_course_offering_prices.unit_discount_amount, "
 		. "ciniki_course_offering_prices.unit_discount_percentage, "
 		. "ciniki_course_offering_prices.taxtype_id, "
-		. "CONCAT_WS(' - ', ciniki_courses.name, ciniki_course_offerings.name) AS course_name "
+		. "ciniki_courses.code AS course_code, "
+		. "ciniki_courses.name AS course_name, "
+		. "ciniki_course_offerings.name AS offering_name "
+//		. "CONCAT_WS(' - ', ciniki_courses.code, ciniki_courses.name, ciniki_course_offerings.name) AS course_name "
 		. "FROM ciniki_course_offering_prices "
 		. "LEFT JOIN ciniki_course_offerings ON ("
 			. "ciniki_course_offering_prices.offering_id = ciniki_course_offerings.id "
@@ -80,7 +83,7 @@ function ciniki_courses_offeringPriceList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'prices', 'fname'=>'id', 'name'=>'price',
-			'fields'=>array('id', 'course_name', 'name', 
+			'fields'=>array('id', 'name', 'course_code', 'course_name', 'offering_name',
 				'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id')),
 		));
 	if( $rc['stat'] != 'ok' ) {
@@ -89,6 +92,12 @@ function ciniki_courses_offeringPriceList($ciniki) {
 	if( isset($rc['prices']) ) {
 		$prices = $rc['prices'];
 		foreach($prices as $pid => $price) {
+			if( $price['course_code'] != '' ) {
+				$price['course_name'] = $price['course_code'] . ' - ' . $price['course_name'];
+			}
+			if( $price['offering_name'] != '' ) {
+				$price['course_name'] .= ' - ' . $price['offering_name'];
+			}
 			$prices[$pid]['price']['unit_amount_display'] = numfmt_format_currency(
 				$intl_currency_fmt, $price['price']['unit_amount'], $intl_currency);
 			$prices[$pid]['price']['unit_discount_amount_display'] = numfmt_format_currency(

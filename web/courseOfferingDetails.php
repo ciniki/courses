@@ -11,6 +11,21 @@
 //
 function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_id, $course_permalink, $offering_permalink) {
 	
+	//
+	// Load INTL settings
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_timezone = $rc['settings']['intl-default-timezone'];
+	$intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
+	$intl_currency = $rc['settings']['intl-default-currency'];
+
+	//
+	// Load the offering details
+	//
 	$strsql = "SELECT ciniki_course_offerings.id, "
 		. "ciniki_course_offerings.condensed_date, "
 		. "ciniki_courses.id AS course_id, "
@@ -79,6 +94,38 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 		}
 		if( isset($rc['files']) ) {
 			$offering['files'] = $rc['files'];
+		}
+	}
+
+	//
+	// Check for prices
+	//
+	if( ($ciniki['business']['modules']['ciniki.courses']['flags']&0x04) > 0 ) {
+		//
+		// Get the price list for the event
+		//
+		$strsql = "SELECT id, name, unit_amount "
+			. "FROM ciniki_course_offering_prices "
+			. "WHERE ciniki_course_offering_prices.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+			. "AND ciniki_course_offering_prices.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+			. "AND (ciniki_course_offering_prices.webflags&0x01) = 0 "
+			. "ORDER BY ciniki_course_offering_prices.name "
+			. "";
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
+			array('container'=>'prices', 'fname'=>'id',
+				'fields'=>array('id', 'name', 'unit_amount')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['prices']) ) {
+			$offering['prices'] = $rc['prices'];
+			foreach($offering['prices'] as $pid => $price) {
+				$offering['prices'][$pid]['unit_amount_display'] = numfmt_format_currency(
+					$intl_currency_fmt, $price['unit_amount'], $intl_currency);
+			}
+		} else {
+			$offering['prices'] = array();
 		}
 	}
 

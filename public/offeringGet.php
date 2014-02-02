@@ -140,6 +140,7 @@ function ciniki_courses_offeringGet($ciniki) {
 		$strsql = "SELECT id, name, unit_amount "
 			. "FROM ciniki_course_offering_prices "
 			. "WHERE ciniki_course_offering_prices.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+			. "AND ciniki_course_offering_prices.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "ORDER BY ciniki_course_offering_prices.name "
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
