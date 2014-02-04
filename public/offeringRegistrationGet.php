@@ -65,7 +65,7 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['registrations']) || !isset($rc['registrations'][0]) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1329', 'msg'=>'Unable to find registration'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1517', 'msg'=>'Unable to find registration'));
 	}
 	$registration = $rc['registrations'][0]['registration'];
 

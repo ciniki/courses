@@ -82,7 +82,7 @@ function ciniki_courses_offeringPriceGet($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['prices']) || !isset($rc['prices'][0]) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1329', 'msg'=>'Unable to find price'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1519', 'msg'=>'Unable to find price'));
 	}
 	$price = $rc['prices'][0]['price'];
 

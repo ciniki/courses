@@ -46,7 +46,7 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['item']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1286', 'msg'=>'Event registration does not exist'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1514', 'msg'=>'Event registration does not exist'));
 	}
 	$item = $rc['item'];
 
