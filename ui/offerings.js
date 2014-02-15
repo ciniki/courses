@@ -120,7 +120,7 @@ function ciniki_courses_offerings() {
 				'cellClasses':['multiline'],
 				'noData':'No instructors added',
 				'addTxt':'Add Instructor',
-				'addFn':'M.startApp(\'ciniki.courses.instructors\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_id\':M.ciniki_courses_offerings.offering.offering_id,\'price_id\':\'0\'});',
+				'addFn':'M.startApp(\'ciniki.courses.instructors\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_id\':M.ciniki_courses_offerings.offering.offering_id,\'price_id\':\'0\',\'add\':\'yes\'});',
 				},
 			'files':{'label':'Files', 'visible':'no', 'type':'simplegrid', 'num_cols':1,
 				'headerValues':null,
