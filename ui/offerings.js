@@ -534,6 +534,7 @@ function ciniki_courses_offerings() {
 			p.sections.offering.fields.start_time.active = 'yes';
 			p.sections.offering.fields.end_time.active = 'yes';
 			p.sections.offering.fields.num_weeks.active = 'yes';
+			p.sections._buttons.buttons.delete.visible = 'no';
 			p.refresh();
 			p.show(cb);
 		}
@@ -619,7 +620,11 @@ function ciniki_courses_offerings() {
 						M.api.err(rsp);
 						return false;
 					} 
-					M.ciniki_courses_offerings.edit.close();
+					if( rsp.id > 0 ) {
+						M.ciniki_courses_offerings.showOffering(M.ciniki_courses_offerings.edit.cb, rsp.id);
+					} else {
+						M.ciniki_courses_offerings.edit.close();
+					}
 				});
 		}
 	};
