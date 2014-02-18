@@ -51,6 +51,7 @@ function ciniki_courses_offerings() {
 			if( s == 'other' ) { return this.sections[s].list; }
 			return this.data[s]; 
 		};
+		this.menu.noData = function(s) { return this.sections[s].noData; }
 		this.menu.cellValue = function(s, i, j, d) {
 			var odate = '';
 			if( d.offering.start_date != null ) {
