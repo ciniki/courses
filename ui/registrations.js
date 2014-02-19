@@ -59,7 +59,7 @@ function ciniki_courses_registrations() {
 //				'addFn':'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_courses_registrations.showEdit();\',\'mc\',{\'customer_id\':M.ciniki_courses_registrations.edit.customer_id});',
 				},
 			'registration':{'label':'Registration', 'fields':{
-				'num_seats':{'label':'Number of Tickets', 'type':'text', 'size':'small'},
+				'num_seats':{'label':'Number of Seats', 'type':'text', 'size':'small'},
 				}},
 			'_customer_notes':{'label':'Customer Notes', 'fields':{
 				'customer_notes':{'label':'', 'hidelabel':'yes', 'hint':'', 'size':'small', 'type':'textarea'},
@@ -163,7 +163,7 @@ function ciniki_courses_registrations() {
 				}
 				M.ciniki_courses_registrations.menu.data.registrations = rsp.registrations;
 				if( rsp.registrations.length > 0 ) {
-					M.ciniki_courses_registrations.menu.sections.registrations.headerValues = ['Name', 'Tickets', 'Paid'];
+					M.ciniki_courses_registrations.menu.sections.registrations.headerValues = ['Name', 'Seats', 'Paid'];
 				} else {
 					M.ciniki_courses_registrations.menu.sections.registrations.headerValues = null;
 				}
