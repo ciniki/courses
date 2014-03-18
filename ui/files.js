@@ -65,9 +65,7 @@ function ciniki_courses_files() {
 
 	this.start = function(cb, appPrefix, aG) {
 		args = {};
-		if( aG != null ) {
-			args = eval(aG);
-		}
+		if( aG != null ) { args = eval(aG); }
 
 		//
 		// Create container
@@ -188,14 +186,25 @@ function ciniki_courses_files() {
 
 	this.deleteFile = function() {
 		if( confirm('Are you sure you want to delete \'' + this.edit.data.name + '\'?  All information about it will be removed and unrecoverable.') ) {
-			var rsp = M.api.getJSONCb('ciniki.courses.offeringFileDelete', {'business_id':M.curBusinessID, 
-				'offering_file_id':M.ciniki_courses_files.edit.offering_file_id}, function(rsp) {
-					if( rsp.stat != 'ok' ) {
-						M.api.err(rsp);
-						return false;
-					} 
-					M.ciniki_courses_files.edit.close();
-				});
+			if( this.edit.offering_file_id != null && this.edit.offering_file_id > 0 ) {
+				M.api.getJSONCb('ciniki.courses.offeringFileDelete', {'business_id':M.curBusinessID, 
+					'offering_file_id':M.ciniki_courses_files.edit.offering_file_id}, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						} 
+						M.ciniki_courses_files.edit.close();
+					});
+			} else {
+				M.api.getJSONCb('ciniki.courses.fileDelete', {'business_id':M.curBusinessID, 
+					'file_id':M.ciniki_courses_files.edit.file_id}, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						} 
+						M.ciniki_courses_files.edit.close();
+					});
+			}
 		}
 	};
 
