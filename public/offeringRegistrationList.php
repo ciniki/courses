@@ -47,12 +47,12 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
 		//
 		// Load the status maps for the text description of each status
 		//
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'invoiceStatusMaps');
-		$rc = ciniki_sapos_invoiceStatusMaps($ciniki);
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'invoiceMaps');
+		$rc = ciniki_sapos_invoiceMaps($ciniki);
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
-		$status_maps = $rc['maps'];
+		$status_maps = $rc['maps']['payment_status'];
 		$status_maps[0] = 'No Invoice';
 
 		$strsql = "SELECT ciniki_course_offering_registrations.id, "

@@ -92,6 +92,7 @@ function ciniki_courses_offeringPriceList($ciniki) {
 	if( isset($rc['prices']) ) {
 		$prices = $rc['prices'];
 		foreach($prices as $pid => $price) {
+			$price = $price['price'];
 			if( $price['course_code'] != '' ) {
 				$price['course_name'] = $price['course_code'] . ' - ' . $price['course_name'];
 			}
@@ -99,9 +100,9 @@ function ciniki_courses_offeringPriceList($ciniki) {
 				$price['course_name'] .= ' - ' . $price['offering_name'];
 			}
 			$prices[$pid]['price']['unit_amount_display'] = numfmt_format_currency(
-				$intl_currency_fmt, $price['price']['unit_amount'], $intl_currency);
+				$intl_currency_fmt, $price['unit_amount'], $intl_currency);
 			$prices[$pid]['price']['unit_discount_amount_display'] = numfmt_format_currency(
-				$intl_currency_fmt, $price['price']['unit_discount_amount'], $intl_currency);
+				$intl_currency_fmt, $price['unit_discount_amount'], $intl_currency);
 		}
 	} else {
 		$prices = array();

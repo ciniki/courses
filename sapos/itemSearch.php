@@ -105,7 +105,7 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $start_needle, $
 				'status'=>0,
 				'object'=>'ciniki.courses.offering',
 				'object_id'=>$course['id'],
-				'description'=>$course['name'],
+				'description'=>$course['course_name'],
 				'quantity'=>1,
 				'unit_amount'=>0,
 				'unit_discount_amount'=>0,
