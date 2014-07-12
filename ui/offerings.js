@@ -236,14 +236,14 @@ function ciniki_courses_offerings() {
 			'_image':{'label':'', 'aside':'yes', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 			}},
-			'course':{'label':'Course', 'fields':{
+			'course':{'label':'Course', 'aside':'yes', 'fields':{
 				'course_name':{'label':'Name', 'type':'text', 'livesearch':'yes'},
 				'code':{'label':'Code', 'type':'text', 'livesearch':'yes'},
 				'level':{'label':'Level', 'type':'text'},
 				'type':{'label':'Type', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
 				'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
 				}},
-			'offering':{'label':'Session', 'fields':{
+			'offering':{'label':'Session', 'aside':'yes', 'fields':{
 				'name':{'label':'Name', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
 				'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':this.statusToggles},
 				'webflags':{'label':'Web', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.webFlags},
