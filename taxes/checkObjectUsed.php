@@ -37,7 +37,7 @@ function ciniki_courses_taxes_checkObjectUsed($ciniki, $modules, $business_id, $
 		if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
 			$used = 'yes';
 			$count = $rc['num']['items'];
-			$msg = "There are $count course offering" . ($rc['num']['items']==1?'':'s') . " still using this tax type.";
+			$msg = "There " . ($count==1?'is':'are') . " $count course offering" . ($count==1?'':'s') . " still using this tax type.";
 		}
 	}
 
