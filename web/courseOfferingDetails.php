@@ -58,7 +58,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'offerings', 'fname'=>'id', 
-			'fields'=>array('id', 'name', 'code', 'permalink', 'image_id'=>'primary_image_id', 
+			'fields'=>array('id', 'name', 'code', 'level', 'permalink', 'image_id'=>'primary_image_id', 
 				'level', 'type', 'category', 'long_description', 'condensed_date')),
 		array('container'=>'classes', 'fname'=>'class_id', 
 			'fields'=>array('id'=>'class_id', 'class_date', 'start_time', 'end_time')),
