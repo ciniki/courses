@@ -75,11 +75,11 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
 	if( isset($args['customer']) && $args['customer'] == 'yes' && $registration['customer_id'] > 0 ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'private', 'customerDetails');
 		$rc = ciniki_customers__customerDetails($ciniki, $args['business_id'], $registration['customer_id'], 
-			array('emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
+			array('phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes', 'subscriptions'=>'no'));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
-		$registration['customer'] = $rc['details'];
+		$registration['customer_details'] = $rc['details'];
 	}
 
 	//

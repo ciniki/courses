@@ -10,9 +10,9 @@
 // Returns
 // =======
 //
-function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $start_needle, $limit) {
+function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
 
-	if( $start_needle == '' ) {
+	if( $args['start_needle'] == '' ) {
 		return array('stat'=>'ok', 'items'=>array());
 	}
 
@@ -47,10 +47,10 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $start_needle, $
 			. ") "
 		. "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND (ciniki_course_offerings.reg_flags&0x03) > 0 "
-		. "AND (ciniki_courses.name LIKE '" . ciniki_core_dbQuote($ciniki, $start_needle) . "%' "
-			. "OR ciniki_courses.name LIKE '% " . ciniki_core_dbQuote($ciniki, $start_needle) . "%' "
-			. "OR ciniki_courses.code LIKE '" . ciniki_core_dbQuote($ciniki, $start_needle) . "%' "
-			. "OR ciniki_courses.code LIKE '% " . ciniki_core_dbQuote($ciniki, $start_needle) . "%' "
+		. "AND (ciniki_courses.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+			. "OR ciniki_courses.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+			. "OR ciniki_courses.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+			. "OR ciniki_courses.code LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 			. ") "
 		. "GROUP BY ciniki_course_offerings.id, ciniki_course_offering_prices.id "
 		. "HAVING end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
