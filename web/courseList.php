@@ -38,6 +38,7 @@ function ciniki_courses_web_courseList($ciniki, $settings, $business_id, $type, 
 			. "AND ciniki_course_offering_classes.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "') "
 		. "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_course_offerings.status = 10 "
+		. "AND (ciniki_course_offerings.webflags&0x01) = 0 "	// Visible online
 		. "GROUP BY ciniki_course_offerings.id "
 		. "";
 	if( $when == 'upcoming' ) {
