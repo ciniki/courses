@@ -6,16 +6,16 @@
 #
 # Fields
 # ------
-# id:				The ID of the instructor image.
+# id:				The ID of the course offering class.
 # uuid:				The Universal Unique ID.
 # business_id:		The ID of the business the date is for.
 #
 # course_id:		The ID of the course the date is for.
 # offering_id:		The ID of the course offering the date is for.
-# course_date:		The date of the course.
-# description:		The description for this course date.
+# class_date:		The date of the course.
 # start_time:		The start time on the date for the course.
 # end_time:			The end time of the date for the course.
+# notes:			The notes for this course date.
 #
 # date_added:		The UTC date and time the record was added.
 # last_updated:		The UTC date and time the record was last changed;

@@ -7,12 +7,13 @@
 #
 # Fields
 # ------
-# id:				The ID of the instructor image.
+# id:				The ID of the course offering.
 # uuid:				The Universal Unique ID.
 # business_id:		The ID of the business the date is for.
 #
 # course_id:		The ID of the course the date is for.
 # name:				The name for this offering: spring 2013, summer 2013
+# permalink:		The permalink for the course offering.
 # status:			The current status of the course offering.
 #
 #					10 - active

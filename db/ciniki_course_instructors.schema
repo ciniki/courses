@@ -9,7 +9,9 @@
 # uuid:				The Universal Unique ID.
 # business_id:		The ID of the business the instructor image is attached to.
 #
-# name:				The name of the instructor.
+# first:			The first name of the instructor.
+# last:				The last name of the instructor.
+# permalink:		The permalink for the instructor webpage.
 # primary_image_id:	The ID of the image for the instructor.
 #
 # webflags:			The flags for displaying on the website.  
