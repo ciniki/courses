@@ -240,7 +240,7 @@ function ciniki_courses_offerings() {
 				'course_name':{'label':'Name', 'type':'text', 'livesearch':'yes'},
 				'code':{'label':'Code', 'type':'text', 'livesearch':'yes'},
 				'level':{'label':'Level', 'type':'text'},
-				'type':{'label':'Type', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
+				'type':{'label':'Type', 'active':'no', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
 				'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
 				}},
 			'offering':{'label':'Session', 'aside':'yes', 'fields':{
@@ -365,6 +365,15 @@ function ciniki_courses_offerings() {
 		if( appContainer == null ) {
 			alert('App Error');
 			return false;
+		}
+		
+		//
+		// Decide what is visible
+		//
+		if( (M.curBusiness.modules['ciniki.courses'].flags&0x10) > 0 ) {
+			this.edit.sections.course.fields.type.active = 'yes';
+		} else {
+			this.edit.sections.course.fields.type.active = 'no';
 		}
 
 		if( args.course_id != null && args.course_id > 0 && args.add != null && args.add == 'yes' ) {
