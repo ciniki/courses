@@ -102,21 +102,6 @@ function ciniki_courses_instructors() {
 				return 'M.startApp(\'ciniki.courses.instructorimages\',null,\'M.ciniki_courses_instructors.showInstructor();\',\'mc\',{\'instructor_image_id\':\'' + d.image.id + '\'});';
 			}
 		};
-		this.instructor.thumbSrc = function(s, i, d) {
-			if( d.image.image_data != null && d.image.image_data != '' ) {
-				return d.image.image_data;
-			} else {
-				return '/ciniki-mods/core/ui/themes/default/img/noimage_75.jpg';
-			}
-		};
-		this.instructor.thumbTitle = function(s, i, d) {
-			if( d.image.name != null ) { return d.image.name; }
-			return '';
-		};
-		this.instructor.thumbID = function(s, i, d) {
-			if( d.image.id != null ) { return d.image.id; }
-			return 0;
-		};
 		this.instructor.thumbFn = function(s, i, d) {
 			return 'M.startApp(\'ciniki.courses.instructorimages\',null,\'M.ciniki_courses_instructors.showInstructor();\',\'mc\',{\'instructor_image_id\':\'' + d.image.id + '\'});';
 		};
