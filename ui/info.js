@@ -315,6 +315,6 @@ function ciniki_courses_info() {
 	};
 
 	this.downloadFile = function(fid) {
-		window.open(M.api.getUploadURL('ciniki.courses.fileDownload', {'business_id':M.curBusinessID, 'file_id':fid}));
+		M.api.openFile('ciniki.courses.fileDownload', {'business_id':M.curBusinessID, 'file_id':fid});
 	};
 }
