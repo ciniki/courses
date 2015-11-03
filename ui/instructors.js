@@ -40,7 +40,7 @@ function ciniki_courses_instructors() {
 		this.instructor.instructor_id = 0;
 		this.instructor.offering_instructor_id = 0;
 		this.instructor.sections = {
-			'_image':{'label':'', 'fields':{
+			'_image':{'label':'', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
 				}},
 			'info':{'label':'', 'list':{
@@ -145,7 +145,7 @@ function ciniki_courses_instructors() {
 		this.edit.offering_instructor_id = 0;
 		this.edit.instructor_id = 0;
 		this.edit.sections = {
-			'_image':{'label':'', 'fields':{
+			'_image':{'label':'', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 			}},
 			'instructor':{'label':'Instructor', 'fields':{

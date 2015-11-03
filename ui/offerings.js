@@ -86,7 +86,7 @@ function ciniki_courses_offerings() {
 		this.offering.offering_id = 0;
 		this.offering.course_id = 0;
 		this.offering.sections = {
-			'_image':{'label':'', 'aside':'yes', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
 				}},
 			'course':{'label':'Course', 'aside':'yes', 'list':{
@@ -233,7 +233,7 @@ function ciniki_courses_offerings() {
 		this.edit.offering_id = 0;
 		this.edit.course_id = 0;
 		this.edit.sections = {
-			'_image':{'label':'', 'aside':'yes', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 			}},
 			'course':{'label':'Course', 'aside':'yes', 'fields':{
