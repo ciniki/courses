@@ -16,7 +16,7 @@ function ciniki_courses_sapos_itemUpdate($ciniki, $business_id, $invoice_id, $it
 	// An course offering was added to an invoice item, get the details and see if we need to 
 	// create a registration for this course offering
 	//
-	if( isset($item['object']) && $item['object'] == 'ciniki.courses.offering_registration' && isset($item['object_id']) ) {
+/*	if( isset($item['object']) && $item['object'] == 'ciniki.courses.offering_registration' && isset($item['object_id']) ) {
 		//
 		// Check the course offering registration exists
 		//
@@ -48,7 +48,7 @@ function ciniki_courses_sapos_itemUpdate($ciniki, $business_id, $invoice_id, $it
 
 		return array('stat'=>'ok');
 	}
-
+*/
 	return array('stat'=>'ok');
 }
 ?>

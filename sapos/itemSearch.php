@@ -85,8 +85,8 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
 			foreach($course['prices'] as $pid => $price) {
 				$details = array(
 					'status'=>0,
-					'object'=>'ciniki.courses.offering',
-					'object_id'=>$course['id'],
+					'object'=>'ciniki.courses.offering_price',
+					'object_id'=>$price['id'],
 					'description'=>$course['course_name'],
 					'quantity'=>1,
 					'unit_amount'=>$price['unit_amount'],
@@ -98,6 +98,8 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
 				if( $price['name'] != '' ) {
 					$details['description'] .= ' - ' . $price['name'];
 				}
+                // Flags: no quantity, registration item
+                $details['flags'] = 0x28;
 				$items[] = array('item'=>$details);
 			}
 		} else {
@@ -110,11 +112,14 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
 				'unit_amount'=>0,
 				'unit_discount_amount'=>0,
 				'unit_discount_percentage'=>0,
+                'shipped_quantity'=>0,
 				'taxtype_id'=>0, 
 				'notes'=>'',
 				);
 			if( isset($course['prices']) && count($course['prices']) == 1 ) {
 				$price = array_pop($course['prices']);
+                $details['object'] = 'ciniki.courses.offering_price';
+                $details['object_id'] = $price['id'];
 				if( isset($price['name']) && $price['name'] != '' ) {
 					$details['description'] .= ' - ' . $price['name'];
 				}
@@ -131,6 +136,8 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
 					$details['taxtype_id'] = $price['taxtype_id'];
 				}
 			}
+            // Flags: no quantity, registration item
+            $item['flags'] = 0x28;
 			$items[] = array('item'=>$details);
 		}
 	}

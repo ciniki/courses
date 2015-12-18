@@ -114,6 +114,7 @@ function ciniki_courses_objects($ciniki) {
 		'fields'=>array(
 			'offering_id'=>array('ref'=>'ciniki.courses.offering'),
 			'customer_id'=>array('ref'=>'ciniki.customers.customer'),
+			'student_id'=>array('ref'=>'ciniki.customers.customer'),
 			'invoice_id'=>array('ref'=>'ciniki.sapos.invoice'),
 			'num_seats'=>array(),
 			'customer_notes'=>array(),

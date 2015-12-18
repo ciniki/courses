@@ -37,7 +37,7 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
 	//
 	// Get the existing registration information
 	//
-	$strsql = "SELECT id, uuid FROM ciniki_course_offering_registrations "
+	$strsql = "SELECT id, invoice_id, uuid FROM ciniki_course_offering_registrations "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
 		. "";
@@ -48,7 +48,7 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
 	if( !isset($rc['item']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1514', 'msg'=>'Event registration does not exist'));
 	}
-	$item = $rc['item'];
+	$registration = $rc['item'];
 
 	//
 	// Start transaction
@@ -65,11 +65,23 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
 	}   
 
 	//
-	// Delete the object
+	// Remove the item from the invoice
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringRegistrationDelete');
-	$args['registration_uuid'] = $item['uuid'];
-	$rc = ciniki_courses__offeringRegistrationDelete($ciniki, $args['business_id'], $item['id'], $item['uuid']);
+    if( $registration['invoice_id'] > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
+        $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['business_id'], array('invoice_id'=>$registration['invoice_id'], 
+            'object'=>'ciniki.courses.offering_registration', 'object_id'=>$registration['id']));
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+            return $rc;
+        }
+    }
+
+	//
+	// Remove the registration
+	//
+	$rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.courses.offering_registration', 
+		$registration['id'], $registration['uuid'], 0x04);
 	if( $rc['stat'] != 'ok' ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
 		return $rc;

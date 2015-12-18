@@ -1,0 +1,6 @@
+#
+# Add fields for storing student
+#
+ALTER TABLE ciniki_course_offering_registrations ADD COLUMN student_id int not null AFTER customer_id;
+UPDATE ciniki_course_offering_registrations SET student_id = customer_id;
+ALTER TABLE ciniki_course_offering_registrations COMMENT='v1.02';

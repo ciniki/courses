@@ -51,5 +51,6 @@ CREATE TABLE ciniki_course_offerings (
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
+    index (course_id),
 	index business_uuid (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.02';
