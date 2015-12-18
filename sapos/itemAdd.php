@@ -64,6 +64,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
 		//
 		$reg_args = array('offering_id'=>$offering['id'],
 			'customer_id'=>$invoice['customer_id'],
+			'student_id'=>$invoice['customer_id'],
 			'num_seats'=>(isset($item['quantity'])?$item['quantity']:1),
 			'invoice_id'=>$invoice['id'],
 			'customer_notes'=>'',
@@ -127,6 +128,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
 		//
 		$reg_args = array('offering_id'=>$offering['id'],
 			'customer_id'=>$invoice['customer_id'],
+			'student_id'=>$invoice['customer_id'],
 			'num_seats'=>(isset($item['quantity'])?$item['quantity']:1),
 			'invoice_id'=>$invoice['id'],
 			'customer_notes'=>'',
