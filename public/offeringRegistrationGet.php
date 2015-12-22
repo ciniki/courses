@@ -94,7 +94,7 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['course']) ) {
-		return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1259', 'msg'=>'Unable to find course'));
+		return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'2914', 'msg'=>'Unable to find course'));
 	}
 	$registration['course_name'] = ($rc['course']['code'] !=''?$rc['course']['code'] . ' - ':'') . $rc['course']['name'];
     $registration['course_dates'] = $rc['course']['condensed_date'];
