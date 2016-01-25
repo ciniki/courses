@@ -150,7 +150,7 @@ function ciniki_courses_templates_offeringregistrations(&$ciniki, $business_id, 
 		$height = $pdf->header_image->getImageHeight();
 		$width = $pdf->header_image->getImageWidth();
 		$image_ratio = $width/$height;
-		$img_width = 90;
+		$img_width = 80;
 		$available_ratio = $img_width/40;
 		// Check if the ratio of the image will make it too large for the height,
 		// and scaled based on either height or width.
@@ -169,7 +169,7 @@ function ciniki_courses_templates_offeringregistrations(&$ciniki, $business_id, 
 	$w = array(25, 65);
 	foreach($pdf->header_details as $detail) {
 		$pdf->SetFillColor(224);
-		$pdf->SetX($pdf->left_margin + 100);
+		$pdf->SetX($pdf->left_margin + 90);
 		$pdf->SetFont('', 'B');
 		$pdf->Cell($w[0], 6, $detail['label'], 1, 0, 'L', 1);
 		$pdf->SetFillColor(255);
@@ -182,7 +182,7 @@ function ciniki_courses_templates_offeringregistrations(&$ciniki, $business_id, 
 	//
 	// Add the registrations
 	//
-	$w = array(80, 80, 30);
+	$w = array(73, 73, 34);
 	$pdf->SetFillColor(224);
 	$pdf->SetFont('', 'B');
 	$pdf->SetCellPadding(2);
@@ -211,15 +211,40 @@ function ciniki_courses_templates_offeringregistrations(&$ciniki, $business_id, 
 			if( isset($rc['customer']) ) {
 				$customer = $rc['customer'];
 				$student_information = $customer['first'] . ' ' . $customer['last'] . "\n";
+				if( isset($customer['phones']) ) {
+					$phones = "";
+					foreach($customer['phones'] as $phone) {
+						if( count($customer['phones']) > 1 ) {
+							$p = $phone['phone_label'] . ': ' . $phone['phone_number'];
+							if( $pdf->getStringWidth($phones . ', ' . $p) > $w[1] ) {
+								$phones .= "\n" . $p;
+							} else {
+								$phones .= ($phones!=''?', ':'') . $p;
+							}
+						} else {
+							$phones .= $phone['phone_number'];
+						}
+					}
+					if( count($customer['phones']) > 0 ) {
+						$student_information .= $phones . "\n";
+					} else {
+						$student_information .= "Phone: \n";
+					}
+				}
+				if( isset($customer['emails']) ) {
+					$emails = '';
+					$comma = '';
+					foreach($customer['emails'] as $e => $email) {
+						$emails .= ($emails!=''?', ':'') . $email['email']['address'];
+					}
+					$student_information .= $emails . "\n";
+				}
 			}
 		}
 
 		// If a business, then convert "Payment Required" to "Invoice"
 		$business_information = '';
 		if( $reg['customer_type'] == 2 || $reg['student_id'] != $reg['customer_id'] ) {
-			if( $reg['invoice_status'] == 'Payment Required' ) {
-				$reg['invoice_status'] = 'Invoice';
-			}
 			$rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, 
 				array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
 			if( $rc['stat'] != 'ok' ) {
@@ -227,12 +252,43 @@ function ciniki_courses_templates_offeringregistrations(&$ciniki, $business_id, 
 			}
 			$business_information = $reg['customer_name'] . "\n";
 //			print "<pre>" . print_r($rc, true) . "</pre>";
+			if( isset($rc['customer']) ) {
+				$customer = $rc['customer'];
+				if( isset($customer['phones']) ) {
+					$phones = "";
+					foreach($customer['phones'] as $phone) {
+						if( count($customer['phones']) > 1 ) {
+							$p = $phone['phone_label'] . ': ' . $phone['phone_number'];
+							if( $pdf->getStringWidth($phones . ', ' . $p) > $w[2] ) {
+								$phones .= "\n" . $p;
+							} else {
+								$phones .= ($phones!=''?', ':'') . $p;
+							}
+						} else {
+							$phones .= $phone['phone_number'];
+						}
+					}
+					if( count($customer['phones']) > 0 ) {
+						$business_information .= $phones . "\n";
+					} else {
+						$business_information .= "Phone: \n";
+					}
+				}
+				if( isset($customer['emails']) ) {
+					$emails = '';
+					$comma = '';
+					foreach($customer['emails'] as $e => $email) {
+						$emails .= ($emails!=''?', ':'') . $email['email']['address'];
+					}
+					$business_information .= $emails . "\n";
+				}
+            }
 		}
 
 		// Calculate the line height required
 		$lh = $pdf->getStringHeight($w[1], $business_information);
 		$lh1 = $pdf->getStringHeight($w[1], $student_information);
-		$lh2 = $pdf->getStringHeight($w[2], $reg['invoice_status']);
+		$lh2 = $pdf->getStringHeight($w[2], $reg['invoice_status_text']);
 		if( $lh1 > $lh ) { $lh = $lh1; }
 		if( $lh2 > $lh ) { $lh = $lh2; }
 
@@ -252,7 +308,7 @@ function ciniki_courses_templates_offeringregistrations(&$ciniki, $business_id, 
 
 		$pdf->MultiCell($w[0], $lh, $student_information, 1, 'L', $fill, 0);
 		$pdf->MultiCell($w[1], $lh, $business_information, 1, 'L', $fill, 0);
-		$pdf->MultiCell($w[2], $lh, $reg['invoice_status'], 1, 'L', $fill, 0);
+		$pdf->MultiCell($w[2], $lh, $reg['invoice_status_text'], 1, 'L', $fill, 0);
 		$pdf->Ln();
 
 		$fill=!$fill;
