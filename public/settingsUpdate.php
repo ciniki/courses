@@ -69,6 +69,7 @@ function ciniki_courses_settingsUpdate(&$ciniki) {
 	$changelog_fields = array(
 		'course-registration-details',
 		'course-registration-more-details',
+		'default-header-image',
 		);
 	//
 	// Check each valid setting and see if a new value was passed in the arguments for it.

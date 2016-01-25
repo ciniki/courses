@@ -23,12 +23,14 @@ function ciniki_courses_registrations() {
 //				'addFn':'M.ciniki_courses_registrations.showAdd(\'M.ciniki_courses_registrations.showMenu();\',M.ciniki_courses_registrations.menu.offering_id);',
 				},
             'prices':{'label':'Add Registration', 'type':'simplegrid', 'num_cols':2},
+            '_buttons':{'label':'', 'buttons':{
+                'registrationspdf':{'label':'Class List', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsPDF(M.ciniki_courses_registrations.menu.offering_id);'},
+                }},
 			};
 		this.menu.cellValue = function(s, i, j, d) {
             if( s == 'registrations' ) {
                 switch(j) {
                     case 0: return '<span class="maintext">' + d.registration.customer_name + '</span>';
-    //				case 1: return '<span class="maintext">' + d.registration.num_seats + '</span>';
                     case 1: return '<span class="maintext">' + d.registration.invoice_status_text + '</span>';
                 }
             } 
@@ -399,4 +401,9 @@ function ciniki_courses_registrations() {
 		}
 		M.startApp('ciniki.sapos.invoice',null,this.newinvoice.cb,'mc',{'customer_id':this.newinvoice.customer_id,'items':items});
 	};
+
+	this.offeringRegistrationsPDF = function(oid) {
+		M.api.openFile('ciniki.courses.offeringRegistrations', {'business_id':M.curBusinessID, 'output':'pdf', 'offering_id':oid});
+	};
+
 }
