@@ -40,11 +40,6 @@ function ciniki_courses_instructorList($ciniki) {
 		. "FROM ciniki_course_instructors "
 		. "WHERE ciniki_course_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "";
-	if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
-		$strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";	// is_numeric verified
-	} else {
-		$strsql .= "LIMIT 25 ";
-	}
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbRspQuery');
 	return ciniki_core_dbRspQuery($ciniki, $strsql, 'ciniki.courses', 'instructors', 'instructor', array('stat'=>'ok', 'instructors'=>array()));
