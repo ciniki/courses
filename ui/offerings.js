@@ -189,7 +189,7 @@ function ciniki_courses_offerings() {
 			}
 			if( s == 'prices' ) {
 				switch(j) {
-					case 0: return d.price.name;
+					case 0: return d.price.name + (d.price.available_to_text!=''?' <span class="subdue">(' + d.price.available_to_text + ')</span>':'');
 					case 1: return d.price.unit_amount_display;
 				}
 			}

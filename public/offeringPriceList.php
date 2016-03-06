@@ -59,6 +59,7 @@ function ciniki_courses_offeringPriceList($ciniki) {
 	//
 	$strsql = "SELECT ciniki_course_offering_prices.id, "
 		. "ciniki_course_offering_prices.name, "
+		. "ciniki_course_offering_prices.available_to, "
 		. "ciniki_course_offering_prices.unit_amount, "
 		. "ciniki_course_offering_prices.unit_discount_amount, "
 		. "ciniki_course_offering_prices.unit_discount_percentage, "
@@ -83,7 +84,7 @@ function ciniki_courses_offeringPriceList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'prices', 'fname'=>'id', 'name'=>'price',
-			'fields'=>array('id', 'name', 'course_code', 'course_name', 'offering_name',
+			'fields'=>array('id', 'name', 'available_to', 'course_code', 'course_name', 'offering_name',
 				'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id')),
 		));
 	if( $rc['stat'] != 'ok' ) {

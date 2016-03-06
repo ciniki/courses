@@ -140,6 +140,7 @@ function ciniki_courses_objects($ciniki) {
 		'fields'=>array(
 			'offering_id'=>array('ref'=>'ciniki.courses.offering'),
 			'name'=>array(),
+			'available_to'=>array('default'=>'1'),
 			'valid_from'=>array(),
 			'valid_to'=>array(),
 			'unit_amount'=>array(),

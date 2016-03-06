@@ -2,9 +2,6 @@
 // This app will display and update prices for an course
 //
 function ciniki_courses_prices() {
-	this.webFlags = {
-		'1':{'name':'Hidden'},
-		};
 	this.init = function() {
 		//
 		// The panel for editing a registrant
@@ -18,13 +15,14 @@ function ciniki_courses_prices() {
         this.edit.sections = { 
 			'price':{'label':'Price', 'fields':{
 				'name':{'label':'Name', 'type':'text'},
+                'available_to':{'label':'Available', 'type':'flags', 'default':'1', 'flags':{}},
 //				'valid_from':{'label':'Valid From', 'hint':'', 'type':'text'},
 //				'valid_to':{'label':'Valid To', 'hint':'', 'type':'text'},
 				'unit_amount':{'label':'Unit Amount', 'type':'text', 'size':'small'},
 				'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
 				'unit_discount_percentage':{'label':'Discount Percent', 'type':'text', 'size':'small'},
 				'taxtype_id':{'label':'Taxes', 'active':'no', 'type':'select', 'options':{}},
-				'webflags':{'label':'Web', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.webFlags},
+				'webflags':{'label':'Web', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':{}},
 				}},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_courses_prices.savePrice();'},
@@ -76,6 +74,24 @@ function ciniki_courses_prices() {
 		} else {
 			this.edit.sections.price.fields.taxtype_id.active = 'no';
 			this.edit.sections.price.fields.taxtype_id.options = {'0':'No Taxes'};
+		}
+
+		//
+		// Setup the available_to flags and webflags
+		//
+		this.edit.sections.price.fields.available_to.flags = {'1':{'name':'Public'}};
+		this.edit.sections.price.fields.webflags.flags = {'1':{'name':'Hidden'}};
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x02) > 0 ) {
+			this.edit.sections.price.fields.available_to.flags['6'] = {'name':'Members'};
+			this.edit.sections.price.fields.webflags.flags['6'] = {'name':'Show Members Price'};
+		}
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x10) > 0 ) {
+			this.edit.sections.price.fields.available_to.flags['7'] = {'name':'Dealers'};
+			this.edit.sections.price.fields.webflags.flags['7'] = {'name':'Show Dealers Price'};
+		}
+		if( (M.curBusiness.modules['ciniki.customers'].flags&0x100) > 0 ) {
+			this.edit.sections.price.fields.available_to.flags['8'] = {'name':'Distributors'};
+			this.edit.sections.price.fields.webflags.flags['8'] = {'name':'Show Distributors Price'};
 		}
 
 		this.showEdit(cb, args.price_id, args.offering_id);

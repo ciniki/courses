@@ -56,6 +56,7 @@ function ciniki_courses_offeringPriceGet($ciniki) {
 	$strsql = "SELECT ciniki_course_offering_prices.id, "
 		. "ciniki_course_offering_prices.offering_id, "
 		. "ciniki_course_offering_prices.name, "
+		. "ciniki_course_offering_prices.available_to, "
 		. "ciniki_course_offering_prices.valid_from, "
 		. "ciniki_course_offering_prices.valid_to, "
 		. "ciniki_course_offering_prices.unit_amount, "
@@ -70,7 +71,7 @@ function ciniki_courses_offeringPriceGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'prices', 'fname'=>'id', 'name'=>'price',
-			'fields'=>array('id', 'offering_id', 'name', 'valid_from', 'valid_to', 
+			'fields'=>array('id', 'offering_id', 'name', 'available_to', 'valid_from', 'valid_to', 
 				'unit_amount', 'unit_discount_amount', 'unit_discount_percentage',
 				'taxtype_id', 'webflags'),
 			'utctotz'=>array('valid_from'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),

@@ -61,6 +61,16 @@ function ciniki_courses_offeringGet($ciniki) {
 	$time_format = ciniki_users_timeFormat($ciniki);
 
 	//
+	// Load event maps
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'maps');
+	$rc = ciniki_courses_maps($ciniki);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$maps = $rc['maps'];
+
+	//
 	// Get the main information
 	//
 	$strsql = "SELECT ciniki_course_offerings.id, "
@@ -137,7 +147,7 @@ function ciniki_courses_offeringGet($ciniki) {
 		//
 		// Get the price list for the event
 		//
-		$strsql = "SELECT id, name, unit_amount "
+		$strsql = "SELECT id, name, available_to, available_to AS available_to_text, unit_amount "
 			. "FROM ciniki_course_offering_prices "
 			. "WHERE ciniki_course_offering_prices.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
 			. "AND ciniki_course_offering_prices.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -145,7 +155,8 @@ function ciniki_courses_offeringGet($ciniki) {
 			. "";
 		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.offerings', array(
 			array('container'=>'prices', 'fname'=>'id', 'name'=>'price',
-				'fields'=>array('id', 'name', 'unit_amount')),
+				'fields'=>array('id', 'name', 'available_to', 'available_to_text', 'unit_amount'),
+                'flags'=>array('available_to_text'=>$maps['price']['available_to'])),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;

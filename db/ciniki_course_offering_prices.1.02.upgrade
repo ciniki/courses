@@ -1,0 +1,5 @@
+#
+# Add the field available_to for course offering prices
+#
+ALTER TABLE ciniki_course_offering_prices ADD COLUMN available_to tinyint unsigned not null AFTER name;
+ALTER TABLE ciniki_course_offering_prices COMMENT='v1.02';

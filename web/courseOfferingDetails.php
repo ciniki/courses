@@ -28,6 +28,8 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 	//
 	$strsql = "SELECT ciniki_course_offerings.id, "
 		. "ciniki_course_offerings.condensed_date, "
+		. "ciniki_course_offerings.num_seats, "
+		. "ciniki_course_offerings.reg_flags, "
 		. "ciniki_courses.id AS course_id, "
 		. "ciniki_courses.name, "
 		. "ciniki_courses.code, "
@@ -58,7 +60,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'offerings', 'fname'=>'id', 
-			'fields'=>array('id', 'name', 'code', 'level', 'permalink', 'image_id'=>'primary_image_id', 
+			'fields'=>array('id', 'name', 'code', 'level', 'permalink', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
 				'level', 'type', 'category', 'long_description', 'condensed_date')),
 		array('container'=>'classes', 'fname'=>'class_id', 
 			'fields'=>array('id'=>'class_id', 'class_date', 'start_time', 'end_time')),
@@ -101,19 +103,44 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 	// Check for prices
 	//
 	if( ($ciniki['business']['modules']['ciniki.courses']['flags']&0x04) > 0 ) {
+        $offering['seats_sold'] = 0;
+        $strsql = "SELECT 'num_seats', SUM(num_seats) AS num_seats "
+            . "FROM ciniki_course_offering_registrations "
+            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+            . "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+		$rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.courses', 'num');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['num']['num_seats']) ) {
+			$offering['seats_sold'] = $rc['num']['num_seats'];
+		}
+	
+        //
+        // Check if any prices are attached to the event
+        //
+        if( isset($ciniki['session']['customer']['price_flags']) ) {
+            $price_flags = $ciniki['session']['customer']['price_flags'];
+        } else {
+            $price_flags = 0x01;
+        }
+
 		//
-		// Get the price list for the event
+		// Get the price list for the course offering
 		//
-		$strsql = "SELECT id, name, unit_amount "
+		$strsql = "SELECT id, name, available_to, unit_amount "
 			. "FROM ciniki_course_offering_prices "
 			. "WHERE ciniki_course_offering_prices.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
 			. "AND ciniki_course_offering_prices.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 			. "AND (ciniki_course_offering_prices.webflags&0x01) = 0 "
+            . "AND ((ciniki_course_offering_prices.available_to&$price_flags) > 0 OR (webflags&available_to&0xF0) > 0) "
 			. "ORDER BY ciniki_course_offering_prices.name "
 			. "";
 		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
 			array('container'=>'prices', 'fname'=>'id',
-				'fields'=>array('id', 'name', 'unit_amount')),
+				'fields'=>array('price_id'=>'id', 'name', 'available_to', 'unit_amount')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
@@ -121,6 +148,18 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 		if( isset($rc['prices']) ) {
 			$offering['prices'] = $rc['prices'];
 			foreach($offering['prices'] as $pid => $price) {
+                // Check if online registrations enabled
+                if( ($offering['reg_flags']&0x02) > 0 && ($price['available_to']&$price_flags) > 0 ) {
+                    $offering['prices'][$pid]['cart'] = 'yes';
+                } else {
+                    $offering['prices'][$pid]['cart'] = 'no';
+                }
+                $offering['prices'][$pid]['object'] = 'ciniki.courses.offering';
+                $offering['prices'][$pid]['object_id'] = $offering['id'];
+                if( $offering['num_seats'] > 0 ) {
+                    $offering['prices'][$pid]['limited_units'] = 'yes';
+                    $offering['prices'][$pid]['units_available'] = $offering['num_seats'] - $offering['seats_sold'];
+                }
 				$offering['prices'][$pid]['unit_amount_display'] = numfmt_format_currency(
 					$intl_currency_fmt, $price['unit_amount'], $intl_currency);
 			}
