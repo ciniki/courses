@@ -73,7 +73,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
 			}
 		}
 
-        $item['flags'] = 0x22;
+        $item['flags'] = 0x28;
     
         //
         // Check the number of seats remaining

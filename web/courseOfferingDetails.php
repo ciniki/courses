@@ -41,6 +41,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 		. "ciniki_courses.long_description, "
 		. "ciniki_course_offering_classes.id AS class_id, "
 		. "DATE_FORMAT(ciniki_course_offering_classes.class_date, '%W %b %e, %Y') AS class_date, "
+		. "UNIX_TIMESTAMP(MIN(ciniki_course_offering_classes.class_date)) AS start_date_ts, "
 		. "TIME_FORMAT(ciniki_course_offering_classes.start_time, '%l:%i %p') AS start_time, "
 		. "TIME_FORMAT(ciniki_course_offering_classes.end_time, '%l:%i %p') AS end_time "
 		. "FROM ciniki_course_offerings "
@@ -63,7 +64,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 			'fields'=>array('id', 'name', 'code', 'level', 'permalink', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
 				'level', 'type', 'category', 'long_description', 'condensed_date')),
 		array('container'=>'classes', 'fname'=>'class_id', 
-			'fields'=>array('id'=>'class_id', 'class_date', 'start_time', 'end_time')),
+			'fields'=>array('id'=>'class_id', 'class_date', 'start_date_ts', 'start_time', 'end_time')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -72,6 +73,23 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 		return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'653', 'msg'=>"I'm sorry, but we can't seem to find the course you requested."));
 	}
 	$offering = array_pop($rc['offerings']);
+
+    //
+    // Check if course is in the future
+    //
+    $reg = 'no';
+    if( ($offering['reg_flags']&0x02) > 0 && isset($offering['classes']) ) {
+        $reg = 'yes';
+        $dt = new DateTime('now', new DateTimeZone($intl_timezone));
+        $dt->setTime(23,59,59);
+        $dt->setTimezone(new DateTimeZone('UTC'));
+        $end_of_cur_day = $dt->format('U');
+        foreach($offering['classes'] as $class) {
+            if( $class['start_date_ts'] < $end_of_cur_day ) {
+                $reg = 'no';
+            }
+        }
+    }
 
 	//
 	// Check if there are files for this course to be displayed
@@ -148,8 +166,10 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 		if( isset($rc['prices']) ) {
 			$offering['prices'] = $rc['prices'];
 			foreach($offering['prices'] as $pid => $price) {
+                //
                 // Check if online registrations enabled
-                if( ($offering['reg_flags']&0x02) > 0 && ($price['available_to']&$price_flags) > 0 ) {
+                //
+                if( $reg == 'yes' && ($price['available_to']&$price_flags) > 0 ) {
                     $offering['prices'][$pid]['cart'] = 'yes';
                 } else {
                     $offering['prices'][$pid]['cart'] = 'no';
