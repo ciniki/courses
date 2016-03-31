@@ -61,7 +61,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
 		array('container'=>'offerings', 'fname'=>'id', 
-			'fields'=>array('id', 'name', 'code', 'level', 'permalink', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
+			'fields'=>array('id', 'name', 'code', 'level', 'permalink', 'start_date_ts', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
 				'level', 'type', 'category', 'long_description', 'condensed_date')),
 		array('container'=>'classes', 'fname'=>'class_id', 
 			'fields'=>array('id'=>'class_id', 'class_date', 'start_date_ts', 'start_time', 'end_time')),
@@ -141,6 +141,17 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
         //
         if( isset($ciniki['session']['customer']['price_flags']) ) {
             $price_flags = $ciniki['session']['customer']['price_flags'];
+            //
+            // Check to make sure at least one class is before the membership expiration date, if member flag is set
+            //
+            if( isset($ciniki['session']['customer']['membership_expiration']) && ($price_flags&0x20) == 0x20 ) {
+                //
+                // Remove price flags for members if expiration is after start of class
+                //
+                if( $offering['start_date_ts'] > $ciniki['session']['customer']['membership_expiration'] ) {
+                    $price_flags = $price_flags &~ 0x20;
+                }
+            }
         } else {
             $price_flags = 0x01;
         }
