@@ -54,11 +54,11 @@ function ciniki_courses_settingsGet($ciniki) {
 	if( isset($args['processhtml']) && $args['processhtml'] == 'yes' ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processContent');
 		if( isset($settings['course-registration-details']) ) {
-			$rc = ciniki_web_processContent($ciniki, $settings['course-registration-details']);
+			$rc = ciniki_web_processContent($ciniki, array(), $settings['course-registration-details']);
 			$settings['course-registration-details-html'] = $rc['content'];
 		}
 		if( isset($settings['course-registration-more-details']) ) {
-			$rc = ciniki_web_processContent($ciniki, $settings['course-registration-more-details']);
+			$rc = ciniki_web_processContent($ciniki, array(), $settings['course-registration-more-details']);
 			$settings['course-registration-more-details-html'] = $rc['content'];
 		}
 	}
