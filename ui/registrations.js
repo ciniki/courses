@@ -24,7 +24,8 @@ function ciniki_courses_registrations() {
 				},
             'prices':{'label':'Add Registration', 'type':'simplegrid', 'num_cols':2},
             '_buttons':{'label':'', 'buttons':{
-                'registrationspdf':{'label':'Class List', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsPDF(M.ciniki_courses_registrations.menu.offering_id);'},
+                'registrationspdf':{'label':'Class List (PDF)', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsPDF(M.ciniki_courses_registrations.menu.offering_id);'},
+                'registrationsexcel':{'label':'Class List (Excel)', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsExcel(M.ciniki_courses_registrations.menu.offering_id);'},
                 }},
 			};
 		this.menu.cellValue = function(s, i, j, d) {
@@ -406,4 +407,7 @@ function ciniki_courses_registrations() {
 		M.api.openFile('ciniki.courses.offeringRegistrations', {'business_id':M.curBusinessID, 'output':'pdf', 'offering_id':oid});
 	};
 
+	this.offeringRegistrationsExcel = function(oid) {
+		M.api.openFile('ciniki.courses.offeringRegistrations', {'business_id':M.curBusinessID, 'output':'excel', 'offering_id':oid});
+	};
 }

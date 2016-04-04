@@ -11,7 +11,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_courses_templates_offeringregistrations(&$ciniki, $business_id, $offering_id, $business_details, $courses_settings) {
+function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_id, $offering_id, $business_details, $courses_settings) {
 
 	//
 	// Load the class

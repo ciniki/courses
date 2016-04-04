@@ -68,25 +68,57 @@ function ciniki_courses_offeringRegistrations($ciniki) {
 	}
 	
 	//
-	// Load the template
+	// Output PDF version
 	//
-	$rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'templates', 'offeringregistrations');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	$fn = $rc['function_call'];
+    if( $args['output'] == 'pdf' ) {
+        $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'templates', 'offeringRegistrationsPDF');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $fn = $rc['function_call'];
 
-	$rc = $fn($ciniki, $args['business_id'], $args['offering_id'], $business_details, $courses_settings);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+        $rc = $fn($ciniki, $args['business_id'], $args['offering_id'], $business_details, $courses_settings);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
 
-	$title = $rc['offering']['code'] . '_' . $rc['offering']['course_name'] . '_' . $rc['offering']['course_name'];
+        $title = $rc['offering']['code'] . '_' . $rc['offering']['course_name'] . '_' . $rc['offering']['course_name'];
 
-	$filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
-	if( isset($rc['pdf']) ) {
-		$rc['pdf']->Output($filename . '.pdf', 'D');
-	}
+        $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($filename . '.pdf', 'D');
+        }
+    }
+
+    //
+    // Output Excel version
+    //
+    elseif( $args['output'] == 'excel' ) {
+        $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'templates', 'offeringRegistrationsExcel');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $fn = $rc['function_call'];
+
+        $rc = $fn($ciniki, $args['business_id'], $args['offering_id'], $business_details, $courses_settings);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+
+        $title = $rc['offering']['code'] . '_' . $rc['offering']['course_name'] . '_' . $rc['offering']['course_name'];
+
+        $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
+
+        if( isset($rc['excel']) ) {
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
+            header('Cache-Control: max-age=0');
+            
+            $objWriter = PHPExcel_IOFactory::createWriter($rc['excel'], 'Excel5');
+            $objWriter->save('php://output');
+        }
+    }
+
 
 	return array('stat'=>'exit');
 }
