@@ -233,6 +233,7 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
                 . "IFNULL(c2.display_name, IFNULL(c1.display_name, '')) AS sort_name, "
                 . "ciniki_course_offering_registrations.num_seats, "
                 . "ciniki_course_offering_registrations.invoice_id, "
+                . "ciniki_course_offering_registrations.notes, "
                 . "ciniki_sapos_invoices.payment_status AS invoice_status, "
                 . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status_text "
                 . "FROM ciniki_course_offering_registrations "
@@ -255,7 +256,7 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
                 array('container'=>'registrations', 'fname'=>'id',
                     'fields'=>array('id', 'customer_id', 'customer_type', 'student_id', 'student_type', 'customer_name', 'student_name', 'num_seats', 
-                        'invoice_id', 'invoice_status', 'invoice_status_text'),
+                        'invoice_id', 'invoice_status', 'invoice_status_text', 'notes'),
                     'maps'=>array('invoice_status_text'=>$status_maps)),
                 ));
             if( $rc['stat'] != 'ok' ) {

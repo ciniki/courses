@@ -43,8 +43,9 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
+    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Notes', false);
 
-    $objPHPExcelWorksheet->getStyle('A1:G1')->getFont()->setBold(true);
+    $objPHPExcelWorksheet->getStyle('A1:H1')->getFont()->setBold(true);
 
     $row++;
 	foreach($offering['registrations'] as $reg) {
@@ -119,6 +120,7 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
 		}
 
         $objPHPExcelWorksheet->setCellValueByColumnAndRow(6, $row, $reg['invoice_status_text'], false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow(7, $row, $reg['notes'], false);
         $row++;
 	}
 
@@ -129,6 +131,7 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
     $objPHPExcelWorksheet->getColumnDimension('E')->setAutoSize(true);
     $objPHPExcelWorksheet->getColumnDimension('F')->setAutoSize(true);
     $objPHPExcelWorksheet->getColumnDimension('G')->setAutoSize(true);
+    $objPHPExcelWorksheet->getColumnDimension('H')->setAutoSize(true);
 
 	return array('stat'=>'ok', 'offering'=>$offering, 'excel'=>$objPHPExcel);
 }
