@@ -150,7 +150,7 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
 		$height = $pdf->header_image->getImageHeight();
 		$width = $pdf->header_image->getImageWidth();
 		$image_ratio = $width/$height;
-		$img_width = 80;
+		$img_width = 70;
 		$available_ratio = $img_width/40;
 		// Check if the ratio of the image will make it too large for the height,
 		// and scaled based on either height or width.
@@ -166,10 +166,10 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
 	//
 	// Add the information to the first page
 	//
-	$w = array(25, 65);
+	$w = array(25, 75);
 	foreach($pdf->header_details as $detail) {
 		$pdf->SetFillColor(224);
-		$pdf->SetX($pdf->left_margin + 90);
+		$pdf->SetX($pdf->left_margin + 80);
 		$pdf->SetFont('', 'B');
 		$pdf->Cell($w[0], 6, $detail['label'], 1, 0, 'L', 1);
 		$pdf->SetFillColor(255);
@@ -179,15 +179,28 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
 	}
 	$pdf->Ln();
 
+    $parents = 'no';
+	foreach($offering['registrations'] as $reg) {
+		if( $reg['student_id'] != $reg['customer_id'] ) {
+            $parents = 'yes';
+        }
+    }
+
 	//
 	// Add the registrations
 	//
-	$w = array(73, 73, 34);
+    if( $parents == 'yes' ) {
+        $w = array(73, 73, 34);
+    } else {
+        $w = array(130, 0, 50);
+    }
 	$pdf->SetFillColor(224);
 	$pdf->SetFont('', 'B');
 	$pdf->SetCellPadding(2);
 	$pdf->Cell($w[0], 6, 'Student', 1, 0, 'L', 1);
-	$pdf->Cell($w[1], 6, 'Parent', 1, 0, 'L', 1);
+    if( $parents == 'yes' ) {
+        $pdf->Cell($w[1], 6, 'Parent', 1, 0, 'L', 1);
+    }
 	$pdf->Cell($w[2], 6, 'Status', 1, 0, 'L', 1);
 	$pdf->Ln();
 	$pdf->SetFillColor(236);
@@ -244,7 +257,8 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
 
 		// If a business, then convert "Payment Required" to "Invoice"
 		$business_information = '';
-		if( $reg['customer_type'] == 2 || $reg['student_id'] != $reg['customer_id'] ) {
+//		if( $reg['customer_type'] == 2 || $reg['student_id'] != $reg['customer_id'] ) {
+		if( $reg['student_id'] != $reg['customer_id'] ) {
 			$rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, 
 				array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
 			if( $rc['stat'] != 'ok' ) {
@@ -298,7 +312,9 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
 			$pdf->SetFillColor(224);
 			$pdf->SetFont('', 'B');
 			$pdf->Cell($w[0], 6, 'Student', 1, 0, 'L', 1);
-			$pdf->Cell($w[1], 6, 'Parent', 1, 0, 'L', 1);
+            if( $parents == 'yes' ) {
+                $pdf->Cell($w[1], 6, 'Parent', 1, 0, 'L', 1);
+            }
 			$pdf->Cell($w[2], 6, 'Status', 1, 0, 'L', 1);
 			$pdf->Ln();
 			$pdf->SetFillColor(236);
@@ -307,7 +323,9 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
 		}
 
 		$pdf->MultiCell($w[0], $lh, $student_information, 1, 'L', $fill, 0);
-		$pdf->MultiCell($w[1], $lh, $business_information, 1, 'L', $fill, 0);
+		if( $parents == 'yes' ) {
+            $pdf->MultiCell($w[1], $lh, $business_information, 1, 'L', $fill, 0);
+        }
 		$pdf->MultiCell($w[2], $lh, $reg['invoice_status_text'], 1, 'L', $fill, 0);
 		$pdf->Ln();
 
