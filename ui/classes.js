@@ -20,7 +20,7 @@ function ciniki_courses_classes() {
 			'info':{'label':'Information', 'type':'simpleform', 'fields':{
 				'class_date':{'label':'Date', 'type':'date'},
 				'start_time':{'label':'Start Time', 'type':'text', 'size':'small'},
-				'end_time':{'label':'Start Time', 'type':'text', 'size':'small'},
+				'end_time':{'label':'End Time', 'type':'text', 'size':'small'},
 			}},
 			'_notes':{'label':'Notes', 'type':'simpleform', 'fields':{
 				'notes':{'label':'', 'type':'textarea', 'size':'small', 'hidelabel':'yes'},

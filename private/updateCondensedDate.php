@@ -43,7 +43,8 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
 		$sameday = 'yes';
 		$sametime = 'yes';
 		$consecutive = 'yes';
-		foreach($rc['rows'] as $did => $date) {
+        $dates = $rc['rows'];
+		foreach($dates as $did => $date) {
 //			$date = $date;
 			if( $first_date == null ) {
 				$first_date = $date;
@@ -83,8 +84,30 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
 				$condensed_date .= ' ' . $prev_time;
 			}
 		} else {
-			// Unable to condense the dates
+			// 
+            // Misc days
+            //
 			$condensed_date = '';
+            if( $sametime == 'yes' ) {
+                foreach($dates as $did => $date) {
+                    $condensed_date .= ($condensed_date != '' ? ', ' : '') . $date['month'] . ' ' . $date['day'];
+                }
+                if( $first_date['year'] != $last_date['year'] ) {
+                    $condensed_date .= ' ' . $first_date['year'] . '/' . $last_date['year'];
+                } else {
+                    $condensed_date .= ' ' . $first_date['year'];
+                }
+				$condensed_date .= ' ' . $prev_time;
+            } else {
+                foreach($dates as $did => $date) {
+                    $condensed_date .= ($condensed_date != '' ? ', ' : '') . $date['month'] . ' ' . $date['day'] . ' (' . $date['start_time'] . ' - ' . $date['end_time'] . ')';
+                } 
+                if( $first_date['year'] != $last_date['year'] ) {
+                    $condensed_date .= ' ' . $first_date['year'] . '/' . $last_date['year'];
+                } else {
+                    $condensed_date .= ' ' . $first_date['year'];
+                }
+            }
 		}
 	} else {
 		$condensed_date = '';
