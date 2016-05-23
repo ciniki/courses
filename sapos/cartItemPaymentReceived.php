@@ -23,6 +23,9 @@ function ciniki_courses_sapos_cartItemPaymentReceived($ciniki, $business_id, $cu
 	if( !isset($args['invoice_id']) || $args['invoice_id'] == '' ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3223', 'msg'=>'No course specified.'));
 	}
+    if( !isset($args['student_id']) || $args['student_id'] == 0 ) {
+        $args['student_id'] = $args['customer_id'];
+    }
 
     if( $args['object'] == 'ciniki.courses.offering' ) {
 		//
@@ -51,7 +54,7 @@ function ciniki_courses_sapos_cartItemPaymentReceived($ciniki, $business_id, $cu
 		//
 		$reg_args = array('offering_id'=>$offering['id'],
 			'customer_id'=>$args['customer_id'],
-			'student_id'=>$args['customer_id'],
+			'student_id'=>$args['student_id'],
 			'num_seats'=>(isset($args['quantity'])?$args['quantity']:1),
 			'invoice_id'=>$args['invoice_id'],
 			'customer_notes'=>'',
