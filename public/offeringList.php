@@ -23,6 +23,7 @@ function ciniki_courses_offeringList($ciniki) {
 		'current'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Current'),
 		'upcoming'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Upcoming'),
 		'past'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Past'),
+		'files'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Files'),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -51,8 +52,9 @@ function ciniki_courses_offeringList($ciniki) {
 	//
 	// Query for the course offerings
 	//
-	$rsp = array('stat'=>'ok', 'past'=>array(), 'current'=>array(), 'upcoming'=>array());
+	$rsp = array('stat'=>'ok', 'pastyears'=>array(), 'current'=>array(), 'upcoming'=>array());
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
 	if( isset($args['current']) && $args['current'] == 'yes' ) {
 		$strsql = "SELECT ciniki_course_offerings.id, "
 			. "ciniki_course_offerings.name AS offering_name, "
@@ -75,8 +77,8 @@ function ciniki_courses_offeringList($ciniki) {
 			. "AND end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
 			. "ORDER BY ciniki_courses.code, ciniki_courses.name "
 			. "";
-		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
-			array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
+		$rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+			array('container'=>'offerings', 'fname'=>'id', 
 				'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'start_date', 'end_date')),
 			));
 		if( $rc['stat'] != 'ok' ) {
@@ -106,8 +108,8 @@ function ciniki_courses_offeringList($ciniki) {
 			. "HAVING start_date = 'No dates set' OR start_date_ts > UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
 			. "ORDER BY ciniki_courses.code, ciniki_courses.name "
 			. "";
-		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
-			array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
+		$rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+			array('container'=>'offerings', 'fname'=>'id',
 				'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'start_date', 'end_date')),
 			));
 		if( $rc['stat'] != 'ok' ) {
@@ -123,6 +125,7 @@ function ciniki_courses_offeringList($ciniki) {
 			. "ciniki_course_offerings.course_id, "
 			. "ciniki_courses.name AS course_name, "
 			. "ciniki_courses.code, "
+			. "IFNULL(DATE_FORMAT(MIN(ciniki_course_offering_classes.class_date), '%Y'), '??') AS year, "
 			. "IFNULL(DATE_FORMAT(MIN(ciniki_course_offering_classes.class_date), '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), 'No dates set') AS start_date, "
 			. "UNIX_TIMESTAMP(MIN(ciniki_course_offering_classes.class_date)) AS start_date_ts, "
 			. "DATE_FORMAT(MAX(ciniki_course_offering_classes.class_date), '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS end_date, "
@@ -136,19 +139,49 @@ function ciniki_courses_offeringList($ciniki) {
 			. "AND (ciniki_course_offerings.status = 10 || ciniki_course_offerings.status = 0 ) "
 			. "GROUP BY ciniki_course_offerings.id "
 			. "HAVING end_date_ts < UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
-			. "ORDER BY ciniki_courses.code, ciniki_courses.name "
+			. "ORDER BY year, ciniki_courses.code, ciniki_courses.name "
 			. "";
-		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
-			array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
+		$rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+			array('container'=>'years', 'fname'=>'year', 'fields'=>array('year')),
+			array('container'=>'offerings', 'fname'=>'id', 
 				'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'start_date', 'end_date')),
 			));
 		if( $rc['stat'] != 'ok' ) {
 			return $rc;
 		}
-		if( isset($rc['offerings']) ) {
-			$rsp['past'] = $rc['offerings'];
+		if( isset($rc['years']) ) {
+			$rsp['pastyears'] = array();
+            foreach($rc['years'] as $year) {
+                $rsp['pastyears'][$year['year']] = $year['offerings'];
+            }
 		}
 	}
+
+    if( isset($args['files']) && $args['files'] == 'yes' ) {
+        //
+        // Load the list of members for an courses
+        //
+        $strsql = "SELECT ciniki_course_files.id, "
+            . "ciniki_course_files.type, "
+            . "ciniki_course_files.type AS type_id, "
+            . "ciniki_course_files.name, "
+            . "ciniki_course_files.description, "
+            . "ciniki_course_files.permalink "
+            . "FROM ciniki_course_files "
+            . "WHERE ciniki_course_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND type = '2' "
+            . "ORDER BY type, publish_date DESC, name "
+            . "";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+            array('container'=>'files', 'fname'=>'id', 'name'=>'file', 'fields'=>array('id', 'name', 'permalink', 'description')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['files']) ) {
+            $rsp['files'] = $rc['files'];
+        }
+    }
 
 	return $rsp;
 }
