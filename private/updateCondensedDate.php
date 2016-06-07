@@ -72,7 +72,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
 					. ' - ' . $last_date['month'] . ' ' . $last_date['day'] . ', ' . $last_date['year'];
 			}
 			$condensed_date .= ' ' . $prev_dayofweek . 's ' . $prev_time;
-		} elseif( $consecutive == 'yes' ) {
+		} elseif( $consecutive == 'yes' && $sametime == 'yes' ) {
 			if( $first_date['year'] != $last_date['year'] ) {
 				$condensed_date = $first_date['month'] . ' ' . $first_date['day'] . ', ' . $first_date['year'] 
 					. ' - ' . $last_date['month'] . ' ' . $last_date['day'] . ', ' . $last_date['year'];
@@ -82,7 +82,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
 			}
 			if( $sametime == 'yes' ) {
 				$condensed_date .= ' ' . $prev_time;
-			}
+            }
 		} else {
 			// 
             // Misc days
