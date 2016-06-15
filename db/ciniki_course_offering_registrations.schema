@@ -21,7 +21,8 @@
 # uuid:				The Universal Unique ID.
 # business_id:		The business the course offering is attached to.
 # offering_id:		The ID of the course offering the registration is for.
-# customer_id:		The ID of the customer who registered for the course offering.
+# customer_id:		The ID of the customer who is paying for the course.
+# student_id:		The ID of the customer who is the student for the course.
 # num_seats:		The number of seats purchased for the course by the customer.
 # invoice_id:		The ID of the invoice in the POS module.  If the ID is zero then
 #					no invoice is attached to this registration.  The customer probably
