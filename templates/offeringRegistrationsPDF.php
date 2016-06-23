@@ -209,7 +209,6 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
 
     $fill=0;
     foreach($offering['registrations'] as $reg) {
-
         //
         // Get the student information, so it can be added to the form and verified
         //
@@ -220,7 +219,6 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
-//          print "<pre>" . print_r($rc, true) . "</pre>";
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
                 $student_information = $customer['first'] . ' ' . $customer['last'] . "\n";
@@ -254,10 +252,12 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
                 }
             }
         }
+        if( $reg['notes'] != '' ) {
+            $student_information .= "\n" . $reg['notes'];
+        }
 
         // If a business, then convert "Payment Required" to "Invoice"
         $business_information = '';
-//      if( $reg['customer_type'] == 2 || $reg['student_id'] != $reg['customer_id'] ) {
         if( $reg['student_id'] != $reg['customer_id'] ) {
             $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, 
                 array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
@@ -265,7 +265,6 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
                 return $rc;
             }
             $business_information = $reg['customer_name'] . "\n";
-//          print "<pre>" . print_r($rc, true) . "</pre>";
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
                 if( isset($customer['phones']) ) {
@@ -328,6 +327,10 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
         }
         $pdf->MultiCell($w[2], $lh, $reg['invoice_status_text'], 1, 'L', $fill, 0);
         $pdf->Ln();
+//        if( isset($reg['notes']) && $reg['notes'] != '' ) {
+//            $pdf->MultiCell(180, 6, $reg['notes'], 1, 'L', $fill, 0);
+//            $pdf->Ln();
+//        }
 
         $fill=!$fill;
     }
