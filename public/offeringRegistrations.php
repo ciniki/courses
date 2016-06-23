@@ -36,40 +36,40 @@ function ciniki_courses_offeringRegistrations($ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-	$modules = $rc['modules'];
+    $modules = $rc['modules'];
 
-	//
-	// Load business details
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
-	$rc = ciniki_businesses_businessDetails($ciniki, $args['business_id']);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( isset($rc['details']) && is_array($rc['details']) ) {	
-		$business_details = $rc['details'];
-	} else {
-		$business_details = array();
-	}
+    //
+    // Load business details
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
+    $rc = ciniki_businesses_businessDetails($ciniki, $args['business_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['details']) && is_array($rc['details']) ) {   
+        $business_details = $rc['details'];
+    } else {
+        $business_details = array();
+    }
 
-	//
-	// Load the invoice settings
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-	$rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_course_settings', 'business_id', $args['business_id'],
-		'ciniki.courses', 'settings', '');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( isset($rc['settings']) ) {
-		$courses_settings = $rc['settings'];
-	} else {
-		$courses_settings = array();
-	}
-	
-	//
-	// Output PDF version
-	//
+    //
+    // Load the invoice settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_course_settings', 'business_id', $args['business_id'],
+        'ciniki.courses', 'settings', '');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['settings']) ) {
+        $courses_settings = $rc['settings'];
+    } else {
+        $courses_settings = array();
+    }
+    
+    //
+    // Output PDF version
+    //
     if( $args['output'] == 'pdf' ) {
         $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'templates', 'offeringRegistrationsPDF');
         if( $rc['stat'] != 'ok' ) {
@@ -120,6 +120,6 @@ function ciniki_courses_offeringRegistrations($ciniki) {
     }
 
 
-	return array('stat'=>'exit');
+    return array('stat'=>'exit');
 }
 ?>

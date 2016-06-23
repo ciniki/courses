@@ -5,39 +5,39 @@
 #
 # Fields
 # ------
-# id:					The ID assigned to the course.
-# uuid:					The Universal Unique ID.
-# business_id:			The business the course is attached to.
+# id:                   The ID assigned to the course.
+# uuid:                 The Universal Unique ID.
+# business_id:          The business the course is attached to.
 #
-# name:					The name for the course.
-# code:					The code for the course.  Typically something CS404, Psych101
-# permalink:			The permalink for the course.
-# primary_image_id:		The ID of the image for use in course listings.
-# type:					The type of the course.  This can act as a high level category list.
-# category:				The category for the course.  When combined with type it acts like a sub category.
-# level:				The level of course (beginner, intermediate, advanced)
+# name:                 The name for the course.
+# code:                 The code for the course.  Typically something CS404, Psych101
+# permalink:            The permalink for the course.
+# primary_image_id:     The ID of the image for use in course listings.
+# type:                 The type of the course.  This can act as a high level category list.
+# category:             The category for the course.  When combined with type it acts like a sub category.
+# level:                The level of course (beginner, intermediate, advanced)
 #
-# short_description:	The short description of the event (optional).
-# long_description:		The longer text description of the event (optional).
+# short_description:    The short description of the event (optional).
+# long_description:     The longer text description of the event (optional).
 #
-# date_added:			The UTC date and time the record was added.
-# last_updated:			The UTC date and time the record was last updated.
+# date_added:           The UTC date and time the record was added.
+# last_updated:         The UTC date and time the record was last updated.
 #
 CREATE TABLE ciniki_courses (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	name varchar(150) not null,
-	code varchar(50) not null,
-	permalink varchar(150) not null,
-	primary_image_id int not null,
-	level varchar(150) not null,
-	type varchar(150) not null,
-	category varchar(150) not null,
-	short_description varchar(2000) not null,
-	long_description varchar(20000) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index sync (business_id, uuid, last_updated)
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    name varchar(150) not null,
+    code varchar(50) not null,
+    permalink varchar(150) not null,
+    primary_image_id int not null,
+    level varchar(150) not null,
+    type varchar(150) not null,
+    category varchar(150) not null,
+    short_description varchar(2000) not null,
+    long_description varchar(20000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

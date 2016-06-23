@@ -7,50 +7,50 @@
 #
 # Fields
 # ------
-# id:				The ID of the course offering.
-# uuid:				The Universal Unique ID.
-# business_id:		The ID of the business the date is for.
+# id:               The ID of the course offering.
+# uuid:             The Universal Unique ID.
+# business_id:      The ID of the business the date is for.
 #
-# course_id:		The ID of the course the date is for.
-# name:				The name for this offering: spring 2013, summer 2013
-# permalink:		The permalink for the course offering.
-# status:			The current status of the course offering.
+# course_id:        The ID of the course the date is for.
+# name:             The name for this offering: spring 2013, summer 2013
+# permalink:        The permalink for the course offering.
+# status:           The current status of the course offering.
 #
-#					10 - active
-#				
-# webflags:			The webflags for each offering.
+#                   10 - active
+#               
+# webflags:         The webflags for each offering.
 #
-#					0x01 - Hidden, do not display on website.
+#                   0x01 - Hidden, do not display on website.
 #
-# condensed_date:	The single string describing the dates for the course.
+# condensed_date:   The single string describing the dates for the course.
 #
-# num_seats:		The number of total seats for the course.
+# num_seats:        The number of total seats for the course.
 #
-# reg_flags:		The flags to control how registrations are handled.
+# reg_flags:        The flags to control how registrations are handled.
 #
-#					0x01 - Admin registrations enabled
-#					0x02 - Online registrations enabled
-#					0x04 -
-#					0x08 - 
+#                   0x01 - Admin registrations enabled
+#                   0x02 - Online registrations enabled
+#                   0x04 -
+#                   0x08 - 
 #
-# date_added:		The UTC date and time the record was added.
-# last_updated:		The UTC date and time the record was last changed;
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last changed;
 #
 CREATE TABLE ciniki_course_offerings (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	course_id int not null,
-	name varchar(150) not null,
-	permalink varchar(150) not null,
-	status tinyint unsigned not null,
-	webflags tinyint unsigned not null,
-	condensed_date varchar(150) not null,
-	num_seats int not null,
-	reg_flags tinyint unsigned not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    course_id int not null,
+    name varchar(150) not null,
+    permalink varchar(150) not null,
+    status tinyint unsigned not null,
+    webflags tinyint unsigned not null,
+    condensed_date varchar(150) not null,
+    num_seats int not null,
+    reg_flags tinyint unsigned not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
     index (course_id),
-	index business_uuid (business_id, uuid, last_updated)
+    index business_uuid (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.02';

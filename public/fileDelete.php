@@ -8,8 +8,8 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id: 		The ID of the business to remove the item from.
-// file_id:				The ID of the file to remove.
+// business_id:         The ID of the business to remove the item from.
+// file_id:             The ID of the file to remove.
 // 
 // Returns
 // -------
@@ -39,26 +39,26 @@ function ciniki_courses_fileDelete(&$ciniki) {
         return $rc;
     }   
 
-	//
-	// Get the uuid of the courses item to be deleted
-	//
-	$strsql = "SELECT uuid FROM ciniki_course_files "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
-		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( !isset($rc['file']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1343', 'msg'=>'Unable to find existing item'));
-	}
-	$uuid = $rc['file']['uuid'];
+    //
+    // Get the uuid of the courses item to be deleted
+    //
+    $strsql = "SELECT uuid FROM ciniki_course_files "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( !isset($rc['file']) ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1343', 'msg'=>'Unable to find existing item'));
+    }
+    $uuid = $rc['file']['uuid'];
 
-	//
-	// Delete the file
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-	return ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.courses.file', $args['file_id'], $uuid, 0x07);
+    //
+    // Delete the file
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+    return ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.courses.file', $args['file_id'], $uuid, 0x07);
 }
 ?>

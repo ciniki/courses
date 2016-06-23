@@ -6,13 +6,13 @@
 #
 # Fields
 # ------
-# id:						The file ID.
-# uuid:						The Universal Unique ID for the file.
-# business_id:				The business the file is for.
+# id:                       The file ID.
+# uuid:                     The Universal Unique ID for the file.
+# business_id:              The business the file is for.
 #
-# offering_id:				The ID of the course offering the price is attached to
+# offering_id:              The ID of the course offering the price is attached to
 #
-# name:						The name for the price. (Member/Non-Member/etc)
+# name:                     The name for the price. (Member/Non-Member/etc)
 #
 # available_to:             The flags that control who the price is for.
 #
@@ -25,39 +25,39 @@
 #                           0x40 - Dealers - must be dealer_status = 10 in customers
 #                           0x80 - Distributors - must be distributor_status = 10 in customers
 #
-# valid_from:				The UTC date and time the price is valid from. **future**
-# valid_to:					The UTC date and time the price is valid until. **future**
+# valid_from:               The UTC date and time the price is valid from. **future**
+# valid_to:                 The UTC date and time the price is valid until. **future**
 #
-# unit_amount:				The price for single person for the course.
-# unit_discount_amount:		The discount amount for a single unit.
-# unit_discount_percentage:	The percentage discount for a single unit.
+# unit_amount:              The price for single person for the course.
+# unit_discount_amount:     The discount amount for a single unit.
+# unit_discount_percentage: The percentage discount for a single unit.
 #
-# taxtype_id:				The ciniki.taxes to be applied for this price.
+# taxtype_id:               The ciniki.taxes to be applied for this price.
 #
-# webflags:					Flags for displaying the file on the website.
+# webflags:                 Flags for displaying the file on the website.
 #
-#							0x01 - Hidden, Do now show the price on the website.
+#                           0x01 - Hidden, Do now show the price on the website.
 #
-# date_added:				The UTC date and time the file was added.
-# last_updated:				The UTC date and time the file was last updated.
+# date_added:               The UTC date and time the file was added.
+# last_updated:             The UTC date and time the file was last updated.
 #
 create table ciniki_course_offering_prices (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	offering_id int not null,
-	name varchar(100) not null,
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    offering_id int not null,
+    name varchar(100) not null,
     available_to tinyint unsigned not null,
-	valid_from datetime not null,
-	valid_to datetime not null,
-	unit_amount decimal(19,4) not null,
-	unit_discount_amount decimal(19,4) not null,
-	unit_discount_percentage decimal(19,4) not null,
-	taxtype_id int not null,
-	webflags tinyint unsigned not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index (offering_id, name),
-	index sync (uuid, business_id, last_updated)
+    valid_from datetime not null,
+    valid_to datetime not null,
+    unit_amount decimal(19,4) not null,
+    unit_discount_amount decimal(19,4) not null,
+    unit_discount_percentage decimal(19,4) not null,
+    taxtype_id int not null,
+    webflags tinyint unsigned not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index (offering_id, name),
+    index sync (uuid, business_id, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.02';

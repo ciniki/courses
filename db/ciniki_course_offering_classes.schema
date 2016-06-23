@@ -6,33 +6,33 @@
 #
 # Fields
 # ------
-# id:				The ID of the course offering class.
-# uuid:				The Universal Unique ID.
-# business_id:		The ID of the business the date is for.
+# id:               The ID of the course offering class.
+# uuid:             The Universal Unique ID.
+# business_id:      The ID of the business the date is for.
 #
-# course_id:		The ID of the course the date is for.
-# offering_id:		The ID of the course offering the date is for.
-# class_date:		The date of the course.
-# start_time:		The start time on the date for the course.
-# end_time:			The end time of the date for the course.
-# notes:			The notes for this course date.
+# course_id:        The ID of the course the date is for.
+# offering_id:      The ID of the course offering the date is for.
+# class_date:       The date of the course.
+# start_time:       The start time on the date for the course.
+# end_time:         The end time of the date for the course.
+# notes:            The notes for this course date.
 #
-# date_added:		The UTC date and time the record was added.
-# last_updated:		The UTC date and time the record was last changed;
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last changed;
 #
 CREATE TABLE ciniki_course_offering_classes (
-	id int not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	course_id int not null,
-	offering_id int not null,
-	class_date date not null,
-	start_time time not null,
-	end_time time not null,
-	notes text not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    course_id int not null,
+    offering_id int not null,
+    class_date date not null,
+    start_time time not null,
+    end_time time not null,
+    notes text not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
     index (offering_id, course_id),
-	index business_uuid (business_id, uuid, last_updated)
+    index business_uuid (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

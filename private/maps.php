@@ -11,16 +11,16 @@
 // -------
 //
 function ciniki_courses_maps($ciniki) {
-	$maps = array();
-	$maps['price'] = array('available_to'=>array(
-		0x01=>'Public',
-		0x02=>'Private',
-		0x10=>'Customers',
-		0x20=>'Members',
-		0x40=>'Dealers',
-		0x80=>'Distributors',
-		));
+    $maps = array();
+    $maps['price'] = array('available_to'=>array(
+        0x01=>'Public',
+        0x02=>'Private',
+        0x10=>'Customers',
+        0x20=>'Members',
+        0x40=>'Dealers',
+        0x80=>'Distributors',
+        ));
 
-	return array('stat'=>'ok', 'maps'=>$maps);
+    return array('stat'=>'ok', 'maps'=>$maps);
 }
 ?>
