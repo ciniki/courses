@@ -27,6 +27,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
     // Load the offering details
     //
     $strsql = "SELECT ciniki_course_offerings.id, "
+        . "ciniki_course_offerings.code AS offering_code, "
         . "ciniki_course_offerings.condensed_date, "
         . "ciniki_course_offerings.num_seats, "
         . "ciniki_course_offerings.reg_flags, "
@@ -61,7 +62,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'code', 'level', 'permalink', 'start_date_ts', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
+            'fields'=>array('id', 'name', 'code', 'offering_code', 'level', 'permalink', 'start_date_ts', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
                 'level', 'type', 'category', 'long_description', 'condensed_date')),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'class_date', 'start_date_ts', 'start_time', 'end_time')),

@@ -1,0 +1,5 @@
+#
+# Add the fields for a code on the course offerings
+#
+ALTER TABLE ciniki_course_offerings ADD COLUMN code varchar(50) not null AFTER name;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.03';

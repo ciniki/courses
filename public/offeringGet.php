@@ -76,6 +76,7 @@ function ciniki_courses_offeringGet($ciniki) {
     $strsql = "SELECT ciniki_course_offerings.id, "
         . "ciniki_course_offerings.course_id, "
         . "ciniki_course_offerings.name AS offering_name, "
+        . "ciniki_course_offerings.code AS offering_code, "
         . "ciniki_course_offerings.permalink, "
         . "ciniki_course_offerings.status, "
         . "ciniki_course_offerings.status AS status_text, "
@@ -100,7 +101,7 @@ function ciniki_courses_offeringGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
-            'fields'=>array('id', 'offering_name', 'permalink', 'status', 'status_text', 
+            'fields'=>array('id', 'offering_name', 'offering_code', 'permalink', 'status', 'status_text', 
                 'reg_flags', 'num_seats',
                 'webflags', 'web_visible', 
                 'primary_image_id', 'course_id', 'course_name', 'code', 'level', 'type', 

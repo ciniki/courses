@@ -58,6 +58,7 @@ function ciniki_courses_offeringList($ciniki) {
     if( isset($args['current']) && $args['current'] == 'yes' ) {
         $strsql = "SELECT ciniki_course_offerings.id, "
             . "ciniki_course_offerings.name AS offering_name, "
+            . "ciniki_course_offerings.code AS offering_code, "
             . "ciniki_course_offerings.course_id, "
             . "ciniki_courses.name AS course_name, "
             . "ciniki_courses.code, "
@@ -85,11 +86,11 @@ function ciniki_courses_offeringList($ciniki) {
             . "GROUP BY ciniki_course_offerings.id "
             . "HAVING start_date_ts <= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
             . "AND end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
-            . "ORDER BY ciniki_courses.code, ciniki_courses.name "
+            . "ORDER BY ciniki_courses.code, ciniki_course_offerings.code, ciniki_courses.name "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'offerings', 'fname'=>'id', 
-                'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'start_date', 'end_date', 'num_seats', 'num_registrations')),
+                'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'offering_code', 'start_date', 'end_date', 'num_seats', 'num_registrations')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -101,6 +102,7 @@ function ciniki_courses_offeringList($ciniki) {
     if( isset($args['upcoming']) && $args['upcoming'] == 'yes' ) {
         $strsql = "SELECT ciniki_course_offerings.id, "
             . "ciniki_course_offerings.name AS offering_name, "
+            . "ciniki_course_offerings.code AS offering_code, "
             . "ciniki_course_offerings.course_id, "
             . "ciniki_courses.name AS course_name, "
             . "ciniki_courses.code, "
@@ -126,11 +128,11 @@ function ciniki_courses_offeringList($ciniki) {
             . "AND (ciniki_course_offerings.status = 10 || ciniki_course_offerings.status = 0 ) "
             . "GROUP BY ciniki_course_offerings.id "
             . "HAVING start_date = 'No dates set' OR start_date_ts > UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
-            . "ORDER BY ciniki_courses.code, ciniki_courses.name "
+            . "ORDER BY ciniki_courses.code, ciniki_course_offerings.code, ciniki_courses.name "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'offerings', 'fname'=>'id',
-                'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'start_date', 'end_date', 'num_seats', 'num_registrations')),
+                'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'offering_code', 'start_date', 'end_date', 'num_seats', 'num_registrations')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -142,6 +144,7 @@ function ciniki_courses_offeringList($ciniki) {
     if( isset($args['past']) && $args['past'] == 'yes' ) {
         $strsql = "SELECT ciniki_course_offerings.id, "
             . "ciniki_course_offerings.name AS offering_name, "
+            . "ciniki_course_offerings.code AS offering_code, "
             . "ciniki_course_offerings.course_id, "
             . "ciniki_courses.name AS course_name, "
             . "ciniki_courses.code, "
@@ -169,12 +172,12 @@ function ciniki_courses_offeringList($ciniki) {
             . "AND (ciniki_course_offerings.status = 10 || ciniki_course_offerings.status = 0 ) "
             . "GROUP BY ciniki_course_offerings.id "
             . "HAVING end_date_ts < UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
-            . "ORDER BY year, ciniki_courses.code, ciniki_courses.name "
+            . "ORDER BY year, ciniki_courses.code, ciniki_course_offerings.code, ciniki_courses.name "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'years', 'fname'=>'year', 'fields'=>array('year')),
             array('container'=>'offerings', 'fname'=>'id', 
-                'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'start_date', 'end_date', 'num_seats', 'num_registrations')),
+                'fields'=>array('id', 'offering_name', 'course_id', 'course_name', 'code', 'offering_code', 'start_date', 'end_date', 'num_seats', 'num_registrations')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;

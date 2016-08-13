@@ -26,6 +26,7 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
         . "ciniki_courses.code AS course_code, "
         . "ciniki_courses.name AS course_name, "
         . "ciniki_course_offerings.name AS offering_name, "
+        . "ciniki_course_offerings.code AS offering_code, "
 //      . "CONCAT_WS(' - ', ciniki_courses.code, ciniki_courses.name, ciniki_course_offerings.name) AS name, "
         . "ciniki_course_offering_prices.id AS price_id, "
         . "ciniki_course_offering_prices.name AS price_name, "
@@ -51,6 +52,8 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
             . "OR ciniki_courses.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_courses.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_courses.code LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR ciniki_course_offerings.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR ciniki_course_offerings.code LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . ") "
         . "GROUP BY ciniki_course_offerings.id, ciniki_course_offering_prices.id "
         . "HAVING end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
@@ -58,7 +61,7 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'courses', 'fname'=>'id',
-            'fields'=>array('id', 'course_code', 'course_name', 'offering_name')),
+            'fields'=>array('id', 'course_code', 'course_name', 'offering_name', 'offering_code')),
         array('container'=>'prices', 'fname'=>'price_id',
             'fields'=>array('id'=>'price_id', 'name'=>'price_name', 'unit_amount'=>'unit_amount', 
                 'unit_discount_amount', 'unit_discount_percentage',
@@ -77,6 +80,8 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
     foreach($courses as $cid => $course) {
         if( $course['course_code'] != '' ) {
             $course['course_name'] = $course['course_code'] . ' - ' . $course['course_name'];
+        } elseif( $course['offering_code'] != '' ) {
+            $course['course_name'] = $course['offering_code'] . ' - ' . $course['course_name'];
         } 
         if( $course['offering_name'] != '' ) {
             $course['course_name'] .= ' - ' . $course['offering_name'];

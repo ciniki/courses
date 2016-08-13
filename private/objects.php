@@ -84,6 +84,7 @@ function ciniki_courses_objects($ciniki) {
         'fields'=>array(
             'course_id'=>array('ref'=>'ciniki.courses.course'),
             'name'=>array(),
+            'code'=>array('name'=>'Offering Code', 'default'=>''),
             'permalink'=>array(),
             'status'=>array(),
             'webflags'=>array(),

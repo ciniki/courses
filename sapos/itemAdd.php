@@ -21,6 +21,8 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
         // Check the offering exists
         //
         $strsql = "SELECT ciniki_course_offerings.id, "
+            . "ciniki_course_offerings.code AS offering_code, "
+            . "ciniki_courses.code, "
             . "CONCAT_WS(' - ', ciniki_courses.name, ciniki_course_offerings.name) AS name "
             . "FROM ciniki_course_offering_prices "
             . "INNER JOIN ciniki_course_offerings ON ("
@@ -41,6 +43,11 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2912', 'msg'=>'Unable to find course'));
         }
         $offering = $rc['offering'];
+        if( $offering['code'] != '' ) { 
+            $offering['name'] = $offering['code'] . ' - ' . $offering['name'];
+        } elseif( $offering['offering_code'] != '' ) {
+            $offering['name'] = $offering['offering_code'] . ' - ' . $offering['name'];
+        }
 
         //
         // Load the customer for the invoice
@@ -89,6 +96,8 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
         // Check the offering exists
         //
         $strsql = "SELECT ciniki_course_offerings.id, "
+            . "ciniki_course_offerings.code AS offering_code, "
+            . "ciniki_courses.code, "
             . "CONCAT_WS(' - ', ciniki_courses.name, ciniki_course_offerings.name) AS name "
             . "FROM ciniki_course_offerings "
             . "LEFT JOIN ciniki_courses ON (ciniki_course_offerings.course_id = ciniki_courses.id "
@@ -105,6 +114,11 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1974', 'msg'=>'Unable to find course'));
         }
         $offering = $rc['offering'];
+        if( $offering['code'] != '' ) { 
+            $offering['name'] = $offering['code'] . ' - ' . $offering['name'];
+        } elseif( $offering['offering_code'] != '' ) {
+            $offering['name'] = $offering['offering_code'] . ' - ' . $offering['name'];
+        }
 
         //
         // Load the customer for the invoice

@@ -13,6 +13,7 @@
 #
 # course_id:        The ID of the course the date is for.
 # name:             The name for this offering: spring 2013, summer 2013
+# code:             The code for this offering of the course.
 # permalink:        The permalink for the course offering.
 # status:           The current status of the course offering.
 #
@@ -42,6 +43,7 @@ CREATE TABLE ciniki_course_offerings (
     business_id int not null,
     course_id int not null,
     name varchar(150) not null,
+    code varchar(50) not null,
     permalink varchar(150) not null,
     status tinyint unsigned not null,
     webflags tinyint unsigned not null,

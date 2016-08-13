@@ -23,6 +23,8 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
     //
     if( $args['object'] == 'ciniki.courses.offering' && isset($args['price_id']) && $args['price_id'] > 0 ) {
         $strsql = "SELECT ciniki_course_offerings.id AS offering_id, "
+            . "ciniki_course_offerings.code AS offering_code, "
+            . "ciniki_courses.code, "
             . "CONCAT_WS(' - ', ciniki_courses.name, ciniki_course_offerings.name) AS description, "
             . "ciniki_course_offerings.reg_flags, "
             . "ciniki_course_offerings.num_seats, "
@@ -49,7 +51,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.products', array(
             array('container'=>'offerings', 'fname'=>'offering_id',
-                'fields'=>array('offering_id', 'price_id', 'price_name', 'description', 'reg_flags', 'num_seats', 
+                'fields'=>array('offering_id', 'price_id', 'price_name', 'code', 'offering_code', 'offering_id', 'description', 'reg_flags', 'num_seats', 
                     'available_to', 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id',
                     )),
             ));
@@ -60,6 +62,11 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
             return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3169', 'msg'=>'No course found.'));     
         }
         $item = array_pop($rc['offerings']);
+        if( $item['code'] != '' ) {
+            $item['description'] = $item['code'] . ' - ' . $item['description'];
+        } elseif( $item['offering_code'] != '' ) {
+            $item['description'] = $item['offering_code'] . ' - ' . $item['description'];
+        }
         if( isset($item['price_name']) && $item['price_name'] != '' ) {
             $item['description'] .= ' - ' . $item['price_name'];
         }

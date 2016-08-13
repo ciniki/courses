@@ -24,7 +24,9 @@ function ciniki_courses_hooks_checkObjectUsed($ciniki, $business_id, $args) {
         //
         $strsql = "SELECT 'items', COUNT(*) "
             . "FROM ciniki_course_offering_registrations "
-            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
+            . "WHERE (customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
+                . "OR student_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
+                . ") "
             . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . "";
         $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.sapos', 'num');

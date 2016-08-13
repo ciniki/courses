@@ -23,6 +23,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
+        'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Web Flags'), 
         'reg_flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration Flags'),
@@ -32,10 +33,6 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         return $rc;
     }   
     $args = $rc['args'];
-
-    if( isset($args['name']) && (!isset($args['permalink']) || $args['permalink'] == '') ) {
-        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['name'])));
-    }
 
     //  
     // Make sure this module is activated, and
@@ -47,22 +44,29 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         return $rc;
     }
 
+    $strsql = "SELECT id, uuid, course_id, name, code "
+        . "FROM ciniki_course_offerings "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'offering');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( !isset($rc['offering']) ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1262', 'msg'=>'Unable to find course offering.'));
+    }
+    $offering = $rc['offering'];
+
     //
     // Check the permalink doesn't already exist
     //
-    if( isset($args['permalink']) ) {
-        $strsql = "SELECT id, uuid, course_id FROM ciniki_course_offerings "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-            . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'offering');
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
+    if( (isset($args['name']) || isset($args['code'])) && (!isset($args['permalink']) || $args['permalink'] == '') ) {  
+        if( isset($args['code']) || $offering['code'] != '' ) {
+            $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower((isset($args['name']) ? $args['name'] : $offering['name']) . '-' . (isset($args['code']) ? $args['code'] : $offering['code']))));
+        } else {
+            $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower(isset($args['name']) ? $args['name'] : $offering['name'])));
         }
-        if( !isset($rc['offering']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1262', 'msg'=>'Unable to find course offering.'));
-        }
-        $offering = $rc['offering'];
         $strsql = "SELECT id, name, permalink FROM ciniki_course_offerings "
             . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "

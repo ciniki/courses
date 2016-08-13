@@ -31,6 +31,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
+        'code'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Web Flags'), 
         'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Class Date'),
@@ -45,9 +46,6 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     }   
     $args = $rc['args'];
 
-    $name = $args['name'];
-    $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($name)));
-
     //  
     // Make sure this module is activated, and
     // check permission to run this function for this business
@@ -59,10 +57,16 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     }   
     $modules = $rc['modules'];
 
+    if( isset($args['code']) && $args['code'] != '' ) {
+        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['name'] . '-' . $args['code'])));
+    } else {
+        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['name'])));
+    }
+
     //
     // Check the permalink doesn't already exist
     //
-    $strsql = "SELECT id, name, permalink FROM ciniki_course_offerings "
+    $strsql = "SELECT id, name, code, permalink FROM ciniki_course_offerings "
         . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
         . "AND course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
