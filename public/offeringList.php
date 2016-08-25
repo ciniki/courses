@@ -96,6 +96,18 @@ function ciniki_courses_offeringList($ciniki) {
             return $rc;
         }
         if( isset($rc['offerings']) ) {
+            usort($rc['offerings'], function($a, $b) {
+                if( $a['code'] == $b['code'] ) {
+                    if( $a['offering_code'] == $b['offering_code'] ) {
+                        if( $a['course_name'] == $b['course_name'] ) {
+                            return strnatcasecmp($a['offering_name'], $b['offering_name']);
+                        }
+                        return strnatcasecmp($a['course_name'], $b['course_name']);
+                    }
+                    return strnatcasecmp($a['offering_code'], $b['offering_code']);
+                }
+                return strnatcasecmp($a['code'], $b['code']);
+            });
             $rsp['current'] = $rc['offerings'];
         }
     }
@@ -138,6 +150,18 @@ function ciniki_courses_offeringList($ciniki) {
             return $rc;
         }
         if( isset($rc['offerings']) ) {
+            usort($rc['offerings'], function($a, $b) {
+                if( $a['code'] == $b['code'] ) {
+                    if( $a['offering_code'] == $b['offering_code'] ) {
+                        if( $a['course_name'] == $b['course_name'] ) {
+                            return strnatcasecmp($a['offering_name'], $b['offering_name']);
+                        }
+                        return strnatcasecmp($a['course_name'], $b['course_name']);
+                    }
+                    return strnatcasecmp($a['offering_code'], $b['offering_code']);
+                }
+                return strnatcasecmp($a['code'], $b['code']);
+            });
             $rsp['upcoming'] = $rc['offerings'];
         }
     }
@@ -185,6 +209,18 @@ function ciniki_courses_offeringList($ciniki) {
         if( isset($rc['years']) ) {
             $rsp['pastyears'] = array();
             foreach($rc['years'] as $year) {
+                usort($year['offerings'], function($a, $b) {
+                    if( $a['code'] == $b['code'] ) {
+                        if( $a['offering_code'] == $b['offering_code'] ) {
+                            if( $a['course_name'] == $b['course_name'] ) {
+                                return strnatcasecmp($a['offering_name'], $b['offering_name']);
+                            }
+                            return strnatcasecmp($a['course_name'], $b['course_name']);
+                        }
+                        return strnatcasecmp($a['offering_code'], $b['offering_code']);
+                    }
+                    return strnatcasecmp($a['code'], $b['code']);
+                });
                 $rsp['pastyears'][$year['year']] = $year['offerings'];
             }
         }
