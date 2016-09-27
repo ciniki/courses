@@ -238,6 +238,7 @@ function ciniki_courses_sapos() {
         if( ns != null && ns > 1 ) {
             args = {
                 'customer_id':cid,
+                'bill_parent':'yes',
                 'payment_status':10,
                 'objects':[],
                 };
@@ -247,6 +248,7 @@ function ciniki_courses_sapos() {
         } else {
             args = {
                 'customer_id':cid,
+                'bill_parent':'yes',
                 'object':'ciniki.courses.offering_price',
                 'object_id':this.regadd.price_id,
                 'payment_status':10,
