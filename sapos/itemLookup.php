@@ -15,7 +15,7 @@ function ciniki_courses_sapos_itemLookup($ciniki, $business_id, $args) {
     if( !isset($args['object']) || $args['object'] == ''
         || !isset($args['object_id']) || $args['object_id'] == '' 
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2906', 'msg'=>'No item specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.66', 'msg'=>'No item specified.'));
     }
 
     //
@@ -50,7 +50,7 @@ function ciniki_courses_sapos_itemLookup($ciniki, $business_id, $args) {
             return $rc;
         }
         if( !isset($rc['offering']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2909', 'msg'=>'Unable to find course'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.67', 'msg'=>'Unable to find course'));
         }
         $offering = $rc['offering'];
         $item = array(

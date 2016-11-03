@@ -54,7 +54,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['offering']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1262', 'msg'=>'Unable to find course offering.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.49', 'msg'=>'Unable to find course offering.'));
     }
     $offering = $rc['offering'];
 
@@ -78,7 +78,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1261', 'msg'=>'You already have an course offering with this name, please choose another name.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.50', 'msg'=>'You already have an course offering with this name, please choose another name.'));
         }
     }
 

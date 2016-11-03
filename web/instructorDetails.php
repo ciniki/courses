@@ -47,7 +47,7 @@ function ciniki_courses_web_instructorDetails($ciniki, $settings, $business_id, 
         return $rc;
     }
     if( !isset($rc['instructors']) || count($rc['instructors']) < 1 ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'1267', 'msg'=>"I'm sorry, but we are unable to find the instructor you requested."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.courses.73', 'msg'=>"I'm sorry, but we are unable to find the instructor you requested."));
     }
     $instructor = array_pop($rc['instructors']);
 

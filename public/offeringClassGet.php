@@ -64,7 +64,7 @@ function ciniki_courses_offeringClassGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['classes']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1257', 'msg'=>'Unable to find class'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.31', 'msg'=>'Unable to find class'));
     }
     $class = $rc['classes'][0]['class'];
     

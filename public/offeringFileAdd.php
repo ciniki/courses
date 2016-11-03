@@ -87,7 +87,7 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     }
     if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1313', 'msg'=>'Unable to add course'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.34', 'msg'=>'Unable to add course'));
     }
     $offering_file_id = $rc['insert_id'];
 

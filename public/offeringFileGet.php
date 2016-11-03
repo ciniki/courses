@@ -68,7 +68,7 @@ function ciniki_courses_offeringFileGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['files']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1315', 'msg'=>'Unable to find file'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.37', 'msg'=>'Unable to find file'));
     }
     $file = $rc['files'][0]['file'];
 

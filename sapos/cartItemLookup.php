@@ -15,7 +15,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3170', 'msg'=>'No course specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.51', 'msg'=>'No course specified.'));
     }
 
     //
@@ -59,7 +59,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
             return $rc;
         }
         if( !isset($rc['offerings']) || count($rc['offerings']) < 1 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3169', 'msg'=>'No course found.'));     
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.52', 'msg'=>'No course found.'));     
         }
         $item = array_pop($rc['offerings']);
         if( $item['code'] != '' ) {
@@ -76,7 +76,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
         //
         if( ($item['available_to']|0xF0) > 0 ) {
             if( ($item['available_to']&$customer['price_flags']) == 0 ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3168', 'msg'=>"I'm sorry, but this product is not available to you."));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.53', 'msg'=>"I'm sorry, but this product is not available to you."));
             }
         }
 
@@ -105,6 +105,6 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
         return array('stat'=>'ok', 'item'=>$item);
     }
 
-    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3167', 'msg'=>'No course specified.'));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.54', 'msg'=>'No course specified.'));
 }
 ?>

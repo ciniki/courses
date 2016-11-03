@@ -64,7 +64,7 @@ function ciniki_courses_instructorImageGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['images']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1250', 'msg'=>'Unable to find image'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.25', 'msg'=>'Unable to find image'));
     }
     $image = $rc['images'][0]['image'];
     

@@ -24,7 +24,7 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
         return $rc;
     }
     if( !isset($rc['offering']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2423', 'msg'=>'Unable to find requested class'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.69', 'msg'=>'Unable to find requested class'));
     }
     $offering = $rc['offering'];
 

@@ -66,7 +66,7 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['registrations']) || !isset($rc['registrations'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1517', 'msg'=>'Unable to find registration'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.44', 'msg'=>'Unable to find registration'));
     }
     $registration = $rc['registrations'][0]['registration'];
 
@@ -94,7 +94,7 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['course']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'2914', 'msg'=>'Unable to find course'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.45', 'msg'=>'Unable to find course'));
     }
     $registration['course_name'] = ($rc['course']['code'] !=''?$rc['course']['code'] . ' - ':'') . $rc['course']['name'];
     $registration['course_dates'] = $rc['course']['condensed_date'];

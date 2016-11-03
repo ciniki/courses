@@ -47,7 +47,7 @@ function ciniki_courses_instructorImageDelete(&$ciniki) {
     }
     if( !isset($rc['item']) ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1249', 'msg'=>'Instructor image does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.24', 'msg'=>'Instructor image does not exist'));
     }
     $uuid = $rc['item']['uuid'];
 

@@ -71,7 +71,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_
         return $rc;
     }
     if( !isset($rc['offerings']) || count($rc['offerings']) < 1 ) {
-        return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'653', 'msg'=>"I'm sorry, but we can't seem to find the course you requested."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.courses.71', 'msg'=>"I'm sorry, but we can't seem to find the course you requested."));
     }
     $offering = array_pop($rc['offerings']);
 

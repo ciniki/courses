@@ -56,7 +56,7 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
             return $rc;
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1251', 'msg'=>'Instructor image not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.26', 'msg'=>'Instructor image not found'));
         }
         $item = $rc['item'];
 
@@ -79,7 +79,7 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1252', 'msg'=>'You already have an image with this name, please choose another name'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.27', 'msg'=>'You already have an image with this name, please choose another name'));
         }
     }
 

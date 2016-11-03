@@ -51,7 +51,7 @@ function ciniki_courses_fileDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['file']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1343', 'msg'=>'Unable to find existing item'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.14', 'msg'=>'Unable to find existing item'));
     }
     $uuid = $rc['file']['uuid'];
 

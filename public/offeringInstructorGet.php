@@ -74,7 +74,7 @@ function ciniki_courses_offeringInstructorGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['instructors']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1269', 'msg'=>'Unable to find instructor'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.40', 'msg'=>'Unable to find instructor'));
     }
     $instructor = $rc['instructors'][0]['instructor'];
 

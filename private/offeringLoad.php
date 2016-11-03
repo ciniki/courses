@@ -75,7 +75,7 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
         return $rc;
     }
     if( !isset($rc['offerings']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'3055', 'msg'=>'Unable to find offering'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.3', 'msg'=>'Unable to find offering'));
     }
     $offering = $rc['offerings'][0]['offering'];
 
@@ -260,7 +260,7 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
                     'maps'=>array('invoice_status_text'=>$status_maps)),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3056', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.4', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
             }
             if( !isset($rc['registrations']) ) {
                 $offering['registrations'] = array();
@@ -297,7 +297,7 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
                     'fields'=>array('id', 'customer_id', 'customer_type', 'student_id', 'customer_name', 'student_type', 'student_name', 'num_seats', 'invoice_id')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3057', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.5', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
             }
             if( !isset($rc['registrations']) ) {
                 $offering['registrations'] = array();

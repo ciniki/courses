@@ -47,7 +47,7 @@ function ciniki_courses_offeringClassDelete(&$ciniki) {
     }
     if( !isset($rc['class']) ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1281', 'msg'=>'Class does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.30', 'msg'=>'Class does not exist'));
     }
     $class = $rc['class'];
 

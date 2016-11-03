@@ -14,14 +14,14 @@ function ciniki_courses_sapos_cartItemPaymentReceived($ciniki, $business_id, $cu
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3221', 'msg'=>'No course specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.55', 'msg'=>'No course specified.'));
     }
 
     if( !isset($args['price_id']) || $args['price_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3222', 'msg'=>'No course specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.56', 'msg'=>'No course specified.'));
     }
     if( !isset($args['invoice_id']) || $args['invoice_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3223', 'msg'=>'No course specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.57', 'msg'=>'No course specified.'));
     }
     if( !isset($args['student_id']) || $args['student_id'] == 0 ) {
         $args['student_id'] = $args['customer_id'];
@@ -45,7 +45,7 @@ function ciniki_courses_sapos_cartItemPaymentReceived($ciniki, $business_id, $cu
             return $rc;
         }
         if( !isset($rc['offering']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'3224', 'msg'=>'Unable to find course'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.58', 'msg'=>'Unable to find course'));
         }
         $offering = $rc['offering'];
 

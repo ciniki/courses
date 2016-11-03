@@ -34,7 +34,7 @@ function ciniki_courses_offeringList($ciniki) {
         && (!isset($args['upcoming']) || $args['upcoming'] != 'yes')
         && (!isset($args['past']) || $args['past'] != 'yes')
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1260', 'msg'=>'You must specify the type of list to return: past, current, upcoming.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.41', 'msg'=>'You must specify the type of list to return: past, current, upcoming.'));
     }
     
     //  

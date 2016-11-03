@@ -67,7 +67,7 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1520', 'msg'=>'Registration does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.48', 'msg'=>'Registration does not exist'));
     }
     $registration = $rc['registration'];
 

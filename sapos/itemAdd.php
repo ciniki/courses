@@ -40,7 +40,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             return $rc;
         }
         if( !isset($rc['offering']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2912', 'msg'=>'Unable to find course'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.61', 'msg'=>'Unable to find course'));
         }
         $offering = $rc['offering'];
         if( $offering['code'] != '' ) { 
@@ -62,7 +62,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             return $rc;
         }
         if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2913', 'msg'=>'Unable to find invoice'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.62', 'msg'=>'Unable to find invoice'));
         }
         $invoice = $rc['invoice'];
         
@@ -111,7 +111,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             return $rc;
         }
         if( !isset($rc['offering']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1974', 'msg'=>'Unable to find course'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.63', 'msg'=>'Unable to find course'));
         }
         $offering = $rc['offering'];
         if( $offering['code'] != '' ) { 
@@ -133,7 +133,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             return $rc;
         }
         if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1975', 'msg'=>'Unable to find invoice'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.64', 'msg'=>'Unable to find invoice'));
         }
         $invoice = $rc['invoice'];
         
@@ -175,7 +175,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             return $rc;
         }
         if( !isset($rc['registration']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1977', 'msg'=>'Unable to find course registration'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.65', 'msg'=>'Unable to find course registration'));
         }
         $registration = $rc['registration'];
     

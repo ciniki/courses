@@ -61,7 +61,7 @@ function ciniki_courses_fileUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1276', 'msg'=>'You already have an courses with this name, please choose another name.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.18', 'msg'=>'You already have an courses with this name, please choose another name.'));
         }
     }
 

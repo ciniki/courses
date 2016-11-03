@@ -124,7 +124,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
         return $rc;
     }
     if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1254', 'msg'=>'Unable to update offering date'));   
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.6', 'msg'=>'Unable to update offering date'));   
     }
 
     $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 

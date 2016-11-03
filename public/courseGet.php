@@ -69,7 +69,7 @@ function ciniki_courses_courseGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['courses']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1259', 'msg'=>'Unable to find course'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.8', 'msg'=>'Unable to find course'));
     }
     $course = $rc['courses'][0]['course'];
 

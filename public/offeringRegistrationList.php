@@ -100,7 +100,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
                 'maps'=>array('invoice_status_text'=>$status_maps)),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1518', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.46', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
         }
         if( !isset($rc['registrations']) ) {
             $registrations = array();
@@ -135,7 +135,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
                 'fields'=>array('id', 'customer_id', 'customer_name'=>'sort_name', 'num_seats', 'invoice_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1522', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.47', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
         }
         if( !isset($rc['registrations']) ) {
             $registrations = array();

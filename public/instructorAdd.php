@@ -70,7 +70,7 @@ function ciniki_courses_instructorAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1265', 'msg'=>'You already have an instructor with this name, please choose another name'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.19', 'msg'=>'You already have an instructor with this name, please choose another name'));
     }
 
     //

@@ -113,7 +113,7 @@ function ciniki_courses_offeringGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['offerings']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1345', 'msg'=>'Unable to find offering'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.38', 'msg'=>'Unable to find offering'));
     }
     $offering = $rc['offerings'][0]['offering'];
 

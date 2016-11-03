@@ -30,7 +30,7 @@ function ciniki_courses_sapos_itemUpdate($ciniki, $business_id, $invoice_id, $it
             return $rc;
         }
         if( !isset($rc['registration']) ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1976', 'msg'=>'Unable to find course registration'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.68', 'msg'=>'Unable to find course registration'));
         }
         $registration = $rc['registration'];
 

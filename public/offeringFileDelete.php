@@ -62,7 +62,7 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     }
     if( !isset($rc['file']) ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1314', 'msg'=>'File does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.35', 'msg'=>'File does not exist'));
     }
     $ofile = $rc['file'];
 
@@ -102,7 +102,7 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     }
     if( !isset($rc['file']) ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1316', 'msg'=>'File does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.36', 'msg'=>'File does not exist'));
     }
     $file = $rc['file'];
     //
