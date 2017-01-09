@@ -54,6 +54,7 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
         . "ciniki_courses.level, "
         . "ciniki_courses.type, "
         . "ciniki_courses.category, "
+        . "ciniki_courses.flags, "
         . "ciniki_courses.short_description, "
         . "ciniki_courses.long_description "
         . "FROM ciniki_course_offerings "
@@ -68,7 +69,7 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
                 'reg_flags', 'num_seats',
                 'webflags', 'web_visible', 
                 'primary_image_id', 'course_id', 'course_name', 'code', 'level', 'type', 
-                'category', 'short_description', 'long_description'),
+                'category', 'flags', 'short_description', 'long_description'),
             'maps'=>array('status_text'=>array('10'=>'Active', '60'=>'Deleted'))),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -230,6 +231,8 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
                 . "IFNULL(c1.display_name, '') AS customer_name, "
                 . "IFNULL(c2.type, '0') AS student_type, "
                 . "IFNULL(c2.display_name, '') AS student_name, "
+                . "DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), c2.birthdate)), '%Y')+0 AS student_age, "
+                . "IFNULL(c2.display_name, '') AS student_name, "
                 . "IFNULL(c2.display_name, IFNULL(c1.display_name, '')) AS sort_name, "
                 . "ciniki_course_offering_registrations.num_seats, "
                 . "ciniki_course_offering_registrations.invoice_id, "
@@ -255,7 +258,8 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
                 array('container'=>'registrations', 'fname'=>'id',
-                    'fields'=>array('id', 'customer_id', 'customer_type', 'student_id', 'student_type', 'customer_name', 'student_name', 'num_seats', 
+                    'fields'=>array('id', 'customer_id', 'customer_type', 'student_id', 'student_type', 'customer_name', 
+                        'student_name', 'student_age', 'num_seats', 
                         'invoice_id', 'invoice_status', 'invoice_status_text', 'notes'),
                     'maps'=>array('invoice_status_text'=>$status_maps)),
                 ));
@@ -275,6 +279,7 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
                 . "IFNULL(c1.display_name, '') AS customer_name, "
                 . "IFNULL(c2.type, '0') AS student_type, "
                 . "IFNULL(c2.display_name, '') AS student_name, "
+                . "DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), c2.birthdate)), '%Y')+0 AS student_age, "
                 . "IFNULL(c2.display_name, IFNULL(c1.display_name, '')) AS sort_name, "
                 . "ciniki_course_offering_registrations.num_seats, "
                 . "ciniki_course_offering_registrations.invoice_id "
@@ -294,7 +299,8 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
                 array('container'=>'registrations', 'fname'=>'id',
-                    'fields'=>array('id', 'customer_id', 'customer_type', 'student_id', 'customer_name', 'student_type', 'student_name', 'num_seats', 'invoice_id')),
+                    'fields'=>array('id', 'customer_id', 'customer_type', 'student_id', 'customer_name', 
+                        'student_type', 'student_name', 'student_age', 'num_seats', 'invoice_id')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.5', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
@@ -306,7 +312,6 @@ function ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, $args)
             }
         }
     }
-
     
     return array('stat'=>'ok', 'offering'=>$offering);
 }

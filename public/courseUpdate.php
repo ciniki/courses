@@ -28,6 +28,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
         'level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Level'), 
         'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'), 
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
         'short_description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Description'), 
         'long_description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Long Description'), 
         )); 

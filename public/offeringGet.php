@@ -90,6 +90,7 @@ function ciniki_courses_offeringGet($ciniki) {
         . "ciniki_courses.level, "
         . "ciniki_courses.type, "
         . "ciniki_courses.category, "
+        . "ciniki_courses.flags, "
         . "ciniki_courses.short_description, "
         . "ciniki_courses.long_description "
         . "FROM ciniki_course_offerings "
@@ -102,10 +103,9 @@ function ciniki_courses_offeringGet($ciniki) {
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
             'fields'=>array('id', 'offering_name', 'offering_code', 'permalink', 'status', 'status_text', 
-                'reg_flags', 'num_seats',
-                'webflags', 'web_visible', 
+                'reg_flags', 'num_seats', 'webflags', 'web_visible', 
                 'primary_image_id', 'course_id', 'course_name', 'code', 'level', 'type', 
-                'category', 'short_description', 'long_description'),
+                'category', 'flags', 'short_description', 'long_description'),
             'maps'=>array('status_text'=>array('10'=>'Active', '60'=>'Deleted'))),
 
         ));

@@ -13,9 +13,11 @@
 # code:                 The code for the course.  Typically something CS404, Psych101
 # permalink:            The permalink for the course.
 # primary_image_id:     The ID of the image for use in course listings.
+# level:                The level of course (beginner, intermediate, advanced)
 # type:                 The type of the course.  This can act as a high level category list.
 # category:             The category for the course.  When combined with type it acts like a sub category.
-# level:                The level of course (beginner, intermediate, advanced)
+#
+# flags:                The options for the course.
 #
 # short_description:    The short description of the event (optional).
 # long_description:     The longer text description of the event (optional).
@@ -34,10 +36,11 @@ CREATE TABLE ciniki_courses (
     level varchar(150) not null,
     type varchar(150) not null,
     category varchar(150) not null,
+    flags tinyint unsigned not null,
     short_description varchar(2000) not null,
     long_description varchar(20000) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

@@ -252,6 +252,10 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
                 }
             }
         }
+        // Check if date of birth should be added 
+        if( ($offering['flags']&0x01) == 0x01 && $reg['customer_id'] != $reg['student_id'] && $reg['student_age'] != '' && $reg['student_age'] > 0 ) {
+            $student_information .= "Age: " . $reg['student_age'] . " (" . $customer['birthdate'] . ") ";
+        }
         if( $reg['notes'] != '' ) {
             $student_information .= "\n" . $reg['notes'];
         }

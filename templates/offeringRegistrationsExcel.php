@@ -39,20 +39,30 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Student', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+    // Check if date of birth should be added 
+    if( ($offering['flags']&0x01) == 0x01 ) {
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Birthdate', false);
+    }
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Parent', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Phone', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Notes', false);
 
-    $objPHPExcelWorksheet->getStyle('A1:H1')->getFont()->setBold(true);
+    if( ($offering['flags']&0x01) == 0x01 ) {
+        $objPHPExcelWorksheet->getStyle('A1:J1')->getFont()->setBold(true);
+    } else {
+        $objPHPExcelWorksheet->getStyle('A1:H1')->getFont()->setBold(true);
+    }
 
     $row++;
     foreach($offering['registrations'] as $reg) {
         //
         // Get the student information, so it can be added to the form and verified
         //
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow(0, $row, $reg['student_name'], false);
+        $col = 0;
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['student_name'], false);
         if( $reg['student_id'] > 0 ) {
             $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, 
                 array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
@@ -72,16 +82,33 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
                             $phones .= $phone['phone_number'];
                         }
                     }
-                    $objPHPExcelWorksheet->setCellValueByColumnAndRow(1, $row, $phones, false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $phones, false);
                 }
+                $col++;
                 if( isset($customer['emails']) ) {
                     $emails = '';
                     $comma = '';
                     foreach($customer['emails'] as $e => $email) {
                         $emails .= ($emails!=''?', ':'') . $email['email']['address'];
                     }
-                    $objPHPExcelWorksheet->setCellValueByColumnAndRow(2, $row, $emails, false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $emails, false);
                 }
+                $col++;
+            }
+            if( ($offering['flags']&0x01) == 0x01 ) {
+                if( $reg['customer_id'] != $reg['student_id'] && $reg['student_age'] != '' && $reg['student_age'] > 0 ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['student_age'], false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $customer['birthdate'], false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+                }
+            }
+        } else {
+            if( ($offering['flags']&0x01) == 0x01 ) {
+                $col+=5;
+            } else {
+                $col+=3;
             }
         }
 
@@ -93,7 +120,7 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow(3, $row, $reg['customer_name'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['customer_name'], false);
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
                 if( isset($customer['phones']) ) {
@@ -106,21 +133,25 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
                             $phones .= $phone['phone_number'];
                         }
                     }
-                    $objPHPExcelWorksheet->setCellValueByColumnAndRow(4, $row, $phones, false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $phones, false);
                 }
+                $col++;
                 if( isset($customer['emails']) ) {
                     $emails = '';
                     $comma = '';
                     foreach($customer['emails'] as $e => $email) {
                         $emails .= ($emails!=''?', ':'') . $email['email']['address'];
                     }
-                    $objPHPExcelWorksheet->setCellValueByColumnAndRow(5, $row, $emails, false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $emails, false);
                 }
+                $col++;
             }
+        } else {    
+            $col+=3;
         }
 
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow(6, $row, $reg['invoice_status_text'], false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow(7, $row, $reg['notes'], false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['invoice_status_text'], false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['notes'], false);
         $row++;
     }
 
@@ -132,6 +163,8 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
     $objPHPExcelWorksheet->getColumnDimension('F')->setAutoSize(true);
     $objPHPExcelWorksheet->getColumnDimension('G')->setAutoSize(true);
     $objPHPExcelWorksheet->getColumnDimension('H')->setAutoSize(true);
+    $objPHPExcelWorksheet->getColumnDimension('I')->setAutoSize(true);
+    $objPHPExcelWorksheet->getColumnDimension('J')->setAutoSize(true);
 
     return array('stat'=>'ok', 'offering'=>$offering, 'excel'=>$objPHPExcel);
 }

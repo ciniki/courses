@@ -23,6 +23,7 @@ function ciniki_courses_objects($ciniki) {
             'level'=>array(),
             'type'=>array(),
             'category'=>array(),
+            'flags'=>array('name'=>'Options', 'default'=>'0'),
             'short_description'=>array(),
             'long_description'=>array(),
             ),

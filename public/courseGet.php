@@ -53,6 +53,7 @@ function ciniki_courses_courseGet($ciniki) {
         . "ciniki_courses.level, "
         . "ciniki_courses.type, "
         . "ciniki_courses.category, "
+        . "ciniki_courses.flags, "
         . "ciniki_courses.short_description, "
         . "ciniki_courses.long_description "
         . "FROM ciniki_courses "
@@ -63,7 +64,7 @@ function ciniki_courses_courseGet($ciniki) {
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
             'fields'=>array('id', 'name', 
-                'primary_image_id', 'code', 'level', 'type', 'category', 'short_description', 'long_description')),
+                'primary_image_id', 'code', 'level', 'type', 'category', 'flags', 'short_description', 'long_description')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

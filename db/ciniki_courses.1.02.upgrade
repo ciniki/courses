@@ -1,0 +1,5 @@
+#
+# Add field for store course options
+#
+ALTER TABLE ciniki_courses ADD COLUMN flags tinyint unsigned not null AFTER category;
+ALTER TABLE ciniki_courses COMMENT='v1.02';
