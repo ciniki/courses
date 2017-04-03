@@ -548,7 +548,7 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
                             . "<td>";
                     }
                     foreach($c['offerings'] as $onum => $offering) {
-                        if( $offering['isdetails'] == 'yes' ) {
+                        if( $offering['is_details'] == 'yes' ) {
                             $offering_url = $args['base_url'] . '/course/' . $offering['course_permalink'] . '/' . $offering['permalink'];
                         } else {
                             $offering_url = '';

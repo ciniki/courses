@@ -21,7 +21,7 @@ function ciniki_courses_web_courseList($ciniki, $settings, $business_id, $type, 
         . "ciniki_courses.permalink AS course_permalink, "
         . "ciniki_courses.name AS course_name, "
         . "ciniki_courses.level, "
-        . "IF(ciniki_courses.long_description='', 'no', 'yes') AS isdetails, "
+        . "IF(ciniki_courses.long_description='', 'no', 'yes') AS is_details, "
         . "ciniki_courses.code, "
         . "IFNULL(DATE_FORMAT(MIN(ciniki_course_offering_classes.class_date), '%a %b %e, %Y'), 'No dates set') AS start_date, "
         . "UNIX_TIMESTAMP(MIN(ciniki_course_offering_classes.class_date)) AS start_date_ts, "
@@ -67,7 +67,7 @@ function ciniki_courses_web_courseList($ciniki, $settings, $business_id, $type, 
         array('container'=>'offerings', 'fname'=>'id', 
             'fields'=>array('id', 'course_id', 'name'=>'course_name', 'level', 
                 'course_permalink', 'permalink', 'code', 'offering_code', 'image_id'=>'primary_image_id', 
-                'start_date', 'end_date', 'short_description', 'condensed_date', 'isdetails')),
+                'start_date', 'end_date', 'short_description', 'condensed_date', 'is_details')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
