@@ -130,9 +130,6 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
             }
 
             $image_permalink = $args['uri_split'][3];
-            if( $rc['img']['title'] != '' ) {
-                $page['title'] .= ' - ' . $rc['img']['title'];
-            }
             $page['breadcrumbs'][] = array('name'=>$rc['img']['title'], 'url'=>$args['base_url'] . '/gallery/' . $image_permalink);
             ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'galleryFindNextPrev');
             $rc = ciniki_web_galleryFindNextPrev($ciniki, $instructor['images'], $image_permalink);
@@ -142,7 +139,10 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
             if( $rc['img'] == NULL ) {
                 $page['blocks'][] = array('type'=>'message', 'section'=>'instructor-image', 'content'=>"I'm sorry, but we can't seem to find the image you requested.");
             } else {
-                $page_title = $instructor['name'] . ' - ' . $img['title'];
+                if( $rc['img']['title'] != '' ) {
+                    $page['title'] .= ' - ' . $rc['img']['title'];
+                }
+                $page_title = $instructor['name'] . ' - ' . $rc['img']['title'];
                 $page['breadcrumbs'][] = array('name'=>$rc['img']['title'], 'url'=>$args['base_url'] . '/gallery/' . $image_permalink);
                 if( $rc['img']['title'] != '' ) {
                     $page['title'] .= ' - ' . $rc['img']['title'];
