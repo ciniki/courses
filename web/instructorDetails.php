@@ -15,6 +15,7 @@ function ciniki_courses_web_instructorDetails($ciniki, $settings, $business_id, 
         . "CONCAT_WS(' ', ciniki_course_instructors.first, ciniki_course_instructors.last) AS name, "
         . "ciniki_course_instructors.permalink, "
         . "ciniki_course_instructors.url, "
+        . "ciniki_course_instructors.synopsis, "
         . "ciniki_course_instructors.full_bio, "
         . "ciniki_course_instructors.primary_image_id, "
         . "ciniki_course_instructor_images.image_id, "
@@ -37,7 +38,7 @@ function ciniki_courses_web_instructorDetails($ciniki, $settings, $business_id, 
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'instructors', 'fname'=>'id', 
             'fields'=>array('id', 'permalink', 'name', 'image_id'=>'primary_image_id', 
-                'url', 'full_bio')),
+                'url', 'synopsis', 'full_bio')),
         array('container'=>'images', 'fname'=>'image_id', 
             'fields'=>array('image_id', 'title'=>'image_name', 'permalink'=>'image_permalink',
                 'description'=>'image_description', 'url'=>'image_url',
