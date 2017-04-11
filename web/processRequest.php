@@ -170,7 +170,7 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
             if( isset($instructor['full_bio']) && $instructor['full_bio'] != '' ) {
                 $content = $instructor['full_bio'];
             } else {
-                $content = $instructor['synopsis'];
+                $content = $instructor['short_bio'];
             }
             
             if( isset($instructor['url']) ) {
