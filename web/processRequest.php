@@ -130,7 +130,6 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
             }
 
             $image_permalink = $args['uri_split'][3];
-            $page['breadcrumbs'][] = array('name'=>$rc['img']['title'], 'url'=>$args['base_url'] . '/gallery/' . $image_permalink);
             ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'galleryFindNextPrev');
             $rc = ciniki_web_galleryFindNextPrev($ciniki, $instructor['images'], $image_permalink);
             if( $rc['stat'] != 'ok' ) {
@@ -410,14 +409,7 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
         $cnt = $rc['content'];
 
         $page_content = '';
-        if( isset($settings['page-courses' . $type_name . '-image']) 
-            || isset($cnt['page-courses' . $type_name . '-content']) 
-            ) {
-//            $page_content .= "<article class='page'>\n"
-//              . "<header class='entry-title'><h1 class='entry-title'>Registration</h1></header>\n"
-//                . "<div class='entry-content'>\n"
-//                . "";
-            
+        if( isset($settings['page-courses' . $type_name . '-image']) || isset($cnt['page-courses' . $type_name . '-content']) ) {
             // Check if there are files to be displayed on the main page
             $program_url = '';
             if( $type_name == '' && (isset($settings['page-courses-catalog-download-active']) 
@@ -493,7 +485,7 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
         }
 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'courseList');
-        foreach(array('current', 'upcoming', 'past') as $type) {
+        foreach(array('upcoming', 'current', 'past') as $type) {
             if( $settings["page-courses-$type-active"] != 'yes' ) {
                 continue;
             }
@@ -521,8 +513,7 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
             $page_content = '';
 
             if( count($categories) > 0 ) {
-                $page_content .= "<table class='clist'>\n"
-                    . "";
+                $page_content .= "<table class='clist'>\n";
                 $prev_category = NULL;
                 $num_categories = count($categories);
                 foreach($categories as $cnum => $c) {
@@ -590,7 +581,7 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
                 $page_content .= "<p>No " . strtolower($name) . " found</p>";
             }
             $page_content .= "</td></tr>\n</table>\n";
-            $page['blocks'][] = array('type'=>'content', 'html'=>$page_content);
+            $page['blocks'][] = array('type'=>'content', 'title'=>$name, 'html'=>$page_content);
         }
         //
         // Check if no submenu going to be displayed, then need to display registration information here
