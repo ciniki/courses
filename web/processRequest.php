@@ -12,7 +12,7 @@
 // Returns
 // -------
 //
-function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $args) {
+function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $args) {
 
     //
     // Check to make sure the module is enabled
@@ -26,6 +26,8 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
         'blocks'=>array(),
         'submenu'=>array(),
         );
+
+    $ciniki['response']['head']['og']['url'] = $args['domain_base_url'];
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processContent');
     //
@@ -235,6 +237,7 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
             $page['title'] = $offering['offering_code'] . ' - ' . $offering['name'];
         }
         $page['breadcrumbs'][] = array('name'=>$page['title'], 'url'=>$args['base_url'] . '/course/' . $course_permalink . '/' . $offering_permalink);
+        $ciniki['response']['head']['og']['url'] .= '/course/' . $course_permalink . '/' . $offering_permalink;
         if( isset($settings['page-courses-level-display']) 
             && $settings['page-courses-level-display'] == 'yes' 
             && isset($offering['level']) && $offering['level'] != ''
@@ -249,7 +252,13 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
             $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'primary'=>'yes', 
                 'image_id'=>$offering['image_id'],'title'=>$offering['name'], 'caption'=>'');
         }
-        
+      
+        if( isset($offering['short_description']) && $offering['short_description'] != '' ) {
+            $ciniki['response']['head']['og']['description'] = strip_tags($offering['short_description']);
+        } elseif( isset($offering['long_description']) && $offering['long_description'] != '' ) {
+            $ciniki['response']['head']['og']['description'] = strip_tags($offering['long_description']);
+        }
+
         //
         // Add description
         //
@@ -302,6 +311,13 @@ function ciniki_courses_web_processRequest($ciniki, $settings, $business_id, $ar
         }
         $content .= "</div>";
         $page['blocks'][] = array('type'=>'content', 'html'=>$content);
+
+        //
+        // Add the share buttons
+        //
+        if( !isset($settings['page-courses-share-buttons']) || $settings['page-courses-share-buttons'] == 'yes' ) {
+            $page['blocks'][] = array('type'=>'sharebuttons', 'section'=>'share', 'pagetitle'=>$offering['name'], 'tags'=>array());
+        }
 
         //
         // The instructors for a course offering
