@@ -244,6 +244,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
             ) {
             $page['title'] .= ' - ' . $offering['level'];
         }
+        $ciniki['response']['head']['og']['title'] = $page['title'];
 
         //
         // Add primary image
