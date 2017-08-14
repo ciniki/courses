@@ -86,7 +86,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
                 $first_type = array_pop($rc['types']);
                 $first_course_type = $first_type['name'];
                 if( ($ciniki['business']['modules']['ciniki.courses']['flags']&0x02) == 0x02 ) {
-                    $page['submenu'][$cid] = array('name'=>$first_type['name'], 'url'=>$args['base_url'] . '/' . urlencode($first_type['name']));
+                    $page['submenu']['classes'] = array('name'=>$first_type['name'], 'url'=>$args['base_url'] . '/' . urlencode($first_type['name']));
                 }
             }
         }
