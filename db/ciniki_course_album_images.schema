@@ -1,0 +1,42 @@
+#
+# Description
+# -----------
+# This table stores the images for albums in the courses module.
+#
+# Fields
+# ------
+# id:                   The ID for the exhibition image.
+# uuid:                 The Universal Unique ID for the exhibition image.
+# business_id:          The ID of the business the exhibition is a part of.
+#
+# album_id:             The ID of the album in ciniki_course_albums.
+#
+# name:                 The name or title of the image.
+# permalink:            The permalink of the image to be used in the URL.
+#
+# flags:                Specify if the image should be displayed on the website.
+#
+#                           0x01 - Visible (display on the website)
+#
+# image_id:             The ID of the image in the ciniki.images module.
+#
+# description:          The description to be used on the website for the image.
+#
+# date_added:           The UTC date and time the image was added.
+# last_updated:         The UTC data and time the image was last updated.
+#
+create table ciniki_course_album_images (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    album_id int not null,
+    name varchar(150) not null,
+    permalink varchar(200) not null,
+    flags tinyint unsigned not null,
+    image_id int not null,
+    description varchar(6000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

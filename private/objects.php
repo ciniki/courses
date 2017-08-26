@@ -164,6 +164,39 @@ function ciniki_courses_objects($ciniki) {
             ),
         'history_table'=>'ciniki_course_history',
         );
+    $objects['album'] = array(
+        'name'=>'Photo Album',
+        'sync'=>'yes',
+        'o_name'=>'album',
+        'o_container'=>'albums',
+        'table'=>'ciniki_course_albums',
+        'fields'=>array(
+            'course_id'=>array('name'=>'Course', 'ref'=>'ciniki.courses.course', 'default'=>'0'),
+            'offering_id'=>array('name'=>'Offering', 'ref'=>'ciniki.courses.offering', 'default'=>'0'),
+            'name'=>array('name'=>'Name'),
+            'permalink'=>array('name'=>'Permalink'),
+            'flags'=>array('name'=>'Options', 'default'=>0),
+            'sequence'=>array('name'=>'Name', 'default'=>'1'),
+            'description'=>array('name'=>'Name', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_course_history',
+        );
+    $objects['album_image'] = array(
+        'name'=>'Photo Album Image',
+        'sync'=>'yes',
+        'o_name'=>'image',
+        'o_container'=>'images',
+        'table'=>'ciniki_course_album_images',
+        'fields'=>array(
+            'album_id'=>array('name'=>'Course', 'ref'=>'ciniki.courses.course', 'default'=>'0'),
+            'name'=>array('name'=>'Name', 'default'=>''),
+            'permalink'=>array('name'=>'Permalink'),
+            'flags'=>array('name'=>'Options', 'default'=>1),
+            'image_id'=>array('name'=>'Image'),
+            'description'=>array('name'=>'Name', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_course_history',
+        );
     $objects['setting'] = array(
         'type'=>'settings',
         'name'=>'Course Settings',

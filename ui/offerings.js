@@ -27,6 +27,10 @@ function ciniki_courses_offerings() {
             'coursecalendar':{'label':'Course Calendar', 'visible':'yes', 
                 'fn':'M.startApp(\'ciniki.courses.files\',null,\'M.ciniki_courses_offerings.menu.open();\',\'mc\',{\'add\':\'yes\',\'type\':2});',
                 },
+            'albums':{'label':'Photos', 
+                'visible':function() { return M.modFlagSet('ciniki.courses', 0x0100); },
+                'fn':'M.startApp(\'ciniki.courses.albums\',null,\'M.ciniki_courses_offerings.menu.open();\',\'mc\',{\'course_id\':0,\'offering_id\':0});',
+                },
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'current', 'tabs':{
             'current':{'label':'Current', 'fn':'M.ciniki_courses_offerings.menu.switchTab("current");'},
