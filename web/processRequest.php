@@ -90,21 +90,149 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
                 }
             }
         }
-        if( ($ciniki['business']['modules']['ciniki.courses']['flags']&0x02) == 0x02 ) {
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x02) ) {
             $page['submenu']['instructors'] = array('name'=>'Instructors', 'url'=>$args['base_url'] . '/instructors');
         }
         if( isset($settings['page-courses-registration-active']) && $settings['page-courses-registration-active'] == 'yes' ) {
             $page['submenu']['registration'] = array('name'=>'Registration', 'url'=>$args['base_url'] . '/registration');
         }
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0100)
+            && isset($settings['page-courses-gallery-active']) && $settings['page-courses-gallery-active'] == 'yes'
+            ) {
+            if( isset($settings['page-courses-gallery-name']) && $settings['page-courses-gallery-name'] != '' ) {
+                $page['submenu']['gallery'] = array('name'=>$settings['page-courses-gallery-name'], 'url'=>$args['base_url'] . '/gallery');
+            } else {
+                $page['submenu']['gallery'] = array('name'=>'Photos', 'url'=>$args['base_url'] . '/gallery');
+            }
+        }
     }
 
     //
-    // Check if we are to display the gallery image for an members
+    // Check if we are to display a list of galleries
     //
+    if( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'gallery' 
+        && isset($settings['page-courses-gallery-active']) && $settings['page-courses-gallery-active'] == 'yes'
+        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0100) 
+        ) {
+
+        //
+        // Setup breadcrumb
+        //
+        if( isset($settings['page-courses-gallery-name']) && $settings['page-courses-gallery-name'] != '' ) {
+            $page['breadcrumbs'][] = array('name'=>$settings['page-courses-gallery-name'], 'url'=>$args['base_url'] . '/gallery');
+        } else {
+            $page['breadcrumbs'][] = array('name'=>$settings['page-courses-gallery-name'], 'url'=>$args['base_url'] . '/gallery');
+        }
+
+        //
+        // Get the list of galleries
+        //
+        $strsql = "SELECT a.id, a.name, a.permalink, a.flags, a.description, i.image_id "
+            . "FROM ciniki_course_albums AS a "
+            . "LEFT JOIN ciniki_course_album_images AS i ON ("
+                . "a.id = i.album_id "
+                . "AND (i.flags&0x01) = 0x01 "
+                . "AND i.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . ") "
+            . "WHERE a.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND (a.flags&0x01) = 0x01 "
+            . "ORDER BY a.sequence, a.name, i.date_added ASC "
+            . "";
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
+            array('container'=>'albums', 'fname'=>'permalink', 'fields'=>array('id', 'name', 'permalink', 'flags', 'description', 'image_id')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['albums']) ) {
+            $albums = $rc['albums'];
+            //
+            // Check if album is specified and exists
+            //
+            if( isset($args['uri_split'][1]) && $args['uri_split'][1] != '' && isset($albums[$args['uri_split'][1]]) ) {
+                $album_permalink = $args['uri_split'][1];
+                $album = $albums[$album_permalink];
+                $page['breadcrumbs'][] = array('name'=>$album['name'], 'url'=>$args['base_url'] . '/gallery/' . $album['permalink']);
+
+                //
+                // Load the list of images for the album
+                //
+                $strsql = "SELECT id, name AS title, permalink, flags, image_id, description "
+                    . "FROM ciniki_course_album_images "
+                    . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                    . "AND album_id = '" . ciniki_core_dbQuote($ciniki, $album['id']) . "' "
+                    . "AND (flags&0x01) = 0x01 "
+                    . "ORDER BY date_added DESC "
+                    . "";
+                $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
+                    array('container'=>'images', 'fname'=>'permalink', 'fields'=>array('id', 'title', 'permalink', 'flags', 'image_id', 'description')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['images']) ) {
+                    $images = $rc['images'];
+                } else {
+                    $images = array();
+                }
+
+                //
+                // Check if image requested from album
+                //
+                if( isset($args['uri_split'][2]) && $args['uri_split'][2] != '' && isset($images[$args['uri_split'][2]]) ) {
+                    $image_permalink = $args['uri_split'][2];
+                    $image = $images[$image_permalink];
+                    //
+                    // Display the image
+                    //
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'galleryFindNextPrev');
+                    $rc = ciniki_web_galleryFindNextPrev($ciniki, $images, $image_permalink);
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    if( $rc['img'] == NULL ) {
+                        $page['blocks'][] = array('type'=>'message', 'section'=>'gallery-image', 'content'=>"I'm sorry, but we can't seem to find the image you requested.");
+                    } else {
+                        $base_url = $args['base_url'] . '/gallery/' . $album_permalink;
+                        $page_title = $rc['img']['title'];
+                        $page['breadcrumbs'][] = array('name'=>$rc['img']['title'], 'url'=>$base_url . '/' . $image_permalink);
+                        if( $rc['img']['title'] != '' ) {
+                            $page['title'] .= ' - ' . $rc['img']['title'];
+                        }
+                        $block = array('type'=>'galleryimage', 'section'=>'gallery-image', 'primary'=>'yes', 'image'=>$rc['img']);
+                        if( $rc['prev'] != null ) {
+                            $block['prev'] = array('url'=>$base_url . '/' . $rc['prev']['permalink'], 'image_id'=>$rc['prev']['image_id']);
+                        }
+                        if( $rc['next'] != null ) {
+                            $block['next'] = array('url'=>$base_url . '/' . $rc['next']['permalink'], 'image_id'=>$rc['next']['image_id']);
+                        }
+                        $page['blocks'][] = $block;
+                    }
+                } else {
+                    //
+                    // Display the list of images
+                    //
+                    $page['blocks'][] = array('type'=>'gallery', 'section'=>'gallery', 'title'=>'', 
+                        'base_url'=>$args['base_url'] . '/gallery/' . $album_permalink,
+                        'images'=>$images);
+                }
+            } else {
+                //
+                // Display the list of albums
+                //
+                $page['blocks'][] = array('type'=>'gallery', 'section'=>'gallery', 'title'=>'',
+                    'base_url'=>$args['base_url'] . '/gallery',
+                    'images'=>$albums);
+            }
+        } else {
+            $page['blocks'][] = array('type'=>'content', 'content'=>"We're sorry, there are no photos at this time.");
+        }
+    }
+
     //
     // Check if we are to display an image, from the gallery, or latest images
     //
-    if( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'instructor' 
+    elseif( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'instructor' 
         && isset($args['uri_split'][1]) && $args['uri_split'][1] != '' 
         ) {
         $instructor_permalink = $args['uri_split'][1];

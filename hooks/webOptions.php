@@ -44,6 +44,24 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $business_id, $args) {
     //
     // FIXME: Add settings
     //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0100) ) {
+        $options[] = array(
+            'label'=>'Photo Gallery',
+            'setting'=>'page-courses-gallery-active', 
+            'type'=>'toggle',
+            'value'=>(isset($settings['page-courses-gallery-active'])?$settings['page-courses-gallery-active']:'no'),
+            'toggles'=>array(
+                array('value'=>'no', 'label'=>'No'),
+                array('value'=>'yes', 'label'=>'Yes'),
+                ),
+            );
+        $options[] = array(
+            'label'=>'Gallery Name',
+            'setting'=>'page-courses-gallery-name', 
+            'type'=>'text',
+            'value'=>(isset($settings['page-courses-gallery-name'])?$settings['page-courses-gallery-name']:'Photos'),
+            );
+    }
 /*    $options[] = array(
         'label'=>'Name',
         'setting'=>'page-courses-name', 
@@ -51,16 +69,6 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $business_id, $args) {
         'value'=>(isset($settings['page-courses-name'])?$settings['page-courses-name']:''),
         'hint'=>'Courses',
     );
-    $options[] = array(
-        'label'=>'Upcoming Courses',
-        'setting'=>'page-courses-upcoming-active', 
-        'type'=>'toggle',
-        'value'=>(isset($settings['page-courses-upcoming-active'])?$settings['page-courses-upcoming-active']:'no'),
-        'toggles'=>array(
-            array('value'=>'no', 'label'=>'No'),
-            array('value'=>'yes', 'label'=>'Yes'),
-            ),
-        );
     $options[] = array(
         'label'=>'Current Courses',
         'setting'=>'page-courses-current-active', 
