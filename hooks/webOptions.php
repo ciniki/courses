@@ -62,6 +62,20 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $business_id, $args) {
             'value'=>(isset($settings['page-courses-gallery-name'])?$settings['page-courses-gallery-name']:'Photos'),
             );
     }
+    // The default page
+    $pages['ciniki.courses'] = array('name'=>'Courses', 'options'=>$options);
+
+    //
+    // The detailed pages
+    //
+    $options = array();
+    $pages['ciniki.courses.intro'] = array('name'=>'Courses - Introduction', 'options'=>$options);
+    $pages['ciniki.courses.active'] = array('name'=>'Courses - Current & Upcoming', 'options'=>$options);
+    $pages['ciniki.courses.instructors'] = array('name'=>'Courses - Instructors', 'options'=>$options);
+    $pages['ciniki.courses.registration'] = array('name'=>'Courses - Registration', 'options'=>$options);
+    $pages['ciniki.courses.photos'] = array('name'=>'Courses - Photos', 'options'=>$options);
+
+
 /*    $options[] = array(
         'label'=>'Name',
         'setting'=>'page-courses-name', 

@@ -21,10 +21,26 @@ function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $business_id, 
     $sdt = $args['ltz_start'];
     $edt = $args['ltz_end'];
 
-    if( isset($ciniki['business']['module_pages']['ciniki.courses']['base_url']) ) {
-        $base_url = $ciniki['business']['module_pages']['ciniki.courses']['base_url'];
+    if( isset($ciniki['business']['module_pages']['ciniki.courses.active']['base_url']) ) {
+        $base_url = $ciniki['business']['module_pages']['ciniki.courses.active']['base_url'];
+    } elseif( isset($ciniki['business']['module_pages']['ciniki.courses']['base_url']) ) {
+        $base_url = $ciniki['business']['module_pages']['ciniki.courses']['base_url'] . '/course';
     } else {
-        $base_url = '/courses';
+        $base_url = '/courses/course';
+    }
+
+    //
+    // Check if colours specified
+    //
+    $style = '';
+    if( isset($settings['ciniki-courses-colour-background']) && $settings['ciniki-courses-colour-background'] != '' ) {
+        $style .= ($style != '' ? ' ':'') . 'background: ' . $settings['ciniki-courses-colour-background'] . ';';
+    }
+    if( isset($settings['ciniki-courses-colour-border']) && $settings['ciniki-courses-colour-border'] != '' ) {
+        $style .= ($style != '' ? ' ':'') . ' border: 1px solid ' . $settings['ciniki-courses-colour-border'] . ';';
+    }
+    if( isset($settings['ciniki-courses-colour-font']) && $settings['ciniki-courses-colour-font'] != '' ) {
+        $style .= ($style != '' ? ' ':'') . ' color: ' . $settings['ciniki-courses-colour-font'] . ';';
     }
 
     //
@@ -69,14 +85,15 @@ function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $business_id, 
 //    if( isset($settings['ciniki-artgallery-exhibition-prefix']) ) {
 //        $prefix = $settings['ciniki-artgallery-exhibition-prefix'];
 //    }
-http://ciniki.local/gibsoncentre/school-of-the-arts/course/mixed-media-madness-grades-5-8/fall-8-week-sessions-2017fall-8-week-2017
+//http://ciniki.local/gibsoncentre/school-of-the-arts/course/mixed-media-madness-grades-5-8/fall-8-week-sessions-2017fall-8-week-2017
     $items = array();
     if( isset($rc['items']) ) {
         foreach($rc['items'] as $class) {
             $item = array(
                 'title'=>$prefix . $class['title'],
                 'time_text'=>'',
-                'url'=>$base_url . '/course/' . $class['course_permalink'] . '/' . $class['offering_permalink'],
+                'style'=>$style,
+                'url'=>$base_url . '/' . $class['course_permalink'] . '/' . $class['offering_permalink'],
                 'classes'=>array('courses'),
                 );
             if( isset($settings['ciniki-courses-display-times']) ) {

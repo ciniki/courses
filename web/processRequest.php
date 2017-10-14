@@ -24,7 +24,6 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         'title'=>$args['page_title'],
         'breadcrumbs'=>$args['breadcrumbs'],
         'blocks'=>array(),
-        'submenu'=>array(),
         );
 
     $ciniki['response']['head']['og']['url'] = $args['domain_base_url'];
@@ -61,6 +60,8 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         $page['breadcrumbs'][] = array('name'=>$page['title'], 'url'=>$args['base_url']);
     }
 
+    $uri_split = $args['uri_split'];
+
     //
     // FIXME: Check if anything has changed, and if not load from cache
     //
@@ -69,7 +70,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
     // Check if there should be a submenu
     //
     $first_course_type = '';
-    if( isset($ciniki['business']['modules']['ciniki.courses']) ) {
+    if( isset($ciniki['business']['modules']['ciniki.courses']) && $args['module_page'] == 'ciniki.courses' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'courseTypes');
         $rc = ciniki_courses_web_courseTypes($ciniki, $settings, $business_id);
         if( $rc['stat'] == 'ok' ) {
@@ -110,18 +111,25 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
     //
     // Check if we are to display a list of galleries
     //
-    if( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'gallery' 
-        && isset($settings['page-courses-gallery-active']) && $settings['page-courses-gallery-active'] == 'yes'
-        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0100) 
-        ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0100) 
+        && ((
+            isset($uri_split[0]) && $uri_split[0] == 'gallery' 
+            && isset($settings['page-courses-gallery-active']) 
+            && $settings['page-courses-gallery-active'] == 'yes'
+            )
+            || $args['module_page'] == 'ciniki.courses.photos'
+        )) {
 
         //
         // Setup breadcrumb
         //
-        if( isset($settings['page-courses-gallery-name']) && $settings['page-courses-gallery-name'] != '' ) {
-            $page['breadcrumbs'][] = array('name'=>$settings['page-courses-gallery-name'], 'url'=>$args['base_url'] . '/gallery');
-        } else {
-            $page['breadcrumbs'][] = array('name'=>$settings['page-courses-gallery-name'], 'url'=>$args['base_url'] . '/gallery');
+        if( $args['module_page'] == 'ciniki.courses' ) {
+            if( isset($settings['page-courses-gallery-name']) && $settings['page-courses-gallery-name'] != '' ) {
+                $page['breadcrumbs'][] = array('name'=>$settings['page-courses-gallery-name'], 'url'=>$args['base_url'] . '/gallery');
+            } else {
+                $page['breadcrumbs'][] = array('name'=>'Gallery', 'url'=>$args['base_url'] . '/gallery');
+            }
+            array_pop($uri_split);
         }
 
         //
@@ -149,8 +157,8 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
             //
             // Check if album is specified and exists
             //
-            if( isset($args['uri_split'][1]) && $args['uri_split'][1] != '' && isset($albums[$args['uri_split'][1]]) ) {
-                $album_permalink = $args['uri_split'][1];
+            if( isset($uri_split[0]) && $uri_split[0] != '' && isset($albums[$uri_split[0]]) ) {
+                $album_permalink = $uri_split[1];
                 $album = $albums[$album_permalink];
                 $page['breadcrumbs'][] = array('name'=>$album['name'], 'url'=>$args['base_url'] . '/gallery/' . $album['permalink']);
 
@@ -179,8 +187,8 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
                 //
                 // Check if image requested from album
                 //
-                if( isset($args['uri_split'][2]) && $args['uri_split'][2] != '' && isset($images[$args['uri_split'][2]]) ) {
-                    $image_permalink = $args['uri_split'][2];
+                if( isset($uri_split[1]) && $uri_split[1] != '' && isset($images[$uri_split[1]]) ) {
+                    $image_permalink = $uri_split[1];
                     $image = $images[$image_permalink];
                     //
                     // Display the image
@@ -232,11 +240,19 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
     //
     // Check if we are to display an image, from the gallery, or latest images
     //
-    elseif( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'instructor' 
-        && isset($args['uri_split'][1]) && $args['uri_split'][1] != '' 
+    elseif( 
+        (isset($uri_split[0]) && $uri_split[0] == 'instructor' && isset($uri_split[1]) && $uri_split[1] != '')
+        ||
+        ($args['module_page'] == 'ciniki.courses.instructors' && isset($uri_split[0]))
         ) {
-        $instructor_permalink = $args['uri_split'][1];
-        $gallery_url = $args['base_url'] . "/instructor/" . $instructor_permalink . "/gallery";
+        if( isset($args['module_page']) && $args['module_page'] == 'ciniki.courses.instructors' ) {
+            $instructor_permalink = $uri_split[0];
+            $gallery_url = $args['base_url'] . "/" . $instructor_permalink . "/gallery";
+        } else {
+            $instructor_permalink = $uri_split[1];
+            $gallery_url = $args['base_url'] . "/instructor/" . $instructor_permalink . "/gallery";
+            array_shift($uri_split);
+        }
 
         //
         // Load the member to get all the details, and the list of images.
@@ -251,18 +267,24 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         $instructor = $rc['instructor'];
 
         $page['title'] = $instructor['name'];
-        $page['breadcrumbs'][] = array('name'=>'Instructors', 'url'=>$args['base_url'] . '/instructors');
-        $page['breadcrumbs'][] = array('name'=>$instructor['name'], 'url'=>$args['base_url'] . '/instructor/' . $instructor_permalink);
+        if( isset($args['module_page']) && $args['module_page'] == 'ciniki.courses.instructors' ) {
+            $base_url = $args['base_url'] . '/' . $instructor_permalink;
+            $page['breadcrumbs'][] = array('name'=>$instructor['name'], 'url'=>$base_url);
+        } else {
+            $base_url = $args['base_url'] . '/instructors';
+            $page['breadcrumbs'][] = array('name'=>'Instructors', 'url'=>$base_url);
+            $page['breadcrumbs'][] = array('name'=>$instructor['name'], 'url'=>$args['base_url'] . '/instructor/' . $instructor_permalink);
+        }
 
         //
         // Check if image from instructor gallery
         //
-        if( isset($args['uri_split'][2]) && $args['uri_split'][2] == 'gallery' && isset($args['uri_split'][3]) && $args['uri_split'][3] != '' ) {
+        if( isset($uri_split[1]) && $uri_split[1] == 'gallery' && isset($uri_split[2]) && $uri_split[2] != '' ) {
             if( !isset($instructor['images']) || count($instructor['images']) < 1 ) {
                 return array('stat'=>'404', 'err'=>array('code'=>'ciniki.courses.76', 'msg'=>"I'm sorry, but we can't seem to find the image you requested."));
             }
 
-            $image_permalink = $args['uri_split'][3];
+            $image_permalink = $uri_split[2];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'galleryFindNextPrev');
             $rc = ciniki_web_galleryFindNextPrev($ciniki, $instructor['images'], $image_permalink);
             if( $rc['stat'] != 'ok' ) {
@@ -332,30 +354,53 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
     //
     // Check if we are to display a list of instructors
     //
-    elseif( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'instructors' ) {
+    elseif( 
+        (isset($uri_split[0]) && $uri_split[0] == 'instructors')
+        ||
+        ($args['module_page'] == 'ciniki.courses.instructors')
+        ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'instructorList');
         $rc = ciniki_courses_web_instructorList($ciniki, $settings, $business_id, 0, 'cilist');
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $page['breadcrumbs'][] = array('name'=>'Instructors', 'url'=>$args['base_url'] . '/instructors');
-        $page['blocks'][] = array('type'=>'cilist', 'notitle'=>'yes', 'section'=>'instructors', 'base_url'=>$args['base_url'] . '/instructor', 'categories'=>$rc['instructors']);
+        if( $args['module_page'] != 'ciniki.courses.instructors' ) {
+            $page['breadcrumbs'][] = array('name'=>'Instructors', 'url'=>$args['base_url'] . '/instructors');
+            $base_url = $args['base_url'] . '/instructor';
+        } else {
+            $base_url = $args['base_url'];
+        }
+        $page['blocks'][] = array('type'=>'cilist', 'notitle'=>'yes', 
+            'section'=>'instructors', 
+            'base_url'=>$base_url, 
+            'categories'=>$rc['instructors'],
+            );
     }
 
     //
     // Check if we are to display a course detail page
     //
-    elseif( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'course'
-        && isset($args['uri_split'][1]) && $args['uri_split'][1] != '' 
-        && isset($args['uri_split'][2]) && $args['uri_split'][2] != '' ) {
+    elseif((isset($uri_split[0]) && $uri_split[0] == 'course'
+            && isset($uri_split[1]) && $uri_split[1] != '' 
+            && isset($uri_split[2]) && $uri_split[2] != '' 
+        ) || (
+            $args['module_page'] == 'ciniki.courses.active'
+            && isset($uri_split[0]) && $uri_split[0] != '' 
+            && isset($uri_split[1]) && $uri_split[1] != '' 
+        )) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'courseOfferingDetails');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processURL');
 
         //
         // Get the course information
         //
-        $course_permalink = $args['uri_split'][1];
-        $offering_permalink = $args['uri_split'][2];
+        if( $args['module_page'] == 'ciniki.courses.active' ) {
+            $course_permalink = $uri_split[0];
+            $offering_permalink = $uri_split[1];
+        } else {
+            $course_permalink = $uri_split[1];
+            $offering_permalink = $uri_split[2];
+        }
         $rc = ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $business_id, $course_permalink, $offering_permalink);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -367,8 +412,13 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         } elseif( ($ciniki['business']['modules']['ciniki.courses']['flags']&0x20) == 0x20 && $offering['offering_code'] != '' ) {
             $page['title'] = $offering['offering_code'] . ' - ' . $offering['name'];
         }
-        $page['breadcrumbs'][] = array('name'=>$page['title'], 'url'=>$args['base_url'] . '/course/' . $course_permalink . '/' . $offering_permalink);
-        $ciniki['response']['head']['og']['url'] .= '/course/' . $course_permalink . '/' . $offering_permalink;
+        if( $args['module_page'] == 'ciniki.courses.active' ) {
+            $page['breadcrumbs'][] = array('name'=>$page['title'], 'url'=>$args['base_url'] . '/' . $course_permalink . '/' . $offering_permalink);
+            $ciniki['response']['head']['og']['url'] .= '/' . $course_permalink . '/' . $offering_permalink;
+        } else {
+            $page['breadcrumbs'][] = array('name'=>$page['title'], 'url'=>$args['base_url'] . '/course/' . $course_permalink . '/' . $offering_permalink);
+            $ciniki['response']['head']['og']['url'] .= '/course/' . $course_permalink . '/' . $offering_permalink;
+        }
         if( isset($settings['page-courses-level-display']) 
             && $settings['page-courses-level-display'] == 'yes' 
             && isset($offering['level']) && $offering['level'] != ''
@@ -460,10 +510,16 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
+            $base_url = $args['base_url'] . '/instructor';
+            if( isset($ciniki['business']['module_pages']['ciniki.courses.instructors']['base_url']) ) {
+                $base_url = $ciniki['business']['module_pages']['ciniki.courses.instructors']['base_url'];
+            }
             if( count($rc['instructors']) > 0 ) {
                 $page['blocks'][] = array('type'=>'cilist', 'section'=>'instructors', 
                     'title'=>(count($rc['instructors']) > 1 ? 'Instructors' : 'Instructor'),
-                    'base_url'=>$args['base_url'] . '/instructor', 'categories'=>$rc['instructors']);
+                    'base_url'=>$base_url,
+                    'categories'=>$rc['instructors'],
+                    );
             }
         }
     }
@@ -471,9 +527,12 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
     //
     // Check if we are to display a registration detail page
     //
-    elseif( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'registration' 
-        && isset($settings['page-courses-registration-active']) && $settings['page-courses-registration-active'] == 'yes'
-        ) {
+    elseif((
+            isset($uri_split[0]) && $uri_split[0] == 'registration' 
+            && isset($settings['page-courses-registration-active']) && $settings['page-courses-registration-active'] == 'yes'
+        ) || (
+            $args['module_page'] == 'ciniki.courses.registration'
+        )) {
         //
         // Check if membership info should be displayed here
         //
@@ -526,8 +585,8 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
     //
     else {
         $coursetype = '';
-        if( isset($args['uri_split'][0]) && $args['uri_split'][0] != '' ) {
-            $coursetype = urldecode($args['uri_split'][0]);
+        if( isset($uri_split[0]) && $uri_split[0] != '' ) {
+            $coursetype = urldecode($uri_split[0]);
         }
         // Setup default settings
         if( !isset($settings['page-courses-upcoming-active']) ) {
@@ -539,6 +598,11 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         if( !isset($settings['page-courses-past-active']) ) {
             $settings['page-courses-past-active'] = 'no';
         }
+        if( $args['module_page'] == 'ciniki.courses.active' ) {
+            $base_url = $args['base_url'];
+        } else {
+            $base_url = $args['base_url'] . '/course';
+        }
         //
         //
         // Check for content in settings
@@ -548,88 +612,90 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         } else {
             $type_name = '';
         }
-        // Load any content for this page
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-        $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_content', 'business_id', $business_id, 'ciniki.web', 'content', "page-courses$type_name");
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        $cnt = $rc['content'];
+        if( $args['module_page'] != 'ciniki.courses.active' ) {
+            // Load any content for this page
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+            $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_content', 'business_id', $business_id, 'ciniki.web', 'content', "page-courses$type_name");
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $cnt = $rc['content'];
 
-        $page_content = '';
-        if( isset($settings['page-courses' . $type_name . '-image']) || isset($cnt['page-courses' . $type_name . '-content']) ) {
-            // Check if there are files to be displayed on the main page
-            $program_url = '';
-            if( $type_name == '' && (isset($settings['page-courses-catalog-download-active']) 
-                    && $settings['page-courses-catalog-download-active'] == 'yes' )
-    //          || ()   -- future files
-                ) {
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'files');
-                $rc = ciniki_courses_web_files($ciniki, $settings, $business_id);
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                if( isset($rc['files']) ) {
-                    $reg_files = $rc['files'];
-                    // Check if program brochure download and link to image
-                    if( count($reg_files) == 1 && isset($reg_files[0]['file']['permalink']) && $reg_files[0]['file']['permalink'] != '' ) {
-                        $program_url = $args['base_url'] . '/download/' . $reg_files[0]['file']['permalink'] . '.' . $reg_files[0]['file']['extension'];
-                        $program_url_title = $reg_files[0]['file']['name'];
+            $page_content = '';
+            if( isset($settings['page-courses' . $type_name . '-image']) || isset($cnt['page-courses' . $type_name . '-content']) ) {
+                // Check if there are files to be displayed on the main page
+                $program_url = '';
+                if( $type_name == '' && (isset($settings['page-courses-catalog-download-active']) 
+                        && $settings['page-courses-catalog-download-active'] == 'yes' )
+        //          || ()   -- future files
+                    ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'files');
+                    $rc = ciniki_courses_web_files($ciniki, $settings, $business_id);
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
                     }
-                } else {
-                    $reg_files = array();
-                }
-            }
-            if( isset($settings["page-courses" . $type_name . "-image"]) && $settings["page-courses" . $type_name . "-image"] != '' && $settings["page-courses" . $type_name . "-image"] > 0 ) {
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'getScaledImageURL');
-                $rc = ciniki_web_getScaledImageURL($ciniki, $settings["page-courses" . $type_name . "-image"], 'original', '500', 0);
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                $page_content .= "<aside><div class='image-wrap'>"
-                    . "<div class='image'>";
-                if( $program_url != '' ) {
-                    $page_content .= "<a target='_blank' href='$program_url' title='$program_url_title'>";
-                }
-                $page_content .= "<img title='' alt='" . $ciniki['business']['details']['name'] . "' src='" . $rc['url'] . "' />";
-                if( $program_url != '' ) {
-                    $page_content .= "</a>";
-                }
-                $page_content .= "</div>";
-                if( isset($settings["page-courses" . $type_name . "-image-caption"]) && $settings["page-courses" . $type_name . "-image-caption"] != '' ) {
-                    $page_content .= "<div class='image-caption'>" . $settings["page-courses" . $type_name . "-image-caption"] . "</div>";
-                }
-                $page_content .= "</div></aside>";
-            }
-            if( isset($cnt['page-courses' . $type_name . '-content']) ) {
-                $rc = ciniki_web_processContent($ciniki, $settings, $cnt['page-courses' . $type_name . '-content']);    
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                $page_content .= $rc['content'];
-            }
-
-            // Check if there are files to be displayed on the main page
-            if( $type_name == '' && (isset($settings['page-courses-catalog-download-active']) 
-                    && $settings['page-courses-catalog-download-active'] == 'yes' )
-    //          || ()   -- future files
-                ) {
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'files');
-                $rc = ciniki_courses_web_files($ciniki, $settings, $business_id);
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                if( isset($rc['files']) ) {
-                    foreach($rc['files'] as $f => $file) {
-                        $file = $file['file'];
-                        $url = $args['base_url'] . '/download/' . $file['permalink'] . '.' . $file['extension'];
-                        $page_content .= "<p>"
-                            . "<a target='_blank' href='" . $url . "' title='" . $file['name'] . "'>" 
-                            . $file['name'] . "</a></p>";
+                    if( isset($rc['files']) ) {
+                        $reg_files = $rc['files'];
+                        // Check if program brochure download and link to image
+                        if( count($reg_files) == 1 && isset($reg_files[0]['file']['permalink']) && $reg_files[0]['file']['permalink'] != '' ) {
+                            $program_url = $args['base_url'] . '/download/' . $reg_files[0]['file']['permalink'] . '.' . $reg_files[0]['file']['extension'];
+                            $program_url_title = $reg_files[0]['file']['name'];
+                        }
+                    } else {
+                        $reg_files = array();
                     }
                 }
+                if( isset($settings["page-courses" . $type_name . "-image"]) && $settings["page-courses" . $type_name . "-image"] != '' && $settings["page-courses" . $type_name . "-image"] > 0 ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'getScaledImageURL');
+                    $rc = ciniki_web_getScaledImageURL($ciniki, $settings["page-courses" . $type_name . "-image"], 'original', '500', 0);
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    $page_content .= "<aside><div class='image-wrap'>"
+                        . "<div class='image'>";
+                    if( $program_url != '' ) {
+                        $page_content .= "<a target='_blank' href='$program_url' title='$program_url_title'>";
+                    }
+                    $page_content .= "<img title='' alt='" . $ciniki['business']['details']['name'] . "' src='" . $rc['url'] . "' />";
+                    if( $program_url != '' ) {
+                        $page_content .= "</a>";
+                    }
+                    $page_content .= "</div>";
+                    if( isset($settings["page-courses" . $type_name . "-image-caption"]) && $settings["page-courses" . $type_name . "-image-caption"] != '' ) {
+                        $page_content .= "<div class='image-caption'>" . $settings["page-courses" . $type_name . "-image-caption"] . "</div>";
+                    }
+                    $page_content .= "</div></aside>";
+                }
+                if( isset($cnt['page-courses' . $type_name . '-content']) ) {
+                    $rc = ciniki_web_processContent($ciniki, $settings, $cnt['page-courses' . $type_name . '-content']);    
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    $page_content .= $rc['content'];
+                }
+
+                // Check if there are files to be displayed on the main page
+                if( $type_name == '' && (isset($settings['page-courses-catalog-download-active']) 
+                        && $settings['page-courses-catalog-download-active'] == 'yes' )
+        //          || ()   -- future files
+                    ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'files');
+                    $rc = ciniki_courses_web_files($ciniki, $settings, $business_id);
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    if( isset($rc['files']) ) {
+                        foreach($rc['files'] as $f => $file) {
+                            $file = $file['file'];
+                            $url = $args['base_url'] . '/download/' . $file['permalink'] . '.' . $file['extension'];
+                            $page_content .= "<p>"
+                                . "<a target='_blank' href='" . $url . "' title='" . $file['name'] . "'>" 
+                                . $file['name'] . "</a></p>";
+                        }
+                    }
+                }
+                $page['blocks'][] = array('type'=>'content', 'html'=>$page_content);       
             }
-            $page['blocks'][] = array('type'=>'content', 'html'=>$page_content);       
         }
 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'courseList');
@@ -688,7 +754,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
                     }
                     foreach($c['offerings'] as $onum => $offering) {
                         if( $offering['is_details'] == 'yes' ) {
-                            $offering_url = $args['base_url'] . '/course/' . $offering['course_permalink'] . '/' . $offering['permalink'];
+                            $offering_url = $base_url . '/' . $offering['course_permalink'] . '/' . $offering['permalink'];
                         } else {
                             $offering_url = '';
                         }
@@ -800,7 +866,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         }
     }
 
-    if( count($page['submenu']) == 1 
+    if( isset($page['submenu']) && count($page['submenu']) == 1 
         && isset($settings['page-courses-registration-active']) && $settings['page-courses-registration-active'] == 'yes' ) {
         $page['submenu'] = array();
     }

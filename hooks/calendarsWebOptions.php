@@ -8,7 +8,7 @@
 // ---------
 // ciniki:
 // settings:        The web settings structure.
-// business_id:     The ID of the business to get exhibitions for.
+// business_id:     The ID of the business to get courses for.
 //
 // args:            The possible arguments for posts
 //
@@ -38,7 +38,25 @@ function ciniki_courses_hooks_calendarsWebOptions(&$ciniki, $business_id, $args)
             array('value'=>'start', 'label'=>'Start'),
             array('value'=>'startend', 'label'=>'Start - End'),
             ),
-    );
+        );
+    $options[] = array(
+        'label'=>'Courses Background Colour',
+        'setting'=>'ciniki-courses-colour-background', 
+        'type'=>'colour',
+        'value'=>(isset($settings['ciniki-courses-colour-background'])?$settings['ciniki-courses-colour-background']:'no'),
+        );
+    $options[] = array(
+        'label'=>'Courses Border Colour',
+        'setting'=>'ciniki-courses-colour-border', 
+        'type'=>'colour',
+        'value'=>(isset($settings['ciniki-courses-colour-border'])?$settings['ciniki-courses-colour-border']:'no'),
+        );
+    $options[] = array(
+        'label'=>'Courses Font Colour',
+        'setting'=>'ciniki-courses-colour-font', 
+        'type'=>'colour',
+        'value'=>(isset($settings['ciniki-courses-colour-font'])?$settings['ciniki-courses-colour-font']:'no'),
+        );
 
     return array('stat'=>'ok', 'options'=>$options);
 }
