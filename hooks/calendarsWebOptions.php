@@ -29,6 +29,18 @@ function ciniki_courses_hooks_calendarsWebOptions(&$ciniki, $business_id, $args)
 
     $options = array();
     $options[] = array(
+        'label'=>'Courses Title Prefix',
+        'setting'=>'ciniki-courses-class-prefix',
+        'type'=>'text',
+        'value'=>(isset($settings['ciniki-courses-class-prefix'])?$settings['ciniki-courses-class-prefix']:''),
+        );
+    $options[] = array(
+        'label'=>'Courses Legend Name',
+        'setting'=>'ciniki-courses-legend-title',
+        'type'=>'text',
+        'value'=>(isset($settings['ciniki-courses-legend-title'])?$settings['ciniki-courses-legend-title']:''),
+        );
+    $options[] = array(
         'label'=>'Course Display Times',
         'setting'=>'ciniki-courses-display-times',
         'type'=>'toggle',

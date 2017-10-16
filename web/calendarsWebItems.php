@@ -44,13 +44,24 @@ function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $business_id, 
     }
 
     //
+    // Setup the legend
+    //
+    if( isset($settings['ciniki-courses-legend-title']) && $settings['ciniki-courses-legend-title'] != '' ) {
+        $legend = array(
+            array('title'=>$settings['ciniki-courses-legend-title'], 'style'=>$style)
+            );
+    } else {
+        $legend = array();
+    }
+
+    //
     // FIXME: Add select for tags to get other colours on web
     //
 
     //
     // Get the list of classes for the calendar
     //
-    $strsql = "SELECT ciniki_courses.id, "
+    $strsql = "SELECT ciniki_course_offering_classes.id, "
         . "ciniki_courses.name, "
         . "ciniki_courses.permalink AS course_permalink, "
         . "ciniki_course_offerings.permalink AS offering_permalink, "
@@ -82,10 +93,10 @@ function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $business_id, 
     }
 
     $prefix = '';
-//    if( isset($settings['ciniki-artgallery-exhibition-prefix']) ) {
-//        $prefix = $settings['ciniki-artgallery-exhibition-prefix'];
-//    }
-//http://ciniki.local/gibsoncentre/school-of-the-arts/course/mixed-media-madness-grades-5-8/fall-8-week-sessions-2017fall-8-week-2017
+    if( isset($settings['ciniki-courses-class-prefix']) ) {
+        $prefix = $settings['ciniki-courses-class-prefix'];
+    }
+
     $items = array();
     if( isset($rc['items']) ) {
         foreach($rc['items'] as $class) {
@@ -111,6 +122,6 @@ function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $business_id, 
         }
     }
 
-    return array('stat'=>'ok', 'items'=>$items);
+    return array('stat'=>'ok', 'items'=>$items, 'legend'=>$legend);
 }
 ?>
