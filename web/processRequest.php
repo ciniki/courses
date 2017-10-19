@@ -123,11 +123,14 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         //
         // Setup breadcrumb
         //
-        if( $args['module_page'] == 'ciniki.courses' ) {
+        if( $args['module_page'] == 'ciniki.courses.photos' ) {
+            $base_url = $args['base_url'];
+        } else {
+            $base_url = $args['base_url'] . '/gallery';
             if( isset($settings['page-courses-gallery-name']) && $settings['page-courses-gallery-name'] != '' ) {
-                $page['breadcrumbs'][] = array('name'=>$settings['page-courses-gallery-name'], 'url'=>$args['base_url'] . '/gallery');
+                $page['breadcrumbs'][] = array('name'=>$settings['page-courses-gallery-name'], 'url'=>$base_url);
             } else {
-                $page['breadcrumbs'][] = array('name'=>'Gallery', 'url'=>$args['base_url'] . '/gallery');
+                $page['breadcrumbs'][] = array('name'=>'Gallery', 'url'=>$base_url);
             }
             array_pop($uri_split);
         }
@@ -158,9 +161,9 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
             // Check if album is specified and exists
             //
             if( isset($uri_split[0]) && $uri_split[0] != '' && isset($albums[$uri_split[0]]) ) {
-                $album_permalink = $uri_split[1];
+                $album_permalink = $uri_split[0];
                 $album = $albums[$album_permalink];
-                $page['breadcrumbs'][] = array('name'=>$album['name'], 'url'=>$args['base_url'] . '/gallery/' . $album['permalink']);
+                $page['breadcrumbs'][] = array('name'=>$album['name'], 'url'=>$base_url . '/' . $album['permalink']);
 
                 //
                 // Load the list of images for the album
@@ -201,7 +204,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
                     if( $rc['img'] == NULL ) {
                         $page['blocks'][] = array('type'=>'message', 'section'=>'gallery-image', 'content'=>"I'm sorry, but we can't seem to find the image you requested.");
                     } else {
-                        $base_url = $args['base_url'] . '/gallery/' . $album_permalink;
+                        $base_url = $base_url . '/' . $album_permalink;
                         $page_title = $rc['img']['title'];
                         $page['breadcrumbs'][] = array('name'=>$rc['img']['title'], 'url'=>$base_url . '/' . $image_permalink);
                         if( $rc['img']['title'] != '' ) {
@@ -221,16 +224,17 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
                     // Display the list of images
                     //
                     $page['blocks'][] = array('type'=>'gallery', 'section'=>'gallery', 'title'=>'', 
-                        'base_url'=>$args['base_url'] . '/gallery/' . $album_permalink,
+                        'base_url'=>$base_url . '/' . $album_permalink,
                         'images'=>$images);
                 }
             } else {
                 //
                 // Display the list of albums
                 //
-                $page['blocks'][] = array('type'=>'gallery', 'section'=>'gallery', 'title'=>'',
-                    'base_url'=>$args['base_url'] . '/gallery',
-                    'images'=>$albums);
+                $page['blocks'][] = array('type'=>'tagimages', 'section'=>'gallery', 
+                    'title'=>'', 
+                    'base_url'=>$base_url,
+                    'tags'=>$albums);
             }
         } else {
             $page['blocks'][] = array('type'=>'content', 'content'=>"We're sorry, there are no photos at this time.");
