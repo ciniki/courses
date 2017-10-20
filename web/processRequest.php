@@ -71,6 +71,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
     //
     $first_course_type = '';
     if( isset($ciniki['business']['modules']['ciniki.courses']) && $args['module_page'] == 'ciniki.courses' ) {
+        $page['submenu'] = array();
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'courseTypes');
         $rc = ciniki_courses_web_courseTypes($ciniki, $settings, $business_id);
         if( $rc['stat'] == 'ok' ) {
