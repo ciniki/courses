@@ -805,7 +805,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $business_id, $a
         //
         // Check if no submenu going to be displayed, then need to display registration information here
         //
-        if( count($page['submenu']) == 1 
+        if( isset($page['submenu']) && count($page['submenu']) == 1 
             && isset($settings['page-courses-registration-active']) && $settings['page-courses-registration-active'] == 'yes' ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'web', 'registrationDetails');
             $rc = ciniki_courses_web_registrationDetails($ciniki, $settings, $business_id);
