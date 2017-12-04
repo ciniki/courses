@@ -16,7 +16,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -26,10 +26,10 @@ function ciniki_courses_offeringDelete(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringDelete'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringDelete'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -54,7 +54,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     // Get the existing offering information
     //
     $strsql = "SELECT uuid FROM ciniki_course_offerings "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'offering');
@@ -71,7 +71,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     // Remove any files attached to the offering
     //
     $strsql = "SELECT id, uuid FROM ciniki_course_offering_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
@@ -82,7 +82,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     if( isset($rc['rows']) ) {
         $files = $rc['rows'];
         foreach($files as $rid => $row) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.courses.offering_file', $row['id'], $row['uuid'], 0x04);
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering_file', $row['id'], $row['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
                 return $rc;
@@ -94,7 +94,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     // Remove any classes attached to the offering
     //
     $strsql = "SELECT id, uuid FROM ciniki_course_offering_classes "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
@@ -105,7 +105,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     if( isset($rc['rows']) ) {
         $classes = $rc['rows'];
         foreach($classes as $rid => $row) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.courses.offering_class', $row['id'], $row['uuid'], 0x04);
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering_class', $row['id'], $row['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
                 return $rc;
@@ -117,7 +117,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     // Remove any instructors attached to the offering
     //
     $strsql = "SELECT id, uuid FROM ciniki_course_offering_instructors "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
@@ -128,7 +128,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     if( isset($rc['rows']) ) {
         $classes = $rc['rows'];
         foreach($classes as $rid => $row) {
-            $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.courses.offering_instructor', $row['id'], $row['uuid'], 0x04);
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering_instructor', $row['id'], $row['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
                 return $rc;
@@ -139,7 +139,7 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     //
     // Delete the offering
     //
-    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.courses.offering', $args['offering_id'], $offering['uuid'], 0x06);
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering', $args['offering_id'], $offering['uuid'], 0x06);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

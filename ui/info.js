@@ -72,7 +72,7 @@ function ciniki_courses_info() {
             return this.data[i]; 
         }
         this.editcourse.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.courses.settingsHistory', 'args':{'business_id':M.curBusinessID, 'setting':i}};
+            return {'method':'ciniki.courses.settingsHistory', 'args':{'tnid':M.curTenantID, 'setting':i}};
         };
         this.editcourse.addButton('save', 'Save', 'M.ciniki_courses_info.saveRegistration();');
         this.editcourse.addClose('Cancel');
@@ -130,7 +130,7 @@ function ciniki_courses_info() {
             return this.data[s];
         };
         this.editfile.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.courses.fileHistory', 'args':{'business_id':M.curBusinessID, 'file_id':this.file_id, 'field':i}};
+            return {'method':'ciniki.courses.fileHistory', 'args':{'tnid':M.curTenantID, 'file_id':this.file_id, 'field':i}};
         };
         this.editfile.addButton('save', 'Save', 'M.ciniki_courses_info.saveFile();');
         this.editfile.addClose('Cancel');
@@ -167,7 +167,7 @@ function ciniki_courses_info() {
         this.course.data = {};
         M.startLoad();
         var rsp = M.api.getJSONCb('ciniki.courses.settingsGet', 
-            {'business_id':M.curBusinessID, 'processhtml':'yes'}, function(rsp) {
+            {'tnid':M.curTenantID, 'processhtml':'yes'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.stopLoad();
                     M.api.err(rsp);
@@ -184,7 +184,7 @@ function ciniki_courses_info() {
                 } else {
                     p.data['course-registration-more-details-html'] = '';
                 }
-                var rsp = M.api.getJSON('ciniki.courses.fileList', {'business_id':M.curBusinessID, 'type':'1'});
+                var rsp = M.api.getJSON('ciniki.courses.fileList', {'tnid':M.curTenantID, 'type':'1'});
                 if( rsp.stat != 'ok' ) {
                     M.stopLoad();
                     M.api.err(rsp);
@@ -200,7 +200,7 @@ function ciniki_courses_info() {
     this.showEditRegistration = function(cb) {
         this.editcourse.data = {};
         var rsp = M.api.getJSONCb('ciniki.courses.settingsGet', 
-            {'business_id':M.curBusinessID}, function(rsp) {
+            {'tnid':M.curTenantID}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -225,7 +225,7 @@ function ciniki_courses_info() {
         var c = this.editcourse.serializeFormData('no');
         if( c != null ) {
             var rsp = M.api.postJSONFormData('ciniki.courses.settingsUpdate', 
-                {'business_id':M.curBusinessID}, c,
+                {'tnid':M.curTenantID}, c,
                 function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -251,7 +251,7 @@ function ciniki_courses_info() {
 
         if( c != '' ) {
             var rsp = M.api.postJSONFormData('ciniki.courses.fileAdd', 
-                {'business_id':M.curBusinessID, 'type':this.addfile.data.type}, c,
+                {'tnid':M.curTenantID, 'type':this.addfile.data.type}, c,
                     function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -269,7 +269,7 @@ function ciniki_courses_info() {
         if( fid != null ) {
             this.editfile.file_id = fid;
         }
-        var rsp = M.api.getJSONCb('ciniki.courses.fileGet', {'business_id':M.curBusinessID, 
+        var rsp = M.api.getJSONCb('ciniki.courses.fileGet', {'tnid':M.curTenantID, 
             'file_id':this.editfile.file_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -287,7 +287,7 @@ function ciniki_courses_info() {
 
         if( c != '' ) {
             var rsp = M.api.postJSONFormData('ciniki.courses.fileUpdate', 
-                {'business_id':M.curBusinessID, 'file_id':this.editfile.file_id}, c,
+                {'tnid':M.curTenantID, 'file_id':this.editfile.file_id}, c,
                     function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -303,7 +303,7 @@ function ciniki_courses_info() {
 
     this.deleteFile = function() {
         if( confirm('Are you sure you want to delete \'' + this.editfile.data.name + '\'?  All information about it will be removed and unrecoverable.') ) {
-            var rsp = M.api.getJSONCb('ciniki.courses.fileDelete', {'business_id':M.curBusinessID, 
+            var rsp = M.api.getJSONCb('ciniki.courses.fileDelete', {'tnid':M.curTenantID, 
                 'file_id':M.ciniki_courses_info.editfile.file_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -315,6 +315,6 @@ function ciniki_courses_info() {
     };
 
     this.downloadFile = function(fid) {
-        M.api.openFile('ciniki.courses.fileDownload', {'business_id':M.curBusinessID, 'file_id':fid});
+        M.api.openFile('ciniki.courses.fileDownload', {'tnid':M.curTenantID, 'file_id':fid});
     };
 }

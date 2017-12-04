@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the course to.
+// tnid:         The ID of the tenant to add the course to.
 // name:                The name of the course.  
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
         'code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Code'), 
@@ -39,10 +39,10 @@ function ciniki_courses_courseUpdate(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.courseUpdate'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.courseUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -54,7 +54,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
             //
             $strsql = "SELECT code, name "
                 . "FROM ciniki_courses "
-                . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'course');
@@ -77,7 +77,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
     //
     if( isset($args['permalink']) ) {
         $strsql = "SELECT id, name, permalink FROM ciniki_courses "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
             . "";
@@ -94,6 +94,6 @@ function ciniki_courses_courseUpdate(&$ciniki) {
     // Update the course
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    return ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.courses.course', $args['course_id'], $args, 0x07);
+    return ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.course', $args['course_id'], $args, 0x07);
 }
 ?>

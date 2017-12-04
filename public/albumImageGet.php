@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the photo album image is attached to.
+// tnid:         The ID of the tenant the photo album image is attached to.
 // albumimage_id:          The ID of the photo album image to get the details for.
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_courses_albumImageGet($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'albumimage_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Photo Album Image'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -30,19 +30,19 @@ function ciniki_courses_albumImageGet($ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.albumImageGet');
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.albumImageGet');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     //
-    // Load business settings
+    // Load tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -79,7 +79,7 @@ function ciniki_courses_albumImageGet($ciniki) {
             . "ciniki_course_album_images.image_id, "
             . "ciniki_course_album_images.description "
             . "FROM ciniki_course_album_images "
-            . "WHERE ciniki_course_album_images.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_course_album_images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_album_images.id = '" . ciniki_core_dbQuote($ciniki, $args['albumimage_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');

@@ -9,11 +9,11 @@
 // Returns
 // -------
 //
-function ciniki_courses_web_registrationDetails($ciniki, $settings, $business_id) {
+function ciniki_courses_web_registrationDetails($ciniki, $settings, $tnid) {
 
     $strsql = "SELECT detail_key, detail_value "
         . "FROM ciniki_course_settings "
-        . "WHERE ciniki_course_settings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_course_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (detail_key = 'course-registration-details' "
             . "OR detail_key = 'course-registration-more-details') "
         . "";
@@ -37,7 +37,7 @@ function ciniki_courses_web_registrationDetails($ciniki, $settings, $business_id
 
     $strsql = "SELECT id, name, extension, permalink, description "
         . "FROM ciniki_course_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND type = 1 "
         . "AND (webflags&0x01) = 0 "
         . "ORDER BY name "

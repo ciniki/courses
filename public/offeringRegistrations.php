@@ -18,7 +18,7 @@ function ciniki_courses_offeringRegistrations($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Class'), 
         'output'=>array('required'=>'no', 'blank'=>'no', 'default'=>'pdf', 'name'=>'Output Format'), 
         )); 
@@ -29,34 +29,34 @@ function ciniki_courses_offeringRegistrations($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringRegistrations'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringRegistrations'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
     $modules = $rc['modules'];
 
     //
-    // Load business details
+    // Load tenant details
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
-    $rc = ciniki_businesses_businessDetails($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'tenantDetails');
+    $rc = ciniki_tenants_tenantDetails($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( isset($rc['details']) && is_array($rc['details']) ) {   
-        $business_details = $rc['details'];
+        $tenant_details = $rc['details'];
     } else {
-        $business_details = array();
+        $tenant_details = array();
     }
 
     //
     // Load the invoice settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_course_settings', 'business_id', $args['business_id'],
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_course_settings', 'tnid', $args['tnid'],
         'ciniki.courses', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -77,7 +77,7 @@ function ciniki_courses_offeringRegistrations($ciniki) {
         }
         $fn = $rc['function_call'];
 
-        $rc = $fn($ciniki, $args['business_id'], $args['offering_id'], $business_details, $courses_settings);
+        $rc = $fn($ciniki, $args['tnid'], $args['offering_id'], $tenant_details, $courses_settings);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -100,7 +100,7 @@ function ciniki_courses_offeringRegistrations($ciniki) {
         }
         $fn = $rc['function_call'];
 
-        $rc = $fn($ciniki, $args['business_id'], $args['offering_id'], $business_details, $courses_settings);
+        $rc = $fn($ciniki, $args['tnid'], $args['offering_id'], $tenant_details, $courses_settings);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }

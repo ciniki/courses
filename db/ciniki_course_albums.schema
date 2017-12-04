@@ -7,7 +7,7 @@
 # ------
 # id:                   The ID for the exhibition image.
 # uuid:                 The Universal Unique ID for the exhibition image.
-# business_id:          The ID of the business the exhibition is a part of.
+# tnid:                 The ID of the tenant the exhibition is a part of.
 #
 # course_id:            The ID of the course the album is attached to, OR zero when a global album.
 # offering_id:          The ID of the course offering the album is attached to, OR zero when a global album.
@@ -32,7 +32,7 @@
 create table ciniki_course_albums (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     course_id int not null,
     offering_id int not null,
     name varchar(150) not null,
@@ -43,5 +43,5 @@ create table ciniki_course_albums (
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
-    index (business_id, uuid, last_updated)
+    index (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

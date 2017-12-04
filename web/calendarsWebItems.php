@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $business_id, $args) {
+function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $tnid, $args) {
 
     if( !isset($args['ltz_start']) || !is_a($args['ltz_start'], 'DateTime') ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.97', 'msg'=>'Invalid start date'));
@@ -21,10 +21,10 @@ function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $business_id, 
     $sdt = $args['ltz_start'];
     $edt = $args['ltz_end'];
 
-    if( isset($ciniki['business']['module_pages']['ciniki.courses.active']['base_url']) ) {
-        $base_url = $ciniki['business']['module_pages']['ciniki.courses.active']['base_url'];
-    } elseif( isset($ciniki['business']['module_pages']['ciniki.courses']['base_url']) ) {
-        $base_url = $ciniki['business']['module_pages']['ciniki.courses']['base_url'] . '/course';
+    if( isset($ciniki['tenant']['module_pages']['ciniki.courses.active']['base_url']) ) {
+        $base_url = $ciniki['tenant']['module_pages']['ciniki.courses.active']['base_url'];
+    } elseif( isset($ciniki['tenant']['module_pages']['ciniki.courses']['base_url']) ) {
+        $base_url = $ciniki['tenant']['module_pages']['ciniki.courses']['base_url'] . '/course';
     } else {
         $base_url = '/courses/course';
     }
@@ -72,13 +72,13 @@ function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $business_id, 
         . "INNER JOIN ciniki_course_offerings ON ("
             . "ciniki_course_offering_classes.offering_id = ciniki_course_offerings.id "
             . "AND (ciniki_course_offerings.webflags&0x01) = 0 "
-            . "AND ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_courses ON ("
             . "ciniki_course_offerings.course_id = ciniki_courses.id "
-            . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_course_offering_classes.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_course_offering_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_course_offering_classes.class_date >= '" . ciniki_core_dbQuote($ciniki, $sdt->format('Y-m-d')) . "' "
         . "AND ciniki_course_offering_classes.class_date <= '" . ciniki_core_dbQuote($ciniki, $edt->format('Y-m-d')) . "' "
         . "";

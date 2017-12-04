@@ -22,7 +22,7 @@ function ciniki_courses_settingsUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -31,19 +31,19 @@ function ciniki_courses_settingsUpdate(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.settingsUpdate'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.settingsUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Grab the settings for the business from the database
+    // Grab the settings for the tenant from the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQuery');
-    $rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_course_settings', 'business_id', $args['business_id'], 'ciniki.courses', 'settings', '');
+    $rc = ciniki_core_dbDetailsQuery($ciniki, 'ciniki_course_settings', 'tnid', $args['tnid'], 'ciniki.courses', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -78,8 +78,8 @@ function ciniki_courses_settingsUpdate(&$ciniki) {
     foreach($changelog_fields as $field) {
         if( isset($ciniki['request']['args'][$field]) 
             && (!isset($settings[$field]) || $ciniki['request']['args'][$field] != $settings[$field]) ) {
-            $strsql = "INSERT INTO ciniki_course_settings (business_id, detail_key, detail_value, date_added, last_updated) "
-                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args']['business_id']) . "'"
+            $strsql = "INSERT INTO ciniki_course_settings (tnid, detail_key, detail_value, date_added, last_updated) "
+                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args']['tnid']) . "'"
                 . ", '" . ciniki_core_dbQuote($ciniki, $field) . "'"
                 . ", '" . ciniki_core_dbQuote($ciniki, $ciniki['request']['args'][$field]) . "'"
                 . ", UTC_TIMESTAMP(), UTC_TIMESTAMP()) "
@@ -91,7 +91,7 @@ function ciniki_courses_settingsUpdate(&$ciniki) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
                 return $rc;
             }
-            ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['business_id'], 
+            ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['tnid'], 
                 2, 'ciniki_course_settings', $field, 'detail_value', $ciniki['request']['args'][$field]);
             $ciniki['syncqueue'][] = array('push'=>'ciniki.courses.setting', 
                 'args'=>array('id'=>$field));
@@ -107,11 +107,11 @@ function ciniki_courses_settingsUpdate(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'courses');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
 
     return array('stat'=>'ok');
 }

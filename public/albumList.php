@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will return the list of Photo Albums for a business.
+// This method will return the list of Photo Albums for a tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:        The ID of the business to get Photo Album for.
+// tnid:        The ID of the tenant to get Photo Album for.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_courses_albumList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'course_id'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Course'),
         'offering_id'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Offering'),
         ));
@@ -29,10 +29,10 @@ function ciniki_courses_albumList($ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id as owner, or sys admin.
+    // Check access to tnid as owner, or sys admin.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.albumList');
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.albumList');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -48,7 +48,7 @@ function ciniki_courses_albumList($ciniki) {
         . "ciniki_course_albums.flags, "
         . "ciniki_course_albums.sequence "
         . "FROM ciniki_course_albums "
-        . "WHERE ciniki_course_albums.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_course_albums.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_course_albums.course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
         . "AND ciniki_course_albums.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
         . "ORDER BY sequence, name "

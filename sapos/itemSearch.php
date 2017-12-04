@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
+function ciniki_courses_sapos_itemSearch($ciniki, $tnid, $args) {
 
     if( $args['start_needle'] == '' ) {
         return array('stat'=>'ok', 'items'=>array());
@@ -38,15 +38,15 @@ function ciniki_courses_sapos_itemSearch($ciniki, $business_id, $args) {
         . "UNIX_TIMESTAMP(MAX(ciniki_course_offering_classes.class_date)) AS end_date_ts "
         . "FROM ciniki_course_offerings "
         . "LEFT JOIN ciniki_course_offering_prices ON (ciniki_course_offerings.id = ciniki_course_offering_prices.offering_id "
-            . "AND ciniki_course_offering_prices.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_course_offering_prices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_courses ON (ciniki_course_offerings.course_id = ciniki_courses.id "
-            . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_course_offering_classes ON (ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "
-            . "AND ciniki_course_offering_classes.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_course_offering_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (ciniki_course_offerings.reg_flags&0x03) > 0 "
         . "AND (ciniki_courses.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_courses.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

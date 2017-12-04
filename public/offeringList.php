@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will return the list of course offerings for a business.  
+// This method will return the list of course offerings for a tenant.  
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get files from.
+// tnid:     The ID of the tenant to get files from.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_courses_offeringList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'current'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Current'),
         'upcoming'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Upcoming'),
         'past'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Past'),
@@ -38,10 +38,10 @@ function ciniki_courses_offeringList($ciniki) {
     }
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $ac = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringList');
+    $ac = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringList');
     if( $ac['stat'] != 'ok' ) { 
         return $ac;
     }   
@@ -71,17 +71,17 @@ function ciniki_courses_offeringList($ciniki) {
             . "FROM ciniki_course_offerings "
             . "LEFT JOIN ciniki_courses ON ("
                 . "ciniki_course_offerings.course_id = ciniki_courses.id "
-                . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_course_offering_classes ON ("
                 . "ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "
-                . "AND ciniki_course_offering_classes.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_course_offering_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_course_offering_registrations ON ("
                 . "ciniki_course_offerings.id = ciniki_course_offering_registrations.offering_id "
-                . "AND ciniki_course_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_course_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_offerings.status = 10 "
             . "GROUP BY ciniki_course_offerings.id "
             . "HAVING start_date_ts <= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
@@ -126,17 +126,17 @@ function ciniki_courses_offeringList($ciniki) {
             . "FROM ciniki_course_offerings "
             . "LEFT JOIN ciniki_courses ON ("
                 . "ciniki_course_offerings.course_id = ciniki_courses.id "
-                . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_course_offering_classes ON ("
                 . "ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "
-                . "AND ciniki_course_offering_classes.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_course_offering_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_course_offering_registrations ON ("
                 . "ciniki_course_offerings.id = ciniki_course_offering_registrations.offering_id "
-                . "AND ciniki_course_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_course_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND (ciniki_course_offerings.status = 10 || ciniki_course_offerings.status = 0 ) "
             . "GROUP BY ciniki_course_offerings.id "
             . "HAVING start_date = 'No dates set' OR start_date_ts > UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
@@ -182,17 +182,17 @@ function ciniki_courses_offeringList($ciniki) {
             . "FROM ciniki_course_offerings "
             . "LEFT JOIN ciniki_courses ON ("
                 . "ciniki_course_offerings.course_id = ciniki_courses.id "
-                . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_course_offering_classes ON ("
                 . "ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "
-                . "AND ciniki_course_offering_classes.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_course_offering_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_course_offering_registrations ON ("
                 . "ciniki_course_offerings.id = ciniki_course_offering_registrations.offering_id "
-                . "AND ciniki_course_offering_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_course_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND (ciniki_course_offerings.status = 10 || ciniki_course_offerings.status = 0 ) "
             . "GROUP BY ciniki_course_offerings.id "
             . "HAVING end_date_ts < UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
@@ -237,7 +237,7 @@ function ciniki_courses_offeringList($ciniki) {
             . "ciniki_course_files.description, "
             . "ciniki_course_files.permalink "
             . "FROM ciniki_course_files "
-            . "WHERE ciniki_course_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_course_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND type = '2' "
             . "ORDER BY type, publish_date DESC, name "
             . "";

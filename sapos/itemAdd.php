@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item) {
+function ciniki_courses_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
 
     //
     // An course was added to an invoice item, get the details and see if we need to 
@@ -27,12 +27,12 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             . "FROM ciniki_course_offering_prices "
             . "INNER JOIN ciniki_course_offerings ON ("
                 . "ciniki_course_offering_prices.offering_id = ciniki_course_offerings.id "
-                . "AND ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_courses ON (ciniki_course_offerings.course_id = ciniki_courses.id "
-                . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_course_offering_prices.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_course_offering_prices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_course_offering_prices.id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'offering');
@@ -54,7 +54,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
         //
         $strsql = "SELECT id, customer_id "
             . "FROM ciniki_sapos_invoices "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $invoice_id) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'invoice');
@@ -77,7 +77,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             'customer_notes'=>'',
             'notes'=>'',
             );
-        $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.courses.offering_registration', 
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.courses.offering_registration', 
             $reg_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -101,9 +101,9 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             . "CONCAT_WS(' - ', ciniki_courses.name, ciniki_course_offerings.name) AS name "
             . "FROM ciniki_course_offerings "
             . "LEFT JOIN ciniki_courses ON (ciniki_course_offerings.course_id = ciniki_courses.id "
-                . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_course_offerings.id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'offering');
@@ -125,7 +125,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
         //
         $strsql = "SELECT id, customer_id "
             . "FROM ciniki_sapos_invoices "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $invoice_id) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'invoice');
@@ -148,7 +148,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
             'customer_notes'=>'',
             'notes'=>'',
             );
-        $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.courses.offering_registration', 
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.courses.offering_registration', 
             $reg_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -167,7 +167,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
         //
         $strsql = "SELECT id, invoice_id "
             . "FROM ciniki_course_offering_registrations "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'registration');
@@ -185,7 +185,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $business_id, $invoice_id, $item)
         if( $registration['invoice_id'] == '0' ) {
             $reg_args = array('invoice_id'=>$invoice_id);
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.courses.offering_registration', 
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.courses.offering_registration', 
                 $registration['id'], $reg_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;

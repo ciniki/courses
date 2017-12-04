@@ -39,7 +39,7 @@ function ciniki_courses_instructorimages() {
             return ''; 
         };
         this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.courses.instructorImageHistory', 'args':{'business_id':M.curBusinessID, 
+            return {'method':'ciniki.courses.instructorImageHistory', 'args':{'tnid':M.curTenantID, 
                 'instructor_image_id':this.instructor_image_id, 'field':i}};
         };
         this.edit.addDropImage = function(iid) {
@@ -83,7 +83,7 @@ function ciniki_courses_instructorimages() {
         if( this.edit.instructor_image_id > 0 ) {
             this.edit.sections._buttons.buttons.delete.visible = 'yes';
             var rsp = M.api.getJSONCb('ciniki.courses.instructorImageGet', 
-                {'business_id':M.curBusinessID, 'instructor_image_id':this.edit.instructor_image_id}, function (rsp) {
+                {'tnid':M.curTenantID, 'instructor_image_id':this.edit.instructor_image_id}, function (rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -106,7 +106,7 @@ function ciniki_courses_instructorimages() {
             var c = this.edit.serializeFormData('no');
             if( c != '' ) {
                 var rsp = M.api.postJSONFormData('ciniki.courses.instructorImageUpdate', 
-                    {'business_id':M.curBusinessID, 
+                    {'tnid':M.curTenantID, 
                     'instructor_image_id':this.edit.instructor_image_id}, c,
                         function(rsp) {
                             if( rsp.stat != 'ok' ) {
@@ -122,7 +122,7 @@ function ciniki_courses_instructorimages() {
             var c = this.edit.serializeForm('yes');
             c += '&instructor_id=' + encodeURIComponent(this.edit.instructor_id);
             var rsp = M.api.postJSONFormData('ciniki.courses.instructorImageAdd', 
-                {'business_id':M.curBusinessID}, c, function(rsp) {
+                {'tnid':M.curTenantID}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -135,7 +135,7 @@ function ciniki_courses_instructorimages() {
     this.deleteImage = function() {
         if( confirm('Are you sure you want to delete \'' + this.edit.data.name + '\'?') ) {
             var rsp = M.api.getJSONCb('ciniki.courses.instructorImageDelete', 
-                {'business_id':M.curBusinessID, 
+                {'tnid':M.curTenantID, 
                 'instructor_image_id':this.edit.instructor_image_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);

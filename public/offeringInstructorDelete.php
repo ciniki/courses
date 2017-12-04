@@ -16,7 +16,7 @@ function ciniki_courses_offeringInstructorDelete(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -26,10 +26,10 @@ function ciniki_courses_offeringInstructorDelete(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringInstructorDelete'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringInstructorDelete'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -38,7 +38,7 @@ function ciniki_courses_offeringInstructorDelete(&$ciniki) {
     // Get the existing instructor information
     //
     $strsql = "SELECT id, uuid FROM ciniki_course_offering_instructors "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_instructor_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'instructor');
@@ -55,6 +55,6 @@ function ciniki_courses_offeringInstructorDelete(&$ciniki) {
     // Delete the instructor from the offering.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-    return ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.courses.offering_instructor', $args['offering_instructor_id'], $instructor['uuid'], 0x07);
+    return ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering_instructor', $args['offering_instructor_id'], $instructor['uuid'], 0x07);
 }
 ?>

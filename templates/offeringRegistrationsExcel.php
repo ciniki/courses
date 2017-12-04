@@ -11,14 +11,14 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business_id, $offering_id, $business_details, $courses_settings) {
+function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $tnid, $offering_id, $tenant_details, $courses_settings) {
 
     //
     // Load the class
     //
     $rsp = array('stat'=>'ok');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringLoad');
-    $rc = ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, 
+    $rc = ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, 
         array('classes'=>'yes', 'instructors'=>'yes', 'reglist'=>'yes'));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -64,7 +64,7 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
         $col = 0;
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['student_name'], false);
         if( $reg['student_id'] > 0 ) {
-            $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, 
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, 
                 array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -112,10 +112,10 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $business
             }
         }
 
-        // If a business, then convert "Payment Required" to "Invoice"
-        $business_information = '';
+        // If a tenant, then convert "Payment Required" to "Invoice"
+        $tenant_information = '';
         if( $reg['customer_type'] == 2 || $reg['student_id'] != $reg['customer_id'] ) {
-            $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, 
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, 
                 array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;

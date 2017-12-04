@@ -7,14 +7,14 @@
 // Arguments
 // =========
 // ciniki:
-// business_id:         The ID of the business the request is for.
+// tnid:         The ID of the tenant the request is for.
 // method:              The requested public method.
 // 
 // Returns
 // =======
 // <rsp stat="ok" />
 //
-function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id) {
+function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
     $strsql = "SELECT DATE_FORMAT(class_date, '%a %b %e, %Y') AS class_date, "
         . "DATE_FORMAT(class_date, '%W') AS dayofweek, "
         . "DATE_FORMAT(class_date, '%Y') AS year, "
@@ -25,7 +25,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
         . "TIME_FORMAT(start_time, '%l:%i %p') AS start_time, "
         . "TIME_FORMAT(end_time, '%l:%i %p') AS end_time "
         . "FROM ciniki_course_offering_classes "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
         . "ORDER BY ciniki_course_offering_classes.class_date "
         . "";
@@ -115,7 +115,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
     
     $strsql = "UPDATE ciniki_course_offerings SET last_updated = UTC_TIMESTAMP()"
         . ", condensed_date = '" . ciniki_core_dbQuote($ciniki, $condensed_date) . "' "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
@@ -128,7 +128,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $business_id, $offering_id
     }
 
     $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 
-        'ciniki_course_history', $business_id, 
+        'ciniki_course_history', $tnid, 
         2, 'ciniki_course_offerings', $offering_id, 'condensed_date', $condensed_date);
     $ciniki['syncqueue'][] = array('push'=>'ciniki.courses.offering',
         'args'=>array('id'=>$offering_id));

@@ -56,7 +56,7 @@ function ciniki_courses_files() {
             return this.data[s];
         };
         this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.courses.fileHistory', 'args':{'business_id':M.curBusinessID, 
+            return {'method':'ciniki.courses.fileHistory', 'args':{'tnid':M.curTenantID, 
                 'file_id':this.file_id, 'field':i}};
         };
         this.edit.addButton('save', 'Save', 'M.ciniki_courses_files.saveFile();');
@@ -116,7 +116,7 @@ function ciniki_courses_files() {
 
         if( c != '' ) {
             var rsp = M.api.postJSONFormData('ciniki.courses.fileAdd', 
-                {'business_id':M.curBusinessID, 'type':this.add.data.type}, c,
+                {'tnid':M.curTenantID, 'type':this.add.data.type}, c,
                     function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -138,7 +138,7 @@ function ciniki_courses_files() {
         if( ofid != null ) {
             this.edit.offering_file_id = ofid;
         }
-        var rsp = M.api.getJSONCb('ciniki.courses.fileGet', {'business_id':M.curBusinessID, 
+        var rsp = M.api.getJSONCb('ciniki.courses.fileGet', {'tnid':M.curTenantID, 
             'file_id':this.edit.file_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -156,7 +156,7 @@ function ciniki_courses_files() {
 
         if( c != '' ) {
             var rsp = M.api.postJSONFormData('ciniki.courses.fileUpdate', 
-                {'business_id':M.curBusinessID, 'file_id':this.edit.file_id}, c,
+                {'tnid':M.curTenantID, 'file_id':this.edit.file_id}, c,
                     function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -172,7 +172,7 @@ function ciniki_courses_files() {
 
     this.saveOfferingFile = function() {
         // Add the file to the offering, nothing to do for update
-        var rsp = M.api.getJSONCb('ciniki.courses.offeringFileAdd', {'business_id':M.curBusinessID, 
+        var rsp = M.api.getJSONCb('ciniki.courses.offeringFileAdd', {'tnid':M.curTenantID, 
             'course_id':this.add.course_id,
             'offering_id':this.add.offering_id,
             'file_id':this.add.file_id}, function(rsp) {
@@ -187,7 +187,7 @@ function ciniki_courses_files() {
     this.deleteFile = function() {
         if( confirm('Are you sure you want to delete \'' + this.edit.data.name + '\'?  All information about it will be removed and unrecoverable.') ) {
             if( this.edit.offering_file_id != null && this.edit.offering_file_id > 0 ) {
-                M.api.getJSONCb('ciniki.courses.offeringFileDelete', {'business_id':M.curBusinessID, 
+                M.api.getJSONCb('ciniki.courses.offeringFileDelete', {'tnid':M.curTenantID, 
                     'offering_file_id':M.ciniki_courses_files.edit.offering_file_id}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -196,7 +196,7 @@ function ciniki_courses_files() {
                         M.ciniki_courses_files.edit.close();
                     });
             } else {
-                M.api.getJSONCb('ciniki.courses.fileDelete', {'business_id':M.curBusinessID, 
+                M.api.getJSONCb('ciniki.courses.fileDelete', {'tnid':M.curTenantID, 
                     'file_id':M.ciniki_courses_files.edit.file_id}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -209,6 +209,6 @@ function ciniki_courses_files() {
     };
 
     this.downloadFile = function(fid) {
-        M.api.openFile('ciniki.courses.fileDownload', {'business_id':M.curBusinessID, 'file_id':fid});
+        M.api.openFile('ciniki.courses.fileDownload', {'tnid':M.curTenantID, 'file_id':fid});
     };
 }

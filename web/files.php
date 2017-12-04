@@ -9,11 +9,11 @@
 // Returns
 // -------
 //
-function ciniki_courses_web_files($ciniki, $settings, $business_id) {
+function ciniki_courses_web_files($ciniki, $settings, $tnid) {
 
     $strsql = "SELECT id, name, extension, permalink, description "
         . "FROM ciniki_course_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND type = 2 "
         . "AND (webflags&0x01) = 0 "
         . "ORDER BY name "

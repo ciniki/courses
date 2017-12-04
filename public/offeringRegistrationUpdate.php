@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the course offering is attached to.
+// tnid:     The ID of the tenant the course offering is attached to.
 // 
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
 //        'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'), 
 //      'customer_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customer'),
 ////        'num_seats'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Number of Seats'),
@@ -46,10 +46,10 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringRegistrationUpdate'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringRegistrationUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -60,7 +60,7 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
     $strsql = "SELECT id, offering_id, student_id, invoice_id "
         . "FROM ciniki_course_offering_registrations "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'registration');
     if( $rc['stat'] != 'ok' ) {
@@ -86,7 +86,7 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
     // Update the registration in the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.courses.offering_registration', 
+    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.offering_registration', 
         $args['registration_id'], $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
@@ -98,7 +98,7 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
     //
 /*  if( isset($args['num_seats']) && $args['num_seats'] != $registration['num_seats'] && $registration['invoice_id'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'invoiceUpdateItem');
-        $rc = ciniki_sapos_invoiceUpdateItem($ciniki, $args['business_id'], $registration['invoice_id'],
+        $rc = ciniki_sapos_invoiceUpdateItem($ciniki, $args['tnid'], $registration['invoice_id'],
             array('object'=>'ciniki.courses.offering_registration',
                 'object_id'=>$registration['id'],
                 'quantity'=>$args['num_seats'],
@@ -118,11 +118,11 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'courses');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
 
     //
     // Update the invoice item
@@ -134,7 +134,7 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
                 $item_args['notes'] = '';
             } else {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
-                $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'], array('customer_id'=>$args['student_id']));
+                $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], array('customer_id'=>$args['student_id']));
                 if( $rc['stat'] == 'ok' && isset($rc['customer']['display_name']) ) {
                     $item_args['notes'] = $rc['customer']['display_name'];
                 }
@@ -151,7 +151,7 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
             $item_args['unit_amount'] = $course['price'];
         }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
-        $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $args['business_id'], $item_args);
+        $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $args['tnid'], $item_args);
         return $rc;
     }
 

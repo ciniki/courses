@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the course to.
+// tnid:         The ID of the tenant to add the course to.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_courses_offeringClassAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
         'class_date'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'Date'), 
@@ -35,10 +35,10 @@ function ciniki_courses_offeringClassAdd(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringClassAdd'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringClassAdd'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -48,14 +48,14 @@ function ciniki_courses_offeringClassAdd(&$ciniki) {
     // Add the class
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.courses.offering_class', $args, 0x07);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_class', $args, 0x07);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     $class_id = $rc['id'];
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'updateCondensedDate');
-    $rc = ciniki_courses_updateCondensedDate($ciniki, $args['business_id'], $args['offering_id']);
+    $rc = ciniki_courses_updateCondensedDate($ciniki, $args['tnid'], $args['offering_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

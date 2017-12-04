@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to search for the courses.
+// tnid:         The ID of the tenant to search for the courses.
 // start_needle:        The search string to use.
 // field:               The field to search.
 // limit:               (optional) The maximum number of results to return.  If not
@@ -22,7 +22,7 @@ function ciniki_courses_courseSearchField($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Search String'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('type', 'category'), 'name'=>'Field'), 
         'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
@@ -36,7 +36,7 @@ function ciniki_courses_courseSearchField($ciniki) {
     // Build the search query
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.courseSearchField'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.courseSearchField'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -46,7 +46,7 @@ function ciniki_courses_courseSearchField($ciniki) {
     //
     $strsql = "SELECT DISTINCT ciniki_courses." . $args['field'] . " AS name "
         . "FROM ciniki_courses "
-        . "WHERE ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $strsql .= "AND ciniki_courses." . $args['field'] . " LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' ";
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {

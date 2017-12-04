@@ -7,7 +7,7 @@
 // Returns
 // -------
 //
-function ciniki_courses_web_fileDownload($ciniki, $business_id, $permalink) {
+function ciniki_courses_web_fileDownload($ciniki, $tnid, $permalink) {
 
     //
     // Get the file details
@@ -17,7 +17,7 @@ function ciniki_courses_web_fileDownload($ciniki, $business_id, $permalink) {
         . "ciniki_course_files.extension, "
         . "ciniki_course_files.binary_content "
         . "FROM ciniki_course_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND CONCAT_WS('.', permalink, extension) = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' "
         . "AND (webflags&0x01) = 0 "        // Make sure file is to be visible
         . "";

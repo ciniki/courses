@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the course to.
+// tnid:         The ID of the tenant to add the course to.
 //
 // name:                The name of the course.
 // permalink:           The permalink for identifing the instructor in web url.
@@ -30,7 +30,7 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'first'=>array('required'=>'no', 'blank'=>'no', 'name'=>'First Name'), 
         'last'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Last Name'), 
         'primary_image_id'=>array('required'=>'no', 'default'=>'0', 'name'=>'Level'), 
@@ -49,10 +49,10 @@ function ciniki_courses_instructorAdd(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.instructorAdd'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.instructorAdd'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -62,7 +62,7 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     // Check the permalink doesn't already exist
     //
     $strsql = "SELECT id, first, last, permalink FROM ciniki_course_instructors "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'instructor');
@@ -77,6 +77,6 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     // Add the instructor
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    return ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.courses.instructor', $args, 0x07);
+    return ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.instructor', $args, 0x07);
 }
 ?>

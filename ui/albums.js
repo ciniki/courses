@@ -1,5 +1,5 @@
 //
-// The course offerings app to manage courses offering by a business
+// The course offerings app to manage courses offering by a tenant
 //
 function ciniki_courses_albums() {
     //
@@ -24,7 +24,7 @@ function ciniki_courses_albums() {
     }
 /*    this.menu.liveSearchCb = function(s, i, v) {
         if( s == 'search' && v != '' ) {
-            M.api.getJSONBgCb('ciniki.courses.albumSearch', {'business_id':M.curBusinessID, 'start_needle':v, 'limit':'25'}, function(rsp) {
+            M.api.getJSONBgCb('ciniki.courses.albumSearch', {'tnid':M.curTenantID, 'start_needle':v, 'limit':'25'}, function(rsp) {
                 M.ciniki_courses_albums.menu.liveSearchShow('search',null,M.gE(M.ciniki_courses_albums.menu.panelUID + '_' + s), rsp.albums);
                 });
         }
@@ -50,7 +50,7 @@ function ciniki_courses_albums() {
     this.menu.open = function(cb, cid, oid) {
         if( cid != null ) { this.course_id = cid; }
         if( oid != null ) { this.offering_id = oid; }
-        M.api.getJSONCb('ciniki.courses.albumList', {'business_id':M.curBusinessID, 'course_id':this.course_id, 'offering_id':this.offering_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.courses.albumList', {'tnid':M.curTenantID, 'course_id':this.course_id, 'offering_id':this.offering_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -94,13 +94,13 @@ function ciniki_courses_albums() {
         };
     this.album.fieldValue = function(s, i, d) { return this.data[i]; }
     this.album.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.courses.albumHistory', 'args':{'business_id':M.curBusinessID, 'album_id':this.album_id, 'field':i}};
+        return {'method':'ciniki.courses.albumHistory', 'args':{'tnid':M.curTenantID, 'album_id':this.album_id, 'field':i}};
     }
     this.album.thumbFn = function(s, i, d) {
         return 'M.ciniki_courses_albums.album.save("M.ciniki_courses_albums.image.open(\'M.ciniki_courses_albums.album.addDropImageRefresh();\',M.ciniki_courses_albums.album.album_id,\'' + d.id + '\');");';
     };
     this.album.addDropImageRefresh = function(cb, aid, iid) {
-        M.api.getJSONCb('ciniki.courses.albumGet', {'business_id':M.curBusinessID, 'album_id':this.album_id, 'images':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.courses.albumGet', {'tnid':M.curTenantID, 'album_id':this.album_id, 'images':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -114,14 +114,14 @@ function ciniki_courses_albums() {
     this.album.addDropImage = function(iid) {
         if( this.album_id == 0 ) {
             var c = this.serializeForm('yes');
-            var rsp = M.api.postJSON('ciniki.courses.albumAdd', {'business_id':M.curBusinessID}, c);
+            var rsp = M.api.postJSON('ciniki.courses.albumAdd', {'tnid':M.curTenantID}, c);
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
             }
             this.album_id = rsp.id;
         }
-        var rsp = M.api.getJSON('ciniki.courses.albumImageAdd', {'business_id':M.curBusinessID, 'image_id':iid, 'album_id':this.album_id});
+        var rsp = M.api.getJSON('ciniki.courses.albumImageAdd', {'tnid':M.curTenantID, 'image_id':iid, 'album_id':this.album_id});
         if( rsp.stat != 'ok' ) {
             M.api.err(rsp);
             return false;
@@ -133,7 +133,7 @@ function ciniki_courses_albums() {
         if( oid != null ) { this.offering_id = oid; }
         if( aid != null ) { this.album_id = aid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.courses.albumGet', {'business_id':M.curBusinessID, 'album_id':this.album_id, 'images':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.courses.albumGet', {'tnid':M.curTenantID, 'album_id':this.album_id, 'images':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -150,7 +150,7 @@ function ciniki_courses_albums() {
         if( this.album_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.courses.albumUpdate', {'business_id':M.curBusinessID, 'album_id':this.album_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.courses.albumUpdate', {'tnid':M.curTenantID, 'album_id':this.album_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -162,7 +162,7 @@ function ciniki_courses_albums() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.courses.albumAdd', {'business_id':M.curBusinessID, 'course_id':this.course_id, 'offering_id':this.offering_id}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.courses.albumAdd', {'tnid':M.curTenantID, 'course_id':this.course_id, 'offering_id':this.offering_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -174,7 +174,7 @@ function ciniki_courses_albums() {
     }
     this.album.remove = function() {
         if( confirm('Are you sure you want to remove album?') ) {
-            M.api.getJSONCb('ciniki.courses.albumDelete', {'business_id':M.curBusinessID, 'album_id':this.album_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.courses.albumDelete', {'tnid':M.curTenantID, 'album_id':this.album_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -229,13 +229,13 @@ function ciniki_courses_albums() {
         };
     this.image.fieldValue = function(s, i, d) { return this.data[i]; }
     this.image.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.courses.albumImageHistory', 'args':{'business_id':M.curBusinessID, 'albumimage_id':this.albumimage_id, 'field':i}};
+        return {'method':'ciniki.courses.albumImageHistory', 'args':{'tnid':M.curTenantID, 'albumimage_id':this.albumimage_id, 'field':i}};
     }
     this.image.open = function(cb, aid, iid, list) {
         if( aid != null ) { this.album_id = aid; }
         if( iid != null ) { this.albumimage_id = iid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.courses.albumImageGet', {'business_id':M.curBusinessID, 'albumimage_id':this.albumimage_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.courses.albumImageGet', {'tnid':M.curTenantID, 'albumimage_id':this.albumimage_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -252,7 +252,7 @@ function ciniki_courses_albums() {
         if( this.albumimage_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.courses.albumImageUpdate', {'business_id':M.curBusinessID, 'albumimage_id':this.albumimage_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.courses.albumImageUpdate', {'tnid':M.curTenantID, 'albumimage_id':this.albumimage_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -264,7 +264,7 @@ function ciniki_courses_albums() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.courses.albumImageAdd', {'business_id':M.curBusinessID, 'album_id':this.album_id}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.courses.albumImageAdd', {'tnid':M.curTenantID, 'album_id':this.album_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -276,7 +276,7 @@ function ciniki_courses_albums() {
     }
     this.image.remove = function() {
         if( confirm('Are you sure you want to remove this image?') ) {
-            M.api.getJSONCb('ciniki.courses.albumImageDelete', {'business_id':M.curBusinessID, 'albumimage_id':this.albumimage_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.courses.albumImageDelete', {'tnid':M.curTenantID, 'albumimage_id':this.albumimage_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;

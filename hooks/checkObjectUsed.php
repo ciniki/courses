@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_courses_hooks_checkObjectUsed($ciniki, $business_id, $args) {
+function ciniki_courses_hooks_checkObjectUsed($ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
 
@@ -27,7 +27,7 @@ function ciniki_courses_hooks_checkObjectUsed($ciniki, $business_id, $args) {
             . "WHERE (customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
                 . "OR student_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
                 . ") "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.sapos', 'num');
         if( $rc['stat'] != 'ok' ) {

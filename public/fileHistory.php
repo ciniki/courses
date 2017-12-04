@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the history for.
+// tnid:         The ID of the tenant to get the history for.
 // file_id:             The ID of the file to get the history for.
 // field:               The field to get the history for.
 //
@@ -29,7 +29,7 @@ function ciniki_courses_fileHistory($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
         ));
@@ -39,10 +39,10 @@ function ciniki_courses_fileHistory($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.fileHistory', 0);
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.fileHistory', 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -50,12 +50,12 @@ function ciniki_courses_fileHistory($ciniki) {
     if( $args['field'] == 'publish_date' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
         return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.courses', 
-            'ciniki_course_history', $args['business_id'], 
+            'ciniki_course_history', $args['tnid'], 
             'ciniki_course_files', $args['file_id'], $args['field'], 'date');
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
     return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.courses', 
-        'ciniki_course_history', $args['business_id'], 
+        'ciniki_course_history', $args['tnid'], 
         'ciniki_course_files', $args['file_id'], $args['field']);
 }
 ?>

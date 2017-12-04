@@ -7,7 +7,7 @@
 # ------
 # id:               The ID of the instructor image.
 # uuid:             The Universal Unique ID.
-# business_id:      The ID of the business the instructor image is attached to.
+# tnid:             The ID of the tenant the instructor image is attached to.
 #
 # course_id:        The ID of the course the instructor is for.
 # offering_id:      The ID of the course offering the instructor is teaching.
@@ -19,7 +19,7 @@
 CREATE TABLE ciniki_course_offering_instructors ( 
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     course_id int not null,
     offering_id int not null,
     instructor_id int not null,
@@ -27,5 +27,5 @@ CREATE TABLE ciniki_course_offering_instructors (
     last_updated datetime not null,
     primary key (id),
     unique index (offering_id, instructor_id),
-    index business_uuid (business_id, uuid, last_updated)
+    index tenant_uuid (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.02';

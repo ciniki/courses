@@ -9,15 +9,15 @@
 // Returns
 // -------
 //
-function ciniki_courses_web_courseTypes($ciniki, $settings, $business_id) {
+function ciniki_courses_web_courseTypes($ciniki, $settings, $tnid) {
 
     $strsql = "SELECT DISTINCT ciniki_courses.type "
         . "FROM ciniki_course_offerings "
         . "LEFT JOIN ciniki_courses ON (ciniki_course_offerings.course_id = ciniki_courses.id "
-            . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "') "
+            . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "') "
         . "LEFT JOIN ciniki_course_offering_classes ON (ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "
-            . "AND ciniki_course_offering_classes.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "') "
-        . "WHERE ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_course_offering_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "') "
+        . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_course_offerings.status = 10 "
         . "AND (ciniki_course_offerings.webflags&0x01) = 0 "
         . "GROUP BY ciniki_course_offerings.id "

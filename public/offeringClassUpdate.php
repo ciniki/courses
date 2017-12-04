@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the course to.
+// tnid:         The ID of the tenant to add the course to.
 // name:                The name of the course.  
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_courses_offeringClassUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'class_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Class'), 
         'class_date'=>array('required'=>'no', 'blank'=>'no', 'type'=>'date', 'name'=>'Date'), 
         'start_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Start Time'), 
@@ -34,10 +34,10 @@ function ciniki_courses_offeringClassUpdate(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringClassUpdate'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringClassUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -46,7 +46,7 @@ function ciniki_courses_offeringClassUpdate(&$ciniki) {
     // Get the existing class information
     //
     $strsql = "SELECT id, offering_id FROM ciniki_course_offering_classes "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'class');
@@ -63,7 +63,7 @@ function ciniki_courses_offeringClassUpdate(&$ciniki) {
     // Update the class
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.courses.offering_class', $args['class_id'], $args, 0x07);
+    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.offering_class', $args['class_id'], $args, 0x07);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -72,7 +72,7 @@ function ciniki_courses_offeringClassUpdate(&$ciniki) {
     // Update the condensed date for the course
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'updateCondensedDate');
-    $rc = ciniki_courses_updateCondensedDate($ciniki, $args['business_id'], $class['offering_id']);
+    $rc = ciniki_courses_updateCondensedDate($ciniki, $args['tnid'], $class['offering_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

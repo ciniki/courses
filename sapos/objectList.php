@@ -11,7 +11,7 @@
 // Returns
 // =======
 //
-function ciniki_courses_sapos_objectList($ciniki, $business_id) {
+function ciniki_courses_sapos_objectList($ciniki, $tnid) {
 
     $objects = array(
         //

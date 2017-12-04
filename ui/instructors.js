@@ -87,7 +87,7 @@ function ciniki_courses_instructors() {
                     if( d.image.image_data != null && d.image.image_data != '' ) {
                         return '<img width="75px" height="75px" src=\'' + d.image.image_data + '\' />'; 
                     } else {
-                        return '<img width="75px" height="75px" src=\'' + M.api.getBinaryURL('ciniki.images.getImage', {'business_id':M.curBusinessID, 'image_id':d.image.image_id, 'version':'thumbnail', 'maxwidth':'75'}) + '\' />'; 
+                        return '<img width="75px" height="75px" src=\'' + M.api.getBinaryURL('ciniki.images.getImage', {'tnid':M.curTenantID, 'image_id':d.image.image_id, 'version':'thumbnail', 'maxwidth':'75'}) + '\' />'; 
                     }
                 } else {
                     return '<img width="75px" height="75px" src=\'/ciniki-mods/core/ui/themes/default/img/noimage_75.jpg\' />';
@@ -107,7 +107,7 @@ function ciniki_courses_instructors() {
         };
         this.instructor.addDropImage = function(iid) {
             var rsp = M.api.getJSON('ciniki.courses.instructorImageAdd',
-                {'business_id':M.curBusinessID, 'image_id':iid, 
+                {'tnid':M.curTenantID, 'image_id':iid, 
                 'instructor_id':M.ciniki_courses_instructors.instructor.instructor_id});
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
@@ -117,7 +117,7 @@ function ciniki_courses_instructors() {
         };
         this.instructor.addDropImageRefresh = function() {
             if( M.ciniki_courses_instructors.instructor.instructor_id > 0 ) {
-                var rsp = M.api.getJSONCb('ciniki.courses.instructorGet', {'business_id':M.curBusinessID, 
+                var rsp = M.api.getJSONCb('ciniki.courses.instructorGet', {'tnid':M.curTenantID, 
                     'instructor_id':M.ciniki_courses_instructors.instructor.instructor_id, 
                     'images':'yes'}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
@@ -167,7 +167,7 @@ function ciniki_courses_instructors() {
         this.edit.liveSearchCb = function(s, i, value) {
             if( i == 'first' || i == 'last' ) {
                 var rsp = M.api.getJSONBgCb('ciniki.courses.instructorSearch', 
-                    {'business_id':M.curBusinessID, 'start_needle':value, 'limit':25},
+                    {'tnid':M.curTenantID, 'start_needle':value, 'limit':25},
                     function(rsp) { 
                         M.ciniki_courses_instructors.edit.liveSearchShow(s, i, M.gE(M.ciniki_courses_instructors.edit.panelUID + '_' + i), rsp.instructors); 
                     });
@@ -194,7 +194,7 @@ function ciniki_courses_instructors() {
             return ''; 
         };
         this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.courses.instructorHistory', 'args':{'business_id':M.curBusinessID, 
+            return {'method':'ciniki.courses.instructorHistory', 'args':{'tnid':M.curTenantID, 
                 'instructor_id':this.instructor_id, 'field':i}};
         };
         this.edit.addDropImage = function(iid) {
@@ -235,7 +235,7 @@ function ciniki_courses_instructors() {
 
     this.showMenu = function(cb) {
         var rsp = M.api.getJSONCb('ciniki.courses.instructorList', 
-            {'business_id':M.curBusinessID}, 
+            {'tnid':M.curTenantID}, 
                 function (rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -258,7 +258,7 @@ function ciniki_courses_instructors() {
         if( this.instructor.offering_instructor_id > 0 ) {
             this.instructor.sections._buttons.buttons.delete.visible = 'yes';
             var rsp = M.api.getJSONCb('ciniki.courses.offeringInstructorGet', 
-                {'business_id':M.curBusinessID, 'offering_instructor_id':this.instructor.offering_instructor_id, 'images':'yes'}, 
+                {'tnid':M.curTenantID, 'offering_instructor_id':this.instructor.offering_instructor_id, 'images':'yes'}, 
                     function (rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -275,7 +275,7 @@ function ciniki_courses_instructors() {
         } else if( this.instructor.instructor_id > 0 ) {
             this.instructor.sections._buttons.buttons.delete.visible = 'no';
             var rsp = M.api.getJSONCb('ciniki.courses.instructorGet', 
-                {'business_id':M.curBusinessID, 'instructor_id':this.instructor.instructor_id, 'images':'yes'}, 
+                {'tnid':M.curTenantID, 'instructor_id':this.instructor.instructor_id, 'images':'yes'}, 
                     function (rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -304,7 +304,7 @@ function ciniki_courses_instructors() {
         }
         if( this.edit.offering_instructor_id > 0 ) {
             var rsp = M.api.getJSONCb('ciniki.courses.offeringInstructorGet', 
-                {'business_id':M.curBusinessID, 'offering_instructor_id':this.edit.offering_instructor_id}, function (rsp) {
+                {'tnid':M.curTenantID, 'offering_instructor_id':this.edit.offering_instructor_id}, function (rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -316,7 +316,7 @@ function ciniki_courses_instructors() {
                 });
         } else if( this.edit.instructor_id > 0 ) {
             var rsp = M.api.getJSONCb('ciniki.courses.instructorGet', 
-                {'business_id':M.curBusinessID, 'instructor_id':this.edit.instructor_id}, function (rsp) {
+                {'tnid':M.curTenantID, 'instructor_id':this.edit.instructor_id}, function (rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -339,7 +339,7 @@ function ciniki_courses_instructors() {
             var c = this.edit.serializeFormData('no');
             if( c != '' ) {
                 var rsp = M.api.postJSONFormData('ciniki.courses.instructorUpdate', 
-                    {'business_id':M.curBusinessID, 'instructor_id':this.edit.instructor_id}, c,
+                    {'tnid':M.curTenantID, 'instructor_id':this.edit.instructor_id}, c,
                         function(rsp) {
                             if( rsp.stat != 'ok' ) {
                                 M.api.err(rsp);
@@ -353,7 +353,7 @@ function ciniki_courses_instructors() {
             var c = this.edit.serializeForm('yes');
             if( c != null ) {
                 var rsp = M.api.postJSONFormData('ciniki.courses.instructorAdd', 
-                    {'business_id':M.curBusinessID}, c,
+                    {'tnid':M.curTenantID}, c,
                     function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -370,7 +370,7 @@ function ciniki_courses_instructors() {
     this.saveOfferingInstructor = function() {
         if( this.edit.offering_instructor_id == 0 && this.edit.offering_id > 0 ) {
             // Add the instructor to the offering, nothing to do for update
-            var rsp = M.api.getJSONCb('ciniki.courses.offeringInstructorAdd', {'business_id':M.curBusinessID, 
+            var rsp = M.api.getJSONCb('ciniki.courses.offeringInstructorAdd', {'tnid':M.curTenantID, 
                 'course_id':this.edit.course_id,
                 'offering_id':this.edit.offering_id,
                 'instructor_id':this.edit.instructor_id}, function(rsp) {
@@ -387,7 +387,7 @@ function ciniki_courses_instructors() {
 
     this.deleteInstructor = function() {
         if( confirm('Are you sure you want to delete this instructor?') ) {
-            var rsp = M.api.getJSONCb('ciniki.courses.offeringInstructorDelete', {'business_id':M.curBusinessID, 
+            var rsp = M.api.getJSONCb('ciniki.courses.offeringInstructorDelete', {'tnid':M.curTenantID, 
                 'offering_instructor_id':this.instructor.offering_instructor_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);

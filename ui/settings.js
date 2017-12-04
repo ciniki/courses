@@ -34,7 +34,7 @@ function ciniki_courses_settings() {
                 }},
 /*          'header':{'label':'Header Address Options', 'fields':{
                 'default-header-contact-position':{'label':'Position', 'type':'toggle', 'default':'center', 'toggles':this.positionOptions},
-                'default-header-name':{'label':'Business Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
+                'default-header-name':{'label':'Tenant Name', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 'default-header-address':{'label':'Address', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 'default-header-phone':{'label':'Phone', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 'default-header-cell':{'label':'Cell', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
@@ -48,7 +48,7 @@ function ciniki_courses_settings() {
         };
         this.documents.fieldHistoryArgs = function(s, i) {
             return {'method':'ciniki.courses.settingsHistory', 
-                'args':{'business_id':M.curBusinessID, 'setting':i}};
+                'args':{'tnid':M.curTenantID, 'setting':i}};
         }
         this.documents.fieldValue = function(s, i, d) {
             if( this.data[i] == null && d.default != null ) { return d.default; }
@@ -88,7 +88,7 @@ function ciniki_courses_settings() {
     }
 
     //
-    // Grab the stats for the business from the database and present the list of orders.
+    // Grab the stats for the tenant from the database and present the list of orders.
     //
     this.showMenu = function(cb) {
         this.menu.refresh();
@@ -99,7 +99,7 @@ function ciniki_courses_settings() {
     // Documents
     //
     this.documentsShow = function(cb) {
-        M.api.getJSONCb('ciniki.courses.settingsGet', {'business_id':M.curBusinessID}, function(rsp) {
+        M.api.getJSONCb('ciniki.courses.settingsGet', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -117,7 +117,7 @@ function ciniki_courses_settings() {
     this.documentsSave = function() {
         var c = this.documents.serializeForm('no');
         if( c != '' ) {
-            M.api.postJSONCb('ciniki.courses.settingsUpdate', {'business_id':M.curBusinessID}, 
+            M.api.postJSONCb('ciniki.courses.settingsUpdate', {'tnid':M.curTenantID}, 
                 c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);

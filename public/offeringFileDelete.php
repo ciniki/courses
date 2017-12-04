@@ -16,7 +16,7 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -26,10 +26,10 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringFileDelete'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringFileDelete'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -53,7 +53,7 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     // Get the existing offering file information
     //
     $strsql = "SELECT id, file_id, uuid FROM ciniki_course_offering_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_file_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
@@ -70,7 +70,7 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     // Remove the file from the database
     //
     $strsql = "DELETE FROM ciniki_course_offering_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_file_id']) . "' ";
     $rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.courses');
     if( $rc['stat'] != 'ok' ) { 
@@ -79,7 +79,7 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     }
 
     ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', 
-        $args['business_id'], 3, 'ciniki_course_offering_files', $args['offering_file_id'], '*', '');
+        $args['tnid'], 3, 'ciniki_course_offering_files', $args['offering_file_id'], '*', '');
     //
     // Add to the sync queue so it will get pushed
     //
@@ -92,8 +92,8 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     $strsql = "SELECT ciniki_course_files.id, ciniki_course_files.uuid, COUNT(file_id) AS num_offerings "
         . "FROM ciniki_course_files "
         . "LEFT JOIN ciniki_course_offering_files ON (ciniki_course_files.id = ciniki_course_offering_files.file_id "
-            . "AND ciniki_course_offering_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ) "
-        . "WHERE ciniki_course_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_course_offering_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ) "
+        . "WHERE ciniki_course_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_course_files.id = '" . ciniki_core_dbQuote($ciniki, $ofile['file_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
@@ -113,7 +113,7 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
         // Remove the file from the database
         //
         $strsql = "DELETE FROM ciniki_course_files "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $ofile['file_id']) . "' ";
         $rc = ciniki_core_dbDelete($ciniki, $strsql, 'ciniki.courses');
         if( $rc['stat'] != 'ok' ) { 
@@ -122,7 +122,7 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
         }
 
         ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', 
-            $args['business_id'], 3, 'ciniki_course_files', $ofile['file_id'], '*', '');
+            $args['tnid'], 3, 'ciniki_course_files', $ofile['file_id'], '*', '');
         //
         // Add to the sync queue so it will get pushed
         //
@@ -139,11 +139,11 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'courses');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
 
     return array('stat'=>'ok');
 }

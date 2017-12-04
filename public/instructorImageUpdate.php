@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business.
+// tnid:         The ID of the tenant.
 // name:                The name of the image.  
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'instructor_image_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor Image'), 
         'image_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Image'),
         'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Title'), 
@@ -35,10 +35,10 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.instructorImageUpdate'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.instructorImageUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -48,7 +48,7 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
         // Get the existing image details
         //
         $strsql = "SELECT uuid, instructor_id FROM ciniki_course_instructor_images "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['instructor_image_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'item');
@@ -69,7 +69,7 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
         // Make sure the permalink is unique
         //
         $strsql = "SELECT id, name, permalink FROM ciniki_course_instructor_images "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND instructor_id <> '" . ciniki_core_dbQuote($ciniki, $item['instructor_id']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['instructor_image_id']) . "' "
@@ -87,6 +87,6 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
     // Update the image
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    return ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.courses.instructor_image', $args['instructor_image_id'], $args, 0x07);
+    return ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.instructor_image', $args['instructor_image_id'], $args, 0x07);
 }
 ?>

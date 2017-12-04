@@ -1,8 +1,8 @@
-Ciniki - Small Business Management Platform
+Ciniki - Multitenant Cloud Platform
 ===========================================
 
 The classes module stores information about classes, program and lectures.  The classes
-can be offered by an individual or a group of people as part of a larger business/organization.
+can be offered by an individual or a group of people as part of a larger tenant/organization.
 
 License
 -------

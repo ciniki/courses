@@ -11,7 +11,7 @@
 // Returns
 // =======
 //
-function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $args) {
+function ciniki_courses_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
@@ -38,14 +38,14 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
             . "FROM ciniki_course_offering_prices "
             . "INNER JOIN ciniki_course_offerings ON ("
                 . "ciniki_course_offering_prices.offering_id = ciniki_course_offerings.id "
-                . "AND ciniki_course_offerings.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND ciniki_course_offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
                 . ") "
             . "INNER JOIN ciniki_courses ON ("
                 . "ciniki_course_offerings.course_id = ciniki_courses.id "
-                . "AND ciniki_courses.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE ciniki_course_offering_prices.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE ciniki_course_offering_prices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_course_offering_prices.id = '" . ciniki_core_dbQuote($ciniki, $args['price_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -88,7 +88,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $business_id, $customer, $
         $item['tickets_sold'] = 0;
         $strsql = "SELECT 'num_seats', SUM(num_seats) AS num_seats "
             . "FROM ciniki_course_offering_registrations "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_course_offering_registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $item['offering_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');

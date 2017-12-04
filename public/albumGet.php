@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the photo album is attached to.
+// tnid:         The ID of the tenant the photo album is attached to.
 // album_id:          The ID of the photo album to get the details for.
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_courses_albumGet($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'album_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Photo Album'),
         'images'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Image'),
         ));
@@ -31,19 +31,19 @@ function ciniki_courses_albumGet($ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.albumGet');
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.albumGet');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     //
-    // Load business settings
+    // Load tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -62,7 +62,7 @@ function ciniki_courses_albumGet($ciniki) {
     if( $args['album_id'] == 0 ) {
         $strsql = "SELECT MAX(sequence) AS max_sequence "
             . "FROM ciniki_course_albums "
-            . "WHERE ciniki_course_albums.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_course_albums.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'max');
         if( $rc['stat'] != 'ok' ) {
@@ -98,7 +98,7 @@ function ciniki_courses_albumGet($ciniki) {
             . "ciniki_course_albums.sequence, "
             . "ciniki_course_albums.description "
             . "FROM ciniki_course_albums "
-            . "WHERE ciniki_course_albums.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_course_albums.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_albums.id = '" . ciniki_core_dbQuote($ciniki, $args['album_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
@@ -127,7 +127,7 @@ function ciniki_courses_albumGet($ciniki) {
             . "ciniki_course_album_images.image_id "
             . "FROM ciniki_course_album_images "
             . "WHERE album_id = '" . ciniki_core_dbQuote($ciniki, $args['album_id']) . "' "
-            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY ciniki_course_album_images.date_added DESC ";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'images', 'fname'=>'id', 'fields'=>array('id', 'name', 'flags', 'image_id')),
@@ -144,7 +144,7 @@ function ciniki_courses_albumGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheThumbnail');
             foreach($rsp['album']['images'] as $iid => $image) {
                 if( isset($image['image_id']) && $image['image_id'] > 0 ) {
-                    $rc = ciniki_images_loadCacheThumbnail($ciniki, $args['business_id'], $image['image_id'], 75);
+                    $rc = ciniki_images_loadCacheThumbnail($ciniki, $args['tnid'], $image['image_id'], 75);
                     if( $rc['stat'] != 'ok' ) {
                         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.78', 'msg'=>'Unable to load image', 'err'=>$rc['err']));
                     }

@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the course offering is attached to.
+// tnid:         The ID of the tenant the course offering is attached to.
 // price_id:        The ID of the price to get the details for.
 // 
 // Returns
@@ -20,7 +20,7 @@ function ciniki_courses_offeringPriceGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'price_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Price'), 
         'customer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
         'invoice'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoice'),
@@ -32,16 +32,16 @@ function ciniki_courses_offeringPriceGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringPriceGet'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringPriceGet'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -65,7 +65,7 @@ function ciniki_courses_offeringPriceGet($ciniki) {
         . "ciniki_course_offering_prices.taxtype_id, "
         . "ciniki_course_offering_prices.webflags "
         . "FROM ciniki_course_offering_prices "
-        . "WHERE ciniki_course_offering_prices.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_course_offering_prices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_course_offering_prices.id = '" . ciniki_core_dbQuote($ciniki, $args['price_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');

@@ -1,13 +1,13 @@
 #
 # Description
 # -----------
-# This table stores the information about courses, lectures etc for a business.
+# This table stores the information about courses, lectures etc for a tenant.
 #
 # Fields
 # ------
 # id:                   The ID assigned to the course.
 # uuid:                 The Universal Unique ID.
-# business_id:          The business the course is attached to.
+# tnid:                 The tenant the course is attached to.
 #
 # name:                 The name for the course.
 # code:                 The code for the course.  Typically something CS404, Psych101
@@ -28,7 +28,7 @@
 CREATE TABLE ciniki_courses (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     name varchar(150) not null,
     code varchar(50) not null,
     permalink varchar(150) not null,
@@ -42,5 +42,5 @@ CREATE TABLE ciniki_courses (
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
-    index sync (business_id, uuid, last_updated)
+    index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.02';

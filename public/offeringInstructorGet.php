@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business.
+// tnid:         The ID of the tenant.
 // offering_instructor_id:          The ID of the course offering instructor to get.
 //
 // Returns
@@ -19,7 +19,7 @@ function ciniki_courses_offeringInstructorGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'),
         'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'),
         )); 
@@ -30,10 +30,10 @@ function ciniki_courses_offeringInstructorGet($ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringInstructorGet'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringInstructorGet'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -61,8 +61,8 @@ function ciniki_courses_offeringInstructorGet($ciniki) {
         . "ciniki_course_instructors.url "
         . "FROM ciniki_course_offering_instructors "
         . "LEFT JOIN ciniki_course_instructors ON (ciniki_course_offering_instructors.instructor_id = ciniki_course_instructors.id "
-            . "AND ciniki_course_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "') "
-        . "WHERE ciniki_course_offering_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_course_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "') "
+        . "WHERE ciniki_course_offering_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_course_offering_instructors.id = '" . ciniki_core_dbQuote($ciniki, $args['offering_instructor_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -87,7 +87,7 @@ function ciniki_courses_offeringInstructorGet($ciniki) {
             . "description, "
             . "url "
             . "FROM ciniki_course_instructor_images "
-            . "WHERE ciniki_course_instructor_images.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_course_instructor_images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_instructor_images.instructor_id = '" . ciniki_core_dbQuote($ciniki, $instructor['instructor_id']) . "' "
             . "ORDER BY ciniki_course_instructor_images.id ASC ";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
@@ -103,7 +103,7 @@ function ciniki_courses_offeringInstructorGet($ciniki) {
             if( isset($instructor['images']) ) {
                 foreach($instructor['images'] as $img_id => $img) {
                     if( isset($img['image']['image_id']) && $img['image']['image_id'] > 0 ) {
-                        $rc = ciniki_images_loadCacheThumbnail($ciniki, $args['business_id'], $img['image']['image_id'], 75);
+                        $rc = ciniki_images_loadCacheThumbnail($ciniki, $args['tnid'], $img['image']['image_id'], 75);
                         if( $rc['stat'] != 'ok' ) {
                             return $rc;
                         }

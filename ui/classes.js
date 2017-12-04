@@ -37,7 +37,7 @@ function ciniki_courses_classes() {
             return ''; 
         };
         this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.courses.offeringClassHistory', 'args':{'business_id':M.curBusinessID, 
+            return {'method':'ciniki.courses.offeringClassHistory', 'args':{'tnid':M.curTenantID, 
                 'class_id':this.class_id, 'field':i}};
         };
         this.edit.addButton('save', 'Save', 'M.ciniki_courses_classes.saveClass();');
@@ -79,7 +79,7 @@ function ciniki_courses_classes() {
         }
         if( this.edit.class_id > 0 ) {
             var rsp = M.api.getJSONCb('ciniki.courses.offeringClassGet', 
-                {'business_id':M.curBusinessID, 'class_id':this.edit.class_id}, function (rsp) {
+                {'tnid':M.curTenantID, 'class_id':this.edit.class_id}, function (rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -101,7 +101,7 @@ function ciniki_courses_classes() {
             var c = this.edit.serializeFormData('no');
             if( c != '' ) {
                 var rsp = M.api.postJSONFormData('ciniki.courses.offeringClassUpdate', 
-                    {'business_id':M.curBusinessID, 'class_id':this.edit.class_id}, c,
+                    {'tnid':M.curTenantID, 'class_id':this.edit.class_id}, c,
                         function(rsp) {
                             if( rsp.stat != 'ok' ) {
                                 M.api.err(rsp);
@@ -117,7 +117,7 @@ function ciniki_courses_classes() {
             c += '&course_id=' + encodeURIComponent(this.edit.course_id);
             if( c != null ) {
                 var rsp = M.api.postJSONFormData('ciniki.courses.offeringClassAdd', 
-                    {'business_id':M.curBusinessID}, c,
+                    {'tnid':M.curTenantID}, c,
                     function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -132,7 +132,7 @@ function ciniki_courses_classes() {
 
     this.deleteClass = function() {
         if( confirm('Are you sure you want to delete \'' + this.edit.data.class_date + '\'?') ) {
-            var rsp = M.api.getJSONCb('ciniki.courses.offeringClassDelete', {'business_id':M.curBusinessID, 
+            var rsp = M.api.getJSONCb('ciniki.courses.offeringClassDelete', {'tnid':M.curTenantID, 
                 'class_id':this.edit.class_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);

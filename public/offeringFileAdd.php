@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the course to.
+// tnid:         The ID of the tenant to add the course to.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
@@ -32,10 +32,10 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['business_id'], 'ciniki.courses.offeringFileAdd'); 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringFileAdd'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -70,11 +70,11 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     //
     // Add the course to the database
     //
-    $strsql = "INSERT INTO ciniki_course_offering_files (uuid, business_id, "
+    $strsql = "INSERT INTO ciniki_course_offering_files (uuid, tnid, "
         . "course_id, offering_id, file_id, "
         . "date_added, last_updated) VALUES ("
         . "'" . ciniki_core_dbQuote($ciniki, $args['uuid']) . "', "
-        . "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
+        . "'" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "', "
         . "'" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "', "
         . "'" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "', "
         . "'" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "', "
@@ -103,7 +103,7 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     foreach($changelog_fields as $field) {
         if( isset($args[$field]) ) {
             $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 
-                'ciniki_course_history', $args['business_id'], 
+                'ciniki_course_history', $args['tnid'], 
                 1, 'ciniki_course_offering_files', $offering_file_id, $field, $args[$field]);
         }
     }
@@ -117,11 +117,11 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'courses');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
 
     $ciniki['syncqueue'][] = array('push'=>'ciniki.courses.offering_file', 
         'args'=>array('id'=>$offering_file_id));

@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_courses_web_instructorDetails($ciniki, $settings, $business_id, $permalink) {
+function ciniki_courses_web_instructorDetails($ciniki, $settings, $tnid, $permalink) {
 
     $strsql = "SELECT ciniki_course_instructors.id, "
         . "CONCAT_WS(' ', ciniki_course_instructors.first, ciniki_course_instructors.last) AS name, "
@@ -29,7 +29,7 @@ function ciniki_courses_web_instructorDetails($ciniki, $settings, $business_id, 
             . "ciniki_course_instructors.id = ciniki_course_instructor_images.instructor_id "
             . "AND (ciniki_course_instructor_images.webflags&0x01) = 0 "
             . ") "
-        . "WHERE ciniki_course_instructors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_course_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_course_instructors.permalink = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' "
         // Check the instructor is visible on the website
         . "AND (ciniki_course_instructors.webflags&0x01) = 0 "

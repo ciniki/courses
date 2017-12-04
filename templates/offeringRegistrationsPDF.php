@@ -11,14 +11,14 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_id, $offering_id, $business_details, $courses_settings) {
+function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $offering_id, $tenant_details, $courses_settings) {
 
     //
     // Load the class
     //
     $rsp = array('stat'=>'ok');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringLoad');
-    $rc = ciniki_courses_offeringLoad($ciniki, $business_id, $offering_id, 
+    $rc = ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, 
         array('classes'=>'yes', 'instructors'=>'yes', 'reglist'=>'yes'));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -44,7 +44,7 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
         public $header_addr = array();
         public $header_details = array();
         public $header_height = 0;      // The height of the image and address
-        public $business_details = array();
+        public $tenant_details = array();
         public $courses_settings = array();
 
         public function Header() {
@@ -65,7 +65,7 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
     $pdf = new MYPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
     //
-    // Figure out the header business name and address information
+    // Figure out the header tenant name and address information
     //
     $pdf->header_height = 0;
     $pdf->header_name = '';
@@ -76,14 +76,14 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
     //
     if( isset($courses_settings['default-header-image']) && $courses_settings['default-header-image'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
-        $rc = ciniki_images_loadImage($ciniki, $business_id, 
+        $rc = ciniki_images_loadImage($ciniki, $tnid, 
             $courses_settings['default-header-image'], 'original');
         if( $rc['stat'] == 'ok' ) {
             $pdf->header_image = $rc['image'];
         }
     }
 
-    $pdf->business_details = $business_details;
+    $pdf->tenant_details = $tenant_details;
     $pdf->courses_settings = $courses_settings;
 
 //  print "<pre>" . print_r($offering, true) . "</pre>";
@@ -122,7 +122,7 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
     // Setup the PDF basics
     //
     $pdf->SetCreator('Ciniki');
-    $pdf->SetAuthor($business_details['name']);
+    $pdf->SetAuthor($tenant_details['name']);
     $pdf->SetTitle($offering['code'] . ' - ' . $offering['offering_name']);
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
@@ -214,7 +214,7 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
         //
         $student_information = $reg['student_name'] . "\n";
         if( $reg['student_id'] > 0 ) {
-            $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, 
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, 
                 array('customer_id'=>$reg['student_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -260,15 +260,15 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
             $student_information .= "\n" . $reg['notes'];
         }
 
-        // If a business, then convert "Payment Required" to "Invoice"
-        $business_information = '';
+        // If a tenant, then convert "Payment Required" to "Invoice"
+        $tenant_information = '';
         if( $reg['student_id'] != $reg['customer_id'] ) {
-            $rc = ciniki_customers_hooks_customerDetails($ciniki, $business_id, 
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, 
                 array('customer_id'=>$reg['customer_id'], 'addresses'=>'yes', 'phones'=>'yes', 'emails'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
-            $business_information = $reg['customer_name'] . "\n";
+            $tenant_information = $reg['customer_name'] . "\n";
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
                 if( isset($customer['phones']) ) {
@@ -286,9 +286,9 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
                         }
                     }
                     if( count($customer['phones']) > 0 ) {
-                        $business_information .= $phones . "\n";
+                        $tenant_information .= $phones . "\n";
                     } else {
-                        $business_information .= "Phone: \n";
+                        $tenant_information .= "Phone: \n";
                     }
                 }
                 if( isset($customer['emails']) ) {
@@ -297,13 +297,13 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
                     foreach($customer['emails'] as $e => $email) {
                         $emails .= ($emails!=''?', ':'') . $email['email']['address'];
                     }
-                    $business_information .= $emails . "\n";
+                    $tenant_information .= $emails . "\n";
                 }
             }
         }
 
         // Calculate the line height required
-        $lh = $pdf->getStringHeight($w[1], $business_information);
+        $lh = $pdf->getStringHeight($w[1], $tenant_information);
         $lh1 = $pdf->getStringHeight($w[1], $student_information);
         $lh2 = $pdf->getStringHeight($w[2], $reg['invoice_status_text']);
         if( $lh1 > $lh ) { $lh = $lh1; }
@@ -327,7 +327,7 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $business_i
 
         $pdf->MultiCell($w[0], $lh, $student_information, 1, 'L', $fill, 0);
         if( $parents == 'yes' ) {
-            $pdf->MultiCell($w[1], $lh, $business_information, 1, 'L', $fill, 0);
+            $pdf->MultiCell($w[1], $lh, $tenant_information, 1, 'L', $fill, 0);
         }
         $pdf->MultiCell($w[2], $lh, $reg['invoice_status_text'], 1, 'L', $fill, 0);
         $pdf->Ln();
