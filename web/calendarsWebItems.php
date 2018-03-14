@@ -30,6 +30,13 @@ function ciniki_courses_web_calendarsWebItems($ciniki, $settings, $tnid, $args) 
     }
 
     //
+    // Check if this modules items are to be included in the calendar
+    //
+    if( isset($settings['ciniki-courses-calendar-include']) && $settings['ciniki-courses-calendar-include'] == 'no' ) {
+        return array('stat'=>'ok');
+    }
+
+    //
     // Check if colours specified
     //
     $style = '';
