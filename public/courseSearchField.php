@@ -49,6 +49,7 @@ function ciniki_courses_courseSearchField($ciniki) {
         . "WHERE ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $strsql .= "AND ciniki_courses." . $args['field'] . " LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' ";
+    $strsql .= "AND ciniki_courses." . $args['field'] . " <> '' ";
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
         $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";   // is_numeric verified
     } else {

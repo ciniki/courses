@@ -32,7 +32,11 @@ function ciniki_courses_web_courseList($ciniki, $settings, $tnid, $type, $when) 
         . "LEFT JOIN ciniki_courses ON (ciniki_course_offerings.course_id = ciniki_courses.id "
             . "";
     if( $type != '' ) {
-        $strsql .= "AND ciniki_courses.type = '" . ciniki_core_dbQuote($ciniki, $type) . "' ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x10) ) {
+            $strsql .= "AND ciniki_courses.type = '" . ciniki_core_dbQuote($ciniki, $type) . "' ";
+        } else {
+            $strsql .= "AND ciniki_courses.category = '" . ciniki_core_dbQuote($ciniki, $type) . "' ";
+        }
     }
     $strsql .= "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "') "
         . "LEFT JOIN ciniki_course_offering_classes ON (ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "

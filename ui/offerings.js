@@ -312,7 +312,7 @@ function ciniki_courses_offerings() {
             'level':{'label':'Level', 'type':'text'},
             'type':{'label':'Type', 'active':'no', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
             'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Children'}}},
-            'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
+            'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
             }},
         'offering':{'label':'Session', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
