@@ -62,7 +62,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'code', 'offering_code', 'level', 'permalink', 'start_date_ts', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
+            'fields'=>array('id', 'course_id', 'name', 'code', 'offering_code', 'level', 'permalink', 'start_date_ts', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
                 'level', 'type', 'category', 'long_description', 'condensed_date')),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'class_date', 'start_date_ts', 'start_time', 'end_time')),
@@ -116,6 +116,29 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
         if( isset($rc['files']) ) {
             $offering['files'] = $rc['files'];
         }
+    }
+
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0200) ) {
+        $strsql = "SELECT id, "
+            . "name, "
+            . "permalink, "
+            . "flags, "
+            . "image_id, "
+            . "description, "
+            . "UNIX_TIMESTAMP(last_updated) AS last_updated "
+            . "FROM ciniki_course_images "
+            . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $offering['course_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.lapt', array(
+            array('container'=>'images', 'fname'=>'id', 
+                'fields'=>array('id', 'title'=>'name', 'permalink', 'flags', 'image_id', 'description', 'last_updated')),
+        ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $offering['images'] = isset($rc['images']) ? $rc['images'] : array();
     }
 
     //

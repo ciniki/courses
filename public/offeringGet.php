@@ -25,6 +25,7 @@ function ciniki_courses_offeringGet($ciniki) {
         'instructors'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Instructor'),
         'prices'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Prices'),
         'files'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Files'),
+        'images'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Images'),
         'registrations'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registrations'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -223,6 +224,38 @@ function ciniki_courses_offeringGet($ciniki) {
             $offering['files'] = $rc['files'];
         } else {
             $offering['files'] = array();
+        }
+    }
+
+    if( isset($args['images']) && $args['images'] == 'yes' ) {
+        $strsql = "SELECT id, "
+            . "name, "
+            . "flags, "
+            . "image_id, "
+            . "description "
+            . "FROM ciniki_course_images "
+            . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $offering['course_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.lapt', array(
+            array('container'=>'images', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'flags', 'image_id', 'description')),
+        ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $offering['images'] = isset($rc['images']) ? $rc['images'] : array();
+
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheThumbnail');
+        foreach($offering['images'] as $img_id => $img) {
+            if( isset($img['image_id']) && $img['image_id'] > 0 ) {
+                $rc = ciniki_images_loadCacheThumbnail($ciniki, $args['tnid'], $img['image_id'], 75);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $offering['images'][$img_id]['image_data'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
+            }
         }
     }
 

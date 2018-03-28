@@ -47,6 +47,22 @@ function ciniki_courses_objects($ciniki) {
             ),
         'history_table'=>'ciniki_course_history',
         );
+    $objects['image'] = array(
+        'name'=>'Image',
+        'sync'=>'yes',
+        'o_name'=>'image',
+        'o_container'=>'images',
+        'table'=>'ciniki_course_images',
+        'fields'=>array(
+            'course_id'=>array('name'=>'Course', 'ref'=>'ciniki.courses.course'),
+            'name'=>array('name'=>'Name', 'default'=>''),
+            'permalink'=>array('name'=>'Permalink', 'default'=>''),
+            'flags'=>array('name'=>'Options', 'default'=>0),
+            'image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image'),
+            'description'=>array('name'=>'Description', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_course_history',
+        );
     $objects['instructor'] = array(
         'name'=>'Instructor',
         'sync'=>'yes',

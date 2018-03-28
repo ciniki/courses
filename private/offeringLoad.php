@@ -188,6 +188,27 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
         }
     }
 
+    if( isset($args['images']) && $args['images'] == 'yes' ) {
+        $strsql = "SELECT id, "
+            . "name, "
+            . "flags, "
+            . "image_id, "
+            . "description "
+            . "FROM ciniki_course_images "
+            . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $offering['course_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.lapt', array(
+            array('container'=>'images', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'flags', 'image_id', 'description')),
+        ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $offering['images'] = isset($rc['images']) ? $rc['images'] : array();
+    }
+
     //
     // Get the number of registrations, if set for the offering
     //
