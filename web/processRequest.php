@@ -586,6 +586,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 $content .= "<h2>Files</h2>";
                 foreach($offering['files'] as $fid => $file) {
                     $url = $args['base_url'] . '/download/' . $file['permalink'] . '.' . $file['extension'];
+                    $content .= "<p><a target='_blank' href='" . $url . "' title='" . $file['name'] . "'>" . $file['name'] . "</a></p>";
                 }
             }
         }
