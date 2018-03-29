@@ -838,11 +838,20 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             $page_content = '';
              
             if( count($categories) > 0 ) {
-                $page['blocks'][] = array('type'=>'cilist', 
-                    'base_url' => $base_url, 
-                    'title' => $name,
-                    'categories' => $categories,
-                    );
+                //if( isset($settings["page-courses--name"]) && $settings["page-courses-$type-name"] != '' ) {
+                if( isset($settings['page-courses-list-format']) && $settings['page-courses-list-format'] == 'cilist' ) {
+                    $page['blocks'][] = array('type'=>'cilist', 
+                        'base_url' => $base_url, 
+                        'title' => $name,
+                        'categories' => $categories,
+                        );
+                } else {
+                    $page['blocks'][] = array('type'=>'clist', 
+                        'base_url' => $base_url, 
+                        'title' => $name,
+                        'categories' => $categories,
+                        );
+                }
                //
                // The following content was removed Mar 28, 2018 and converted to newer block format.
                //
