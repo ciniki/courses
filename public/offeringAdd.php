@@ -35,6 +35,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Web Flags'), 
         'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Class Date'),
+        'skip_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Skip Date'),
         'start_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Start Time'),
         'end_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'End Time'),
         'num_weeks'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Num Weeks'),
@@ -128,6 +129,13 @@ function ciniki_courses_offeringAdd(&$ciniki) {
             );
         for($i=0;$i<$repeat;$i++) {
             $class_args['class_date'] = date_format($cur_date, 'Y-m-d');
+            if( isset($args['skip_date']) && $class_args['class_date'] == $args['skip_date'] ) {
+                //
+                // Calculate next class date
+                //
+                $cur_date = date_add($cur_date, new DateInterval('P7D'));
+                $class_args['class_date'] = date_format($cur_date, 'Y-m-d');
+            }
             $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_class', $class_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
