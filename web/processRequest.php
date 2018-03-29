@@ -845,6 +845,14 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                         'title' => $name,
                         'categories' => $categories,
                         );
+                } elseif( isset($settings['page-courses-list-format']) && $settings['page-courses-list-format'] == 'imagelist' ) {
+                    foreach($categories as $cat) {
+                        $page['blocks'][] = array('type'=>'imagelist', 
+                            'base_url' => $base_url, 
+                            'title' => $name . ' - ' . $cat['name'],
+                            'list' => $cat['list'],
+                            );
+                    }
                 } else {
                     $page['blocks'][] = array('type'=>'clist', 
                         'base_url' => $base_url, 
