@@ -68,16 +68,33 @@ function ciniki_courses_web_courseList($ciniki, $settings, $tnid, $type, $when) 
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'categories', 'fname'=>'category', 
             'fields'=>array('name'=>'category')),
-        array('container'=>'offerings', 'fname'=>'id', 
-            'fields'=>array('id', 'course_id', 'name'=>'course_name', 'level', 
+        array('container'=>'list', 'fname'=>'id', 
+            'fields'=>array('id', 'course_id', 'course_name', 'level', 
                 'course_permalink', 'permalink', 'code', 'offering_code', 'image_id'=>'primary_image_id', 
-                'start_date', 'end_date', 'short_description', 'condensed_date', 'is_details')),
+                'start_date', 'end_date', 'short_description', 'subtitle'=>'condensed_date', 'is_details')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( !isset($rc['categories']) ) {
         return array('stat'=>'ok', 'categories'=>array());
+    }
+
+    foreach($rc['categories'] as $cid => $cat) {
+        foreach($cat['list'] as $lid => $item) {
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x01) && $item['code'] != '' ) {
+                $rc['categories'][$cid]['list'][$lid]['title'] = $item['code'] . ' - ' . $item['course_name'];
+            } elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x20) && $item['offering_code'] != '' ) {
+                $rc['categories'][$cid]['list'][$lid]['title'] = $item['offering_code'] . ' - ' . $item['course_name'];
+            } else {
+                $rc['categories'][$cid]['list'][$lid]['title'] = $item['course_name'];
+            }
+            if( $item['is_details'] == 'yes' ) {
+                $rc['categories'][$cid]['list'][$lid]['permalink'] = $item['course_permalink'] . '/' . $item['permalink'];
+            } else {
+                $rc['categories'][$cid]['list'][$lid]['permalink'] = '';
+            }
+        }
     }
 
     return array('stat'=>'ok', 'categories'=>$rc['categories']);

@@ -836,9 +836,17 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 $name = ucwords($type . "");
             }
             $page_content = '';
-
+             
             if( count($categories) > 0 ) {
-                $page_content .= "<table class='clist'>\n";
+                $page['blocks'][] = array('type'=>'cilist', 
+                    'base_url' => $base_url, 
+                    'title' => $name,
+                    'categories' => $categories,
+                    );
+               //
+               // The following content was removed Mar 28, 2018 and converted to newer block format.
+               //
+/*                $page_content .= "<table class='clist'>\n";
                 $prev_category = NULL;
                 $num_categories = count($categories);
                 foreach($categories as $cnum => $c) {
@@ -855,7 +863,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                         // Only the blank category
                         $offering = reset($c['offerings']);
                         $page_content .= "<tr><th>"
-                            . "<span class='clist-category'>" . $offering['condensed_date'] . "</span></th>"
+                            . "<span class='clist-category'>" . $offering['subtitle'] . "</span></th>"
                             . "<td>";
                         $hide_dates = 'yes';
                     } else {
@@ -863,18 +871,18 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                             . "<span class='clist-category'></span></th>"
                             . "<td>";
                     }
-                    foreach($c['offerings'] as $onum => $offering) {
+                    foreach($c['list'] as $onum => $offering) {
                         if( $offering['is_details'] == 'yes' ) {
                             $offering_url = $base_url . '/' . $offering['course_permalink'] . '/' . $offering['permalink'];
                         } else {
                             $offering_url = '';
                         }
                         if( ($ciniki['tenant']['modules']['ciniki.courses']['flags']&0x01) == 0x01 && $offering['code'] != '' ) {
-                            $offering_name = $offering['code'] . ' - ' . $offering['name'];
+                            $offering_name = $offering['code'] . ' - ' . $offering['course_name'];
                         } elseif( ($ciniki['tenant']['modules']['ciniki.courses']['flags']&0x20) == 0x20 && $offering['offering_code'] != '' ) {
-                            $offering_name = $offering['offering_code'] . ' - ' . $offering['name'];
+                            $offering_name = $offering['offering_code'] . ' - ' . $offering['course_name'];
                         } else {
-                            $offering_name = $offering['name'];
+                            $offering_name = $offering['course_name'];
                         }
                         if( isset($settings['page-courses-level-display']) 
                             && $settings['page-courses-level-display'] == 'yes' 
@@ -889,7 +897,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                             $page_content .= "<p class='clist-title'>" . $offering_name . "</p>";
                         }
                         if( $hide_dates != 'yes' ) {
-                            $page_content .= "<p class='clist-subtitle'>" . $offering['condensed_date'] . "</p>";
+                            $page_content .= "<p class='clist-subtitle'>" . $offering['subtitle'] . "</p>";
                         }
                         $rc = ciniki_web_processContent($ciniki, $settings, $offering['short_description'], 'clist-description');   
                         if( $rc['stat'] != 'ok' ) {
@@ -901,13 +909,17 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                             $page_content .= "<p class='clist-url clist-more'><a href='" . $offering_url . "'>... more</a></p>";
                         }
                     }
-                }
+                } 
+                $page_content .= "</td></tr>\n</table>\n";
+                $page['blocks'][] = array('type'=>'content', 'title'=>$name, 'html'=>$page_content); */
             } else {
-                $page_content .= "<p>No " . strtolower($name) . " found</p>";
-            }
-            $page_content .= "</td></tr>\n</table>\n";
-            $page['blocks'][] = array('type'=>'content', 'title'=>$name, 'html'=>$page_content);
-        }
+//                $page_content .= "<p>No " . strtolower($name) . " found</p>";
+                $page['blocks'][] = array('type'=>'content', 'title'=>$name, 'content'=>"None found");
+            } 
+//            $page_content .= "</td></tr>\n</table>\n";
+//            $page['blocks'][] = array('type'=>'content', 'title'=>$name, 'html'=>$page_content);
+        } 
+
         //
         // Check if no submenu going to be displayed, then need to display registration information here
         //
