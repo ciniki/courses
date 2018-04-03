@@ -172,6 +172,12 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
     ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
 
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.courses.offering', 'object_id'=>$offering_id));
+
     return array('stat'=>'ok', 'id'=>$offering_id);
 }
 ?>

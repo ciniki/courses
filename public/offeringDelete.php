@@ -152,6 +152,12 @@ function ciniki_courses_offeringDelete(&$ciniki) {
         return $rc;
     }
 
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.courses.offering', 'object_id'=>$args['offering_id']));
+
     return array('stat'=>'ok');
 }
 ?>

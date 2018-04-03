@@ -86,6 +86,24 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
     // Update the offering
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    return ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.offering', $args['offering_id'], $args, 0x07);
+    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.offering', $args['offering_id'], $args, 0x07);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.109', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
+    }
+
+    //
+    // Update the last_change date in the tenant modules
+    // Ignore the result, as we don't want to stop user updates if this fails.
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
+
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.courses.offering', 'object_id'=>$args['offering_id']));
+    
+    return array('stat'=>'ok');
 }
 ?>

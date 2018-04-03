@@ -94,6 +94,39 @@ function ciniki_courses_courseUpdate(&$ciniki) {
     // Update the course
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    return ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.course', $args['course_id'], $args, 0x07);
+    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.course', $args['course_id'], $args, 0x07);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.110', 'msg'=>'Unable to update course', 'err'=>$rc['err']));
+    }
+
+    //
+    // Find list of offerings and run web index update
+    //
+    $strsql = "SELECT id FROM ciniki_course_offerings "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'course');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['rows']) ) {
+        foreach($rc['rows'] as $row) {
+            //
+            // Update the web index if enabled
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+            ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.courses.offering', 'object_id'=>$row['id']));
+        }
+    }
+
+    //
+    // Update the last_change date in the tenant modules
+    // Ignore the result, as we don't want to stop user updates if this fails.
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
+
+    return array('stat'=>'ok');
 }
 ?>

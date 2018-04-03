@@ -17,11 +17,11 @@
 # permalink:        The permalink for the course offering.
 # status:           The current status of the course offering.
 #
-#                   10 - active
+#                       10 - active
 #               
 # webflags:         The webflags for each offering.
 #
-#                   0x01 - Hidden, do not display on website.
+#                       0x01 - Hidden, do not display on website.
 #
 # condensed_date:   The single string describing the dates for the course.
 #
@@ -29,10 +29,10 @@
 #
 # reg_flags:        The flags to control how registrations are handled.
 #
-#                   0x01 - Admin registrations enabled
-#                   0x02 - Online registrations enabled
-#                   0x04 -
-#                   0x08 - 
+#                       0x01 - Admin registrations enabled
+#                       0x02 - Online registrations enabled
+#                       0x04 -
+#                       0x08 - 
 #
 # date_added:       The UTC date and time the record was added.
 # last_updated:     The UTC date and time the record was last changed;
