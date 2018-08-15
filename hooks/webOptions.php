@@ -69,6 +69,16 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $tnid, $args) {
     // The detailed pages
     //
     $options = array();
+/*    $options[] = array(
+        'label'=>'Course Dates Format',
+        'setting'=>'page-courses-course-dates-format', 
+        'type'=>'toggle',
+        'value'=>(isset($settings['page-courses-course-dates-format'])?$settings['page-courses-course-dates-format']:'compressed'),
+        'toggles'=>array(
+            array('value'=>'compressed', 'label'=>'Compressed'),
+            array('value'=>'list', 'label'=>'List'),
+            ),
+        ); */
     $pages['ciniki.courses.intro'] = array('name'=>'Courses - Introduction', 'options'=>$options);
     $pages['ciniki.courses.active'] = array('name'=>'Courses - Current & Upcoming', 'options'=>$options);
     $pages['ciniki.courses.instructors'] = array('name'=>'Courses - Instructors', 'options'=>$options);
