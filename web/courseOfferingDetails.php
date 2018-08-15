@@ -43,6 +43,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
         . "ciniki_course_offering_classes.id AS class_id, "
         . "DATE_FORMAT(ciniki_course_offering_classes.class_date, '%W %b %e, %Y') AS class_date, "
         . "UNIX_TIMESTAMP(MIN(ciniki_course_offering_classes.class_date)) AS start_date_ts, "
+        . "MIN(ciniki_course_offering_classes.class_date) AS first_date, "
         . "TIME_FORMAT(ciniki_course_offering_classes.start_time, '%l:%i %p') AS start_time, "
         . "TIME_FORMAT(ciniki_course_offering_classes.end_time, '%l:%i %p') AS end_time "
         . "FROM ciniki_course_offerings "
@@ -62,7 +63,8 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 
-            'fields'=>array('id', 'course_id', 'name', 'code', 'offering_code', 'level', 'permalink', 'start_date_ts', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
+            'fields'=>array('id', 'course_id', 'name', 'code', 'offering_code', 'level', 'permalink', 
+                'first_date', 'start_date_ts', 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
                 'level', 'type', 'category', 'long_description', 'condensed_date')),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'class_date', 'start_date_ts', 'start_time', 'end_time')),
@@ -81,15 +83,20 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
     $reg = 'no';
     if( ($offering['reg_flags']&0x02) > 0 && isset($offering['classes']) ) {
         $reg = 'yes';
+        $fdt = new DateTime($offering['first_date'], new DateTimeZone($intl_timezone));
+        $fdt->setTime(3,0,0);
         $dt = new DateTime('now', new DateTimeZone($intl_timezone));
-        $dt->setTime(23,59,59);
-        $dt->setTimezone(new DateTimeZone('UTC'));
-        $end_of_cur_day = $dt->format('U');
-        foreach($offering['classes'] as $class) {
-            if( $class['start_date_ts'] < $end_of_cur_day ) {
-                $reg = 'no';
-            }
+        if( $dt->format('U') > $fdt->format('U') ) {
+            $reg = 'no';
         }
+        // **** OLD METHOD of calculating if reg should still be open
+        //$dt->setTimezone(new DateTimeZone('UTC'));
+//        $end_of_cur_day = $dt->format('U');
+//        foreach($offering['classes'] as $class) {
+//            if( $class['start_date_ts'] < $end_of_cur_day ) {
+//                $reg = 'no';
+//            }
+//        }
     }
 
     //
