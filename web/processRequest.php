@@ -319,16 +319,16 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 if( $rc['img']['title'] != '' ) {
                     $page['title'] .= ' - ' . $rc['img']['title'];
                 }
-                $page['breadcrumbs'][] = array('name'=>$rc['img']['title'], 'url'=>$args['base_url'] . '/gallery/' . $image_permalink);
+                $page['breadcrumbs'][] = array('name'=>$rc['img']['title'], 'url'=>$args['base_url'] . '/' . $instructor_permalink . '/gallery/' . $image_permalink);
                 if( $rc['img']['title'] != '' ) {
                     $page['title'] .= ' - ' . $rc['img']['title'];
                 }
                 $block = array('type'=>'galleryimage', 'section'=>'instructor-image', 'primary'=>'yes', 'image'=>$rc['img']);
                 if( $rc['prev'] != null ) {
-                    $block['prev'] = array('url'=>$args['base_url'] . '/gallery/' . $rc['prev']['permalink'], 'image_id'=>$rc['prev']['image_id']);
+                    $block['prev'] = array('url'=>$args['base_url'] . '/' . $instructor_permalink . '/gallery/' . $rc['prev']['permalink'], 'image_id'=>$rc['prev']['image_id']);
                 }
                 if( $rc['next'] != null ) {
-                    $block['next'] = array('url'=>$args['base_url'] . '/gallery/' . $rc['next']['permalink'], 'image_id'=>$rc['next']['image_id']);
+                    $block['next'] = array('url'=>$args['base_url'] . '/' . $instructor_permalink . '/gallery/' . $rc['next']['permalink'], 'image_id'=>$rc['next']['image_id']);
                 }
                 $page['blocks'][] = $block;
             }
