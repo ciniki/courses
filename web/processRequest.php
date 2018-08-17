@@ -570,7 +570,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         // The classes for a course offering
         //
         if( isset($offering['classes']) && count($offering['classes']) > 1 ) {
-            $content .= "<h2>Courses</h2><p>";
+            $content .= "<h2>Class Dates</h2><p>";
             foreach($offering['classes'] as $cid => $class) {
                 $content .= $class['class_date'] . " " . $class['start_time'] . " - " . $class['end_time'] . "<br/>";
             }
