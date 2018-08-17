@@ -35,6 +35,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Web Flags'), 
         'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Class Date'),
+        'days'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Days of the week for courses'),
         'skip_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Skip Date'),
         'start_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Start Time'),
         'end_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'End Time'),
@@ -120,6 +121,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
             $repeat = 1;
         }
         $cur_date = date_create('@' . strtotime($args['class_date']));
+        $start_day = $cur_date->format('N');
         $class_args = array(
             'course_id'=>$args['course_id'],
             'offering_id'=>$offering_id,
@@ -145,7 +147,29 @@ function ciniki_courses_offeringAdd(&$ciniki) {
             //
             // Calculate next class date
             //
-            $cur_date = date_add($cur_date, new DateInterval('P7D'));
+            if( isset($args['days']) && $args['days'] > 0 ) {
+                //
+                // Check for other days of the week that need to be added, only check next 6 days
+                //
+                for($j=0;$j<6;$j++) {
+                    $cur_date->add(new DateInterval('P1D'));
+                    $day = $cur_date->format('N');
+                    if( in_array($day, $args['days']) ) {
+                        $class_args['class_date'] = date_format($cur_date, 'Y-m-d');
+                        $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_class', $class_args, 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                            return $rc;
+                        }
+                    }
+                }
+                //
+                // Advance 1 more day to get to the same day of the week that the first date is on
+                //
+                $cur_date = date_add($cur_date, new DateInterval('P1D'));
+            } else {
+                $cur_date = date_add($cur_date, new DateInterval('P7D'));
+            }
         }
         //
         // Update the condensed date

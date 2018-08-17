@@ -342,6 +342,7 @@ function ciniki_courses_offerings() {
             'status':{'label':'Status', 'type':'toggle', 'default':'10', 'toggles':this.statusToggles},
             'webflags':{'label':'Web', 'type':'flags', 'toggle':'no', 'join':'yes', 'flags':this.webFlags},
             'class_date':{'label':'Date', 'active':'no', 'type':'date', 'size':'small'},
+            'days':{'label':'Days', 'active':'no', 'none':'yes', 'type':'multiselect', 'options':['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']},
             'skip_date':{'label':'Skip', 'active':'no', 'type':'date', 'size':'small'},
             'start_time':{'label':'Start', 'active':'no', 'type':'text', 'size':'small'},
             'end_time':{'label':'End', 'active':'no', 'type':'text', 'size':'small'},
@@ -672,6 +673,7 @@ function ciniki_courses_offerings() {
                     p.data = rsp.offering;
                     p.course_id = rsp.offering.course_id;
                     p.sections.offering.fields.class_date.active = 'no';
+                    p.sections.offering.fields.days.active = 'no';
                     p.sections.offering.fields.skip_date.active = 'no';
                     p.sections.offering.fields.start_time.active = 'no';
                     p.sections.offering.fields.end_time.active = 'no';
@@ -693,6 +695,7 @@ function ciniki_courses_offerings() {
                     p.data['course_name'] = rsp.course.name;
                     p.course_id = rsp.course.id;
                     p.sections.offering.fields.class_date.active = 'yes';
+                    p.sections.offering.fields.days.active = 'yes';
                     p.sections.offering.fields.skip_date.active = 'yes';
                     p.sections.offering.fields.start_time.active = 'yes';
                     p.sections.offering.fields.end_time.active = 'yes';
@@ -705,6 +708,7 @@ function ciniki_courses_offerings() {
             var p = M.ciniki_courses_offerings.edit;
             p.data = {};
             p.sections.offering.fields.class_date.active = 'yes';
+            p.sections.offering.fields.days.active = 'yes';
             p.sections.offering.fields.skip_date.active = 'yes';
             p.sections.offering.fields.start_time.active = 'yes';
             p.sections.offering.fields.end_time.active = 'yes';
