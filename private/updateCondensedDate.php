@@ -133,6 +133,12 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
                 foreach($day_names as $name) {
                     $condensed_date .= ($condensed_date != '' ? ', ' : '') . $name;
                 }
+                //
+                // Add the start and end date
+                //
+                $condensed_date .= ' ' . $first_date['month'] . ' ' . $first_date['day'] 
+                    . ' - ' . $last_date['month'] . ' ' . $last_date['day'];
+                // Check if dates can be reduced further
                 $condensed_date = str_replace('Sun, Mon, Tue, Wed, Thu, Fri, Sat ', 'Sun - Sat ', $condensed_date);
                 $condensed_date = str_replace('Sun, Mon, Tue, Wed, Thu, Fri ', 'Sun - Fri ', $condensed_date);
                 $condensed_date = str_replace('Sun, Mon, Tue, Wed, Thu ', 'Sun - Thu ', $condensed_date);
@@ -148,11 +154,9 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
                 $condensed_date = str_replace('Wed, Thu, Fri, Sat ', 'Wed - Sat ', $condensed_date);
                 $condensed_date = str_replace('Wed, Thu, Fri ', 'Wed - Fri ', $condensed_date);
                 $condensed_date = str_replace('Thu, Fri, Sat ', 'Thu - Sat ', $condensed_date);
-                //
-                // Add the start and end date
-                //
-                $condensed_date .= ' ' . $first_date['month'] . ' ' . $first_date['day'] 
-                    . ' - ' . $last_date['month'] . ' ' . $last_date['day'];
+                if( $sametime == 'yes' ) {
+                    $condensed_date .= ' ' . $prev_time;
+                }
             }
         } else {
             // 
