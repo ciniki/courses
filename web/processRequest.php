@@ -367,7 +367,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
 
             if( isset($instructor['images']) && count($instructor['images']) > 0 ) {
                 $page['blocks'][] = array('type'=>'gallery', 'section'=>'gallery', 'title'=>'Additional Images', 
-                    'base_url'=>$args['base_url'] . "/instructor/" . $instructor['permalink'] . "/gallery",
+                    'base_url'=>$args['base_url'] . "/" . $instructor['permalink'] . "/gallery",
                     'images'=>$instructor['images']);
             }
         }
