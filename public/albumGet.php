@@ -96,6 +96,7 @@ function ciniki_courses_albumGet($ciniki) {
             . "ciniki_course_albums.permalink, "
             . "ciniki_course_albums.flags, "
             . "ciniki_course_albums.sequence, "
+            . "ciniki_course_albums.primary_image_id, "
             . "ciniki_course_albums.description "
             . "FROM ciniki_course_albums "
             . "WHERE ciniki_course_albums.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -103,7 +104,7 @@ function ciniki_courses_albumGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'albums', 'fname'=>'id', 
-                'fields'=>array('course_id', 'offering_id', 'name', 'permalink', 'flags', 'sequence', 'description'),
+                'fields'=>array('course_id', 'offering_id', 'name', 'permalink', 'flags', 'sequence', 'primary_image_id', 'description'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

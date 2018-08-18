@@ -67,11 +67,20 @@ function ciniki_courses_albums() {
     //
     // The panel to edit Photo Album
     //
-    this.album = new M.panel('Photo Album', 'ciniki_courses_albums', 'album', 'mc', 'medium', 'sectioned', 'ciniki.courses.albums.album');
+    this.album = new M.panel('Photo Album', 'ciniki_courses_albums', 'album', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.courses.albums.album');
     this.album.data = null;
     this.album.album_id = 0;
     this.album.nplist = [];
     this.album.sections = {
+        '_image':{'label':'Photo', 'type':'imageform', 'aside':'yes', 'fields':{
+            'primary_image_id':{'label':'', 'required':'yes', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_courses_albums.album.setFieldValue('primary_image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                },
+        }},
         'general':{'label':'', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Visible'}}},
@@ -80,8 +89,8 @@ function ciniki_courses_albums() {
         '_description':{'label':'Description', 'aside':'yes', 'fields':{
             'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
             }},
-        'images':{'label':'Images', 'aside':'yes', 'type':'simplethumbs'},
-        '_images':{'label':'', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
+        'images':{'label':'Images', 'aside':'no', 'type':'simplethumbs'},
+        '_images':{'label':'', 'aside':'no', 'type':'simplegrid', 'num_cols':1,
             'addTxt':'Add Image',
             'addFn':'M.ciniki_courses_albums.album.save("M.ciniki_courses_albums.image.open(\'M.ciniki_courses_albums.album.addDropImageRefresh();\',M.ciniki_courses_albums.album.album_id,0);");',
             },

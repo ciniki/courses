@@ -1,0 +1,5 @@
+#
+# Add the primary image field to the table.
+#
+ALTER TABLE ciniki_course_albums ADD COLUMN primary_image_id int not null AFTER sequence;
+ALTER TABLE ciniki_course_albums COMMENT='v1.02';

@@ -193,6 +193,7 @@ function ciniki_courses_objects($ciniki) {
             'permalink'=>array('name'=>'Permalink'),
             'flags'=>array('name'=>'Options', 'default'=>0),
             'sequence'=>array('name'=>'Name', 'default'=>'1'),
+            'primary_image_id'=>array('name'=>'Image', 'default'=>'0'),
             'description'=>array('name'=>'Name', 'default'=>''),
             ),
         'history_table'=>'ciniki_course_history',

@@ -23,6 +23,7 @@ function ciniki_courses_albumUpdate(&$ciniki) {
         'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
+        'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         ));
     if( $rc['stat'] != 'ok' ) {

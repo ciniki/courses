@@ -157,7 +157,8 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         //
         // Get the list of galleries
         //
-        $strsql = "SELECT a.id, a.name, a.permalink, a.flags, a.description, i.image_id "
+        $strsql = "SELECT a.id, a.name, a.permalink, a.flags, a.description, a.primary_image_id, "
+            . "IF(a.primary_image_id > 0, a.primary_image_id, i.image_id) AS image_id "
             . "FROM ciniki_course_albums AS a "
             . "LEFT JOIN ciniki_course_album_images AS i ON ("
                 . "a.id = i.album_id "
@@ -169,7 +170,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             . "ORDER BY a.sequence, a.name, i.date_added ASC "
             . "";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
-            array('container'=>'albums', 'fname'=>'permalink', 'fields'=>array('id', 'name', 'permalink', 'flags', 'description', 'image_id')),
+            array('container'=>'albums', 'fname'=>'permalink', 'fields'=>array('id', 'name', 'permalink', 'flags', 'description', 'primary_image_id', 'image_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -239,6 +240,14 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                         $page['blocks'][] = $block;
                     }
                 } else {
+                    if( isset($album['description']) && $album['description'] != '' ) {
+//                        if( isset($album['primary_image_id']) && $album['primary_image_id'] != '' ) {
+//                            $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'primary'=>'yes', 
+//                                'image_id'=>$album['primary_image_id'],'title'=>$album['name'], 'caption'=>'');
+//                        }
+                        $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'wide'=>'yes', 'content'=>$album['description']);
+                    }
+
                     //
                     // Display the list of images
                     //
