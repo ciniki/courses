@@ -3,7 +3,7 @@
 //
 function ciniki_courses_offerings() {
     this.statusToggles = {'10':'Active', '60':'Deleted'};
-    this.webFlags = {'1':{'name':'Hidden'}};
+    this.webFlags = {'1':{'name':'Hidden'}, '2':{'name':'Hide Class Dates'}};
     this.regFlags = {
         '1':{'name':'Track Registrations'},
         '2':{'name':'Online Registrations'},
@@ -347,6 +347,7 @@ function ciniki_courses_offerings() {
             'start_time':{'label':'Start', 'active':'no', 'type':'text', 'size':'small'},
             'end_time':{'label':'End', 'active':'no', 'type':'text', 'size':'small'},
             'num_weeks':{'label':'Weeks', 'active':'no', 'type':'text', 'size':'small'},
+            'condensed_date':{'label':'Dates', 'active':'no', 'type':'text'},
             }},
         '_registrations':{'label':'Registrations', 'visible':'no', 'fields':{
             'reg_flags':{'label':'Options', 'active':'no', 'type':'flags', 'joined':'no', 'flags':this.regFlags},
@@ -663,46 +664,50 @@ function ciniki_courses_offerings() {
         if( this.edit.offering_id > 0 ) {
             var formname = 'Edit';
             this.edit.sections._buttons.buttons.delete.visible = 'yes';
-            var rsp = M.api.getJSONCb('ciniki.courses.offeringGet',
-                {'tnid':M.curTenantID, 'offering_id':this.edit.offering_id}, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    }
-                    var p = M.ciniki_courses_offerings.edit;
-                    p.data = rsp.offering;
-                    p.course_id = rsp.offering.course_id;
-                    p.sections.offering.fields.class_date.active = 'no';
-                    p.sections.offering.fields.days.active = 'no';
-                    p.sections.offering.fields.skip_date.active = 'no';
-                    p.sections.offering.fields.start_time.active = 'no';
-                    p.sections.offering.fields.end_time.active = 'no';
-                    p.sections.offering.fields.num_weeks.active = 'no';
-                    p.refresh();
-                    p.show(cb);
-                });
+            M.api.getJSONCb('ciniki.courses.offeringGet', {'tnid':M.curTenantID, 'offering_id':this.edit.offering_id, 'classes':'yes'}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_courses_offerings.edit;
+                p.data = rsp.offering;
+                p.course_id = rsp.offering.course_id;
+                p.sections.offering.fields.class_date.active = 'no';
+                p.sections.offering.fields.days.active = 'no';
+                p.sections.offering.fields.skip_date.active = 'no';
+                p.sections.offering.fields.start_time.active = 'no';
+                p.sections.offering.fields.end_time.active = 'no';
+                p.sections.offering.fields.num_weeks.active = 'no';
+                p.sections.offering.fields.condensed_date.active = 'no';
+                if( rsp.offering.classes != null && rsp.offering.classes.length == 0 ) {
+                    // Possible switch in the future
+                    //p.sections.offering.fields.condensed_date.active = 'yes';
+                }
+                p.refresh();
+                p.show(cb);
+            });
         } else if( this.edit.course_id > 0 ) {
             var formname = 'Add';
             this.edit.sections._buttons.buttons.delete.visible = 'no';
-            var rsp = M.api.getJSONCb('ciniki.courses.courseGet',
-                {'tnid':M.curTenantID, 'course_id':this.edit.course_id}, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    }
-                    var p = M.ciniki_courses_offerings.edit;
-                    p.data = rsp.course;
-                    p.data['course_name'] = rsp.course.name;
-                    p.course_id = rsp.course.id;
-                    p.sections.offering.fields.class_date.active = 'yes';
-                    p.sections.offering.fields.days.active = 'yes';
-                    p.sections.offering.fields.skip_date.active = 'yes';
-                    p.sections.offering.fields.start_time.active = 'yes';
-                    p.sections.offering.fields.end_time.active = 'yes';
-                    p.sections.offering.fields.num_weeks.active = 'yes';
-                    p.refresh();
-                    p.show(cb);
-                });
+            M.api.getJSONCb('ciniki.courses.courseGet', {'tnid':M.curTenantID, 'course_id':this.edit.course_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_courses_offerings.edit;
+                p.data = rsp.course;
+                p.data['course_name'] = rsp.course.name;
+                p.course_id = rsp.course.id;
+                p.sections.offering.fields.class_date.active = 'yes';
+                p.sections.offering.fields.days.active = 'yes';
+                p.sections.offering.fields.skip_date.active = 'yes';
+                p.sections.offering.fields.start_time.active = 'yes';
+                p.sections.offering.fields.end_time.active = 'yes';
+                p.sections.offering.fields.num_weeks.active = 'yes';
+                p.sections.offering.fields.condensed_date.active = 'no';
+                p.refresh();
+                p.show(cb);
+            });
         } else {
             var formname = 'Add';
             var p = M.ciniki_courses_offerings.edit;
@@ -713,6 +718,7 @@ function ciniki_courses_offerings() {
             p.sections.offering.fields.start_time.active = 'yes';
             p.sections.offering.fields.end_time.active = 'yes';
             p.sections.offering.fields.num_weeks.active = 'yes';
+            p.sections.offering.fields.condensed_date.active = 'no';
             p.sections._buttons.buttons.delete.visible = 'no';
             p.refresh();
             p.show(cb);

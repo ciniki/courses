@@ -22,6 +22,9 @@
 # webflags:         The webflags for each offering.
 #
 #                       0x01 - Hidden, do not display on website.
+#                       0x02 - Hide class dates
+#                       0x04 - 
+#                       0x08 - 
 #
 # condensed_date:   The single string describing the dates for the course.
 #
