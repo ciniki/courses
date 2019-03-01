@@ -67,6 +67,7 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $tnid, $args) {
             ),
         );
 
+
     //
     // FIXME: Add settings from web/ui/main.js 
     //
