@@ -22,7 +22,7 @@ function ciniki_courses_hooks_calendarsWebOptions(&$ciniki, $tnid, $args) {
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.courses']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.67', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.117', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     $settings = $args['settings'];

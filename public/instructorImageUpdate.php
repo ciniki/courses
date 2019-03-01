@@ -56,7 +56,7 @@ function ciniki_courses_instructorImageUpdate(&$ciniki) {
             return $rc;
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.26', 'msg'=>'Instructor image not found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.116', 'msg'=>'Instructor image not found'));
         }
         $item = $rc['item'];
 

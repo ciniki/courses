@@ -41,8 +41,34 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $tnid, $args) {
 
 
     $options = array();
+
     //
-    // FIXME: Add settings
+    // Add the options for displaying prices and 
+    //
+    $course_list_options = array();
+    $course_list_options[] = array(
+        'label'=>'Listings - Show Instructors',
+        'setting'=>'page-courses-list-include-instructors', 
+        'type'=>'toggle',
+        'value'=>(isset($settings['page-courses-list-include-instructors'])?$settings['page-courses-list-include-instructors']:'no'),
+        'toggles'=>array(
+            array('value'=>'no', 'label'=>'No'),
+            array('value'=>'yes', 'label'=>'Yes'),
+            ),
+        );
+    $course_list_options[] = array(
+        'label'=>'Listings - Show Prices',
+        'setting'=>'page-courses-list-include-prices', 
+        'type'=>'toggle',
+        'value'=>(isset($settings['page-courses-list-include-prices'])?$settings['page-courses-list-include-prices']:'no'),
+        'toggles'=>array(
+            array('value'=>'no', 'label'=>'No'),
+            array('value'=>'yes', 'label'=>'Yes'),
+            ),
+        );
+
+    //
+    // FIXME: Add settings from web/ui/main.js 
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0100) ) {
         $options[] = array(
@@ -63,7 +89,7 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $tnid, $args) {
             );
     }
     // The default page
-    $pages['ciniki.courses'] = array('name'=>'Courses', 'options'=>$options);
+    $pages['ciniki.courses'] = array('name'=>'Courses', 'options'=>$course_list_options);
 
     //
     // The detailed pages
@@ -80,7 +106,7 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $tnid, $args) {
             ),
         ); */
     $pages['ciniki.courses.intro'] = array('name'=>'Courses - Introduction', 'options'=>$options);
-    $pages['ciniki.courses.active'] = array('name'=>'Courses - Current & Upcoming', 'options'=>$options);
+    $pages['ciniki.courses.active'] = array('name'=>'Courses - Current & Upcoming', 'options'=>$course_list_options);
     $pages['ciniki.courses.instructors'] = array('name'=>'Courses - Instructors', 'options'=>$options);
     $pages['ciniki.courses.registration'] = array('name'=>'Courses - Registration', 'options'=>$options);
     $pages['ciniki.courses.photos'] = array('name'=>'Courses - Photos', 'options'=>$options);
@@ -134,7 +160,7 @@ function ciniki_courses_hooks_webOptions(&$ciniki, $tnid, $args) {
             ),
         ); */
 
-    $pages['ciniki.courses'] = array('name'=>'Courses', 'options'=>$options);
+    $pages['ciniki.courses'] = array('name'=>'Courses', 'options'=>$course_list_options);
 
     return array('stat'=>'ok', 'pages'=>$pages);
 }

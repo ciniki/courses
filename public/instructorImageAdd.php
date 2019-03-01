@@ -50,7 +50,7 @@ function ciniki_courses_instructorImageAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
     $rc = ciniki_core_dbUUID($ciniki, 'ciniki.courses');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.22', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.115', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
     }
     $args['uuid'] = $rc['uuid'];
 
