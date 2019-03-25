@@ -23,7 +23,7 @@ function ciniki_courses_courseSearch($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'), 
-        'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
+        'limit'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
