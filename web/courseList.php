@@ -223,6 +223,13 @@ function ciniki_courses_web_courseList($ciniki, $settings, $tnid, $type, $when) 
             } else {
                 $rc['categories'][$cid]['list'][$lid]['title'] = $item['course_name'];
             }
+            if( isset($settings['page-courses-level-display']) 
+                && $settings['page-courses-level-display'] == 'yes' 
+                && isset($item['level']) && $item['level'] != ''
+                ) {
+                $rc['categories'][$cid]['list'][$lid]['title'] .= ' - ' . $item['level'];
+            }
+
             if( $item['is_details'] == 'yes' ) {
                 $rc['categories'][$cid]['list'][$lid]['permalink'] = $item['course_permalink'] . '/' . $item['permalink'];
             } else {

@@ -521,18 +521,18 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         } elseif( ($ciniki['tenant']['modules']['ciniki.courses']['flags']&0x20) == 0x20 && $offering['offering_code'] != '' ) {
             $page['title'] = $offering['offering_code'] . ' - ' . $offering['name'];
         }
+        if( isset($settings['page-courses-level-display']) 
+            && $settings['page-courses-level-display'] == 'yes' 
+            && isset($offering['level']) && $offering['level'] != ''
+            ) {
+            $page['title'] .= ' - ' . $offering['level'];
+        }
         if( $args['module_page'] == 'ciniki.courses.active' ) {
             $page['breadcrumbs'][] = array('name'=>$page['title'], 'url'=>$args['base_url'] . '/' . $course_permalink . '/' . $offering_permalink);
             $ciniki['response']['head']['og']['url'] .= '/' . $course_permalink . '/' . $offering_permalink;
         } else {
             $page['breadcrumbs'][] = array('name'=>$page['title'], 'url'=>$args['base_url'] . '/course/' . $course_permalink . '/' . $offering_permalink);
             $ciniki['response']['head']['og']['url'] .= '/course/' . $course_permalink . '/' . $offering_permalink;
-        }
-        if( isset($settings['page-courses-level-display']) 
-            && $settings['page-courses-level-display'] == 'yes' 
-            && isset($offering['level']) && $offering['level'] != ''
-            ) {
-            $page['title'] .= ' - ' . $offering['level'];
         }
         $ciniki['response']['head']['og']['title'] = $page['title'];
 
