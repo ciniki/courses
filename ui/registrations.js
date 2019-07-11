@@ -2,156 +2,140 @@
 // This app will display and update registrations for an course offering
 //
 function ciniki_courses_registrations() {
-    this.init = function() {
-        //
-        // registrations panel
-        //
-        this.menu = new M.panel('Registrations',
-            'ciniki_courses_registrations', 'menu',
-            'mc', 'medium', 'sectioned', 'ciniki.courses.registrations.menu');
-        this.menu.offering_id = 0;
-        this.menu.sections = {
+    //
+    // registrations panel
+    //
+    this.menu = new M.panel('Registrations',
+        'ciniki_courses_registrations', 'menu',
+        'mc', 'medium', 'sectioned', 'ciniki.courses.registrations.menu');
+    this.menu.offering_id = 0;
+    this.menu.sections = {
 //          'search':{'label':'', 'type':'livesearch'},
-            'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':2,
-                'noData':'No registrations',
-                'sortable':'yes',
-                'sortTypes':['text', 'text'],
-                'cellClasses':['multiline', 'multiline', ''],
-//              'addTxt':'Add Registration',
- //               'addFn':'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'offering_id\':M.ciniki_courses_registrations.menu.offering_id,\'source\':\'offering\'});',
-                
-//              'addFn':'M.ciniki_courses_registrations.showAdd(\'M.ciniki_courses_registrations.showMenu();\',M.ciniki_courses_registrations.menu.offering_id);',
-                },
-            'prices':{'label':'Add Registration', 'type':'simplegrid', 'num_cols':2},
-            '_buttons':{'label':'', 'buttons':{
-                'registrationspdf':{'label':'Class List (PDF)', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsPDF(M.ciniki_courses_registrations.menu.offering_id);'},
-                'registrationsexcel':{'label':'Class List (Excel)', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsExcel(M.ciniki_courses_registrations.menu.offering_id);'},
-                }},
-            };
-        this.menu.cellValue = function(s, i, j, d) {
-            if( s == 'registrations' ) {
-                switch(j) {
-                    case 0: return '<span class="maintext">' + d.registration.customer_name + '</span>';
-                    case 1: return '<span class="maintext">' + d.registration.invoice_status_text + '</span>';
-                }
-            } 
-            if( s == 'prices' ) {
-                switch(j) {
-                    case 0: return d.price.name;
-                    case 1: return d.price.unit_amount_display;
-                }
-            }
+        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':2,
+            'noData':'No registrations',
+            'sortable':'yes',
+            'sortTypes':['text', 'text'],
+            'cellClasses':['multiline', 'multiline', ''],
+            },
+        'prices':{'label':'Add Registration', 'type':'simplegrid', 'num_cols':2},
+        '_buttons':{'label':'', 'buttons':{
+            'registrationspdf':{'label':'Class List (PDF)', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsPDF(M.ciniki_courses_registrations.menu.offering_id);'},
+            'registrationsexcel':{'label':'Class List (Excel)', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsExcel(M.ciniki_courses_registrations.menu.offering_id);'},
+            }},
         };
-        this.menu.sectionData = function(s) {
-            return this.data[s];
-        };
-        this.menu.noData = function(s) { return this.sections[s].noData; }
-        this.menu.rowFn = function(s, i, d) {
-            if( s == 'registrations' ) {
-    //          return 'M.ciniki_courses_registrations.showEdit(\'M.ciniki_courses_registrations.showMenu();\',null,null,\'' + d.registration.id + '\');';
-                return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'registration_id\':\'' + d.registration.id + '\',\'source\':\'offering\'});';
-    //            M.ciniki_courses_registrations.showEdit(\'M.ciniki_courses_registrations.showMenu();\',null,null,\'' + d.registration.id + '\');';
+    this.menu.cellValue = function(s, i, j, d) {
+        if( s == 'registrations' ) {
+            switch(j) {
+                case 0: return '<span class="maintext">' + d.registration.customer_name + '</span>';
+                case 1: return '<span class="maintext">' + d.registration.invoice_status_text + '</span>';
             }
-            if( s == 'prices' ) {
-                return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'offering_id\':M.ciniki_courses_registrations.menu.offering_id,\'price_id\':\'' + d.price.id + '\',\'source\':\'offering\'});';
+        } 
+        if( s == 'prices' ) {
+            switch(j) {
+                case 0: return d.price.name;
+                case 1: return d.price.unit_amount_display;
             }
-        };
-//      this.menu.addButton('add', 'Add', 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'offering_id\':M.ciniki_courses_registrations.menu.offering_id,\'source\':\'offering\'});');
-//      this.menu.addButton('add', 'Add', 'M.ciniki_courses_registrations.showAdd(\'M.ciniki_courses_registrations.showMenu();\',M.ciniki_courses_registrations.menu.offering_id);');
-        this.menu.addClose('Back');
-
-        //
-        // The panel for editing a registrant
-        //
-        this.edit = new M.panel('Registrant',
-            'ciniki_courses_registrations', 'edit',
-            'mc', 'medium', 'sectioned', 'ciniki.courses.registrations.edit');
-        this.edit.data = null;
-        this.edit.offering_id = 0;
-        this.edit.registration_id = 0;
-        this.edit.sections = { 
-            'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2,
-                'cellClasses':['label',''],
-                'addTxt':'Edit',
-                'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_courses_registrations.updateEditCustomer(null);\',\'mc\',{\'next\':\'M.ciniki_courses_registrations.updateEditCustomer\',\'customer_id\':M.ciniki_courses_registrations.edit.customer_id});',
-                },
-            'invoice':{'label':'Invoice', 'visible':'no', 'type':'simplegrid', 'num_cols':5,
-                'headerValues':['Invoice #', 'Date', 'Customer', 'Amount', 'Status'],
-                'cellClasses':['',''],
-//              'addTxt':'',
-//              'addFn':'M.ciniki_courses_registrations.saveRegistration(\'yes\');',
-//              'addFn':'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_courses_registrations.showEdit();\',\'mc\',{\'customer_id\':M.ciniki_courses_registrations.edit.customer_id});',
-                },
-//          'registration':{'label':'Registration', 'fields':{
-//              'num_seats':{'label':'Number of Seats', 'type':'text', 'size':'small'},
-//              }},
-            '_customer_notes':{'label':'Customer Notes', 'fields':{
-                'customer_notes':{'label':'', 'hidelabel':'yes', 'hint':'', 'size':'small', 'type':'textarea'},
-                }},
-            '_notes':{'label':'Private Notes', 'fields':{
-                'notes':{'label':'', 'hidelabel':'yes', 'hint':'', 'size':'small', 'type':'textarea'},
-                }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Save', 'fn':'M.ciniki_courses_registrations.saveRegistration();'},
-                'saveandinvoice':{'label':'Save and Invoice', 'fn':'M.ciniki_courses_registrations.saveRegistration(\'yes\');'},
-                'delete':{'label':'Delete', 'fn':'M.ciniki_courses_registrations.deleteRegistration();'},
-                }},
-            };  
-        this.edit.fieldValue = function(s, i, d) { return this.data[i]; }
-        this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.courses.offeringRegistrationHistory', 'args':{'tnid':M.curTenantID, 
-                'registration_id':this.registration_id, 'offering_id':this.offering_id, 'field':i}};
         }
-        this.edit.sectionData = function(s) {
-            if( s == 'invoice' ) { return this.data[s]!=null?{'invoice':this.data[s]}:{}; }
-            return this.data[s];
+    };
+    this.menu.sectionData = function(s) {
+        return this.data[s];
+    };
+    this.menu.noData = function(s) { return this.sections[s].noData; }
+    this.menu.rowFn = function(s, i, d) {
+        if( s == 'registrations' ) {
+            return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'registration_id\':\'' + d.registration.id + '\',\'source\':\'offering\'});';
         }
-        this.edit.cellValue = function(s, i, j, d) {
-            if( s == 'customer_details' ) {
-                switch(j) {
-                    case 0: return d.detail.label;
-                    case 1: return d.detail.value.replace(/\n/, '<br/>');
-                }
-            } 
-            if( s == 'invoice' ) {
-                switch(j) {
-                    case 0: return d.invoice_number;
-                    case 1: return d.invoice_date;
-                    case 2: return (d.customer!=null&&d.customer.display_name!=null)?d.customer.display_name:'';
-                    case 3: return d.total_amount_display;
-                    case 4: return d.payment_status_text;
-                }
-            }
-        };
-        this.edit.rowFn = function(s, i, d) { 
-            if( s == 'invoice' ) { return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_courses_registrations.showEdit();\',\'mc\',{\'invoice_id\':\'' + d.id + '\'});'; }
-            return ''; 
-        };
-        this.edit.addButton('save', 'Save', 'M.ciniki_courses_registrations.saveRegistration();');
-        this.edit.addClose('Cancel');
+        if( s == 'prices' ) {
+            return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'offering_id\':M.ciniki_courses_registrations.menu.offering_id,\'price_id\':\'' + d.price.id + '\',\'source\':\'offering\'});';
+        }
+    };
+    this.menu.addClose('Back');
 
-        //
-        // The add invoice panel, which display the price list for quantity
-        //
-        this.newinvoice = new M.panel('Create Invoice',
-            'ciniki_courses_registrations', 'newinvoice',
-            'mc', 'medium', 'sectioned', 'ciniki.courses.registrations.newinvoice');
-        this.newinvoice.data = null;
-        this.newinvoice.customer_id = 0;
-        this.newinvoice.offering_id = 0;
-        this.newinvoice.registration_id = 0;
-        this.newinvoice.quantity = 1;
-        this.newinvoice.sections = {
-            'prices':{'label':'Price List', 'fields':{
-                'price_id':{'label':'Price', 'type':'select', 'options':{}},
-                }},
-            '_buttons':{'label':'', 'buttons':{
-                'save':{'label':'Create Invoice', 'fn':'M.ciniki_courses_registrations.createInvoice();'},
-                }},
-            };
-        this.newinvoice.fieldValue = function(s, i, d) { return this.data[i]; }
-        this.newinvoice.addClose('Cancel');
+    //
+    // The panel for editing a registrant
+    //
+    this.edit = new M.panel('Registrant',
+        'ciniki_courses_registrations', 'edit',
+        'mc', 'medium', 'sectioned', 'ciniki.courses.registrations.edit');
+    this.edit.data = null;
+    this.edit.offering_id = 0;
+    this.edit.registration_id = 0;
+    this.edit.sections = { 
+        'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2,
+            'cellClasses':['label',''],
+            'addTxt':'Edit',
+            'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_courses_registrations.updateEditCustomer(null);\',\'mc\',{\'next\':\'M.ciniki_courses_registrations.updateEditCustomer\',\'customer_id\':M.ciniki_courses_registrations.edit.customer_id});',
+            },
+        'invoice':{'label':'Invoice', 'visible':'no', 'type':'simplegrid', 'num_cols':5,
+            'headerValues':['Invoice #', 'Date', 'Customer', 'Amount', 'Status'],
+            'cellClasses':['',''],
+            },
+        '_customer_notes':{'label':'Customer Notes', 'fields':{
+            'customer_notes':{'label':'', 'hidelabel':'yes', 'hint':'', 'size':'small', 'type':'textarea'},
+            }},
+        '_notes':{'label':'Private Notes', 'fields':{
+            'notes':{'label':'', 'hidelabel':'yes', 'hint':'', 'size':'small', 'type':'textarea'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_courses_registrations.saveRegistration();'},
+            'saveandinvoice':{'label':'Save and Invoice', 'fn':'M.ciniki_courses_registrations.saveRegistration(\'yes\');'},
+            'delete':{'label':'Delete', 'fn':'M.ciniki_courses_registrations.deleteRegistration();'},
+            }},
+        };  
+    this.edit.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.edit.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.courses.offeringRegistrationHistory', 'args':{'tnid':M.curTenantID, 
+            'registration_id':this.registration_id, 'offering_id':this.offering_id, 'field':i}};
     }
+    this.edit.sectionData = function(s) {
+        if( s == 'invoice' ) { return this.data[s]!=null?{'invoice':this.data[s]}:{}; }
+        return this.data[s];
+    }
+    this.edit.cellValue = function(s, i, j, d) {
+        if( s == 'customer_details' ) {
+            switch(j) {
+                case 0: return d.detail.label;
+                case 1: return d.detail.value.replace(/\n/, '<br/>');
+            }
+        } 
+        if( s == 'invoice' ) {
+            switch(j) {
+                case 0: return d.invoice_number;
+                case 1: return d.invoice_date;
+                case 2: return (d.customer!=null&&d.customer.display_name!=null)?d.customer.display_name:'';
+                case 3: return d.total_amount_display;
+                case 4: return d.payment_status_text;
+            }
+        }
+    };
+    this.edit.rowFn = function(s, i, d) { 
+        if( s == 'invoice' ) { return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_courses_registrations.showEdit();\',\'mc\',{\'invoice_id\':\'' + d.id + '\'});'; }
+        return ''; 
+    };
+    this.edit.addButton('save', 'Save', 'M.ciniki_courses_registrations.saveRegistration();');
+    this.edit.addClose('Cancel');
+
+    //
+    // The add invoice panel, which display the price list for quantity
+    //
+    this.newinvoice = new M.panel('Create Invoice',
+        'ciniki_courses_registrations', 'newinvoice',
+        'mc', 'medium', 'sectioned', 'ciniki.courses.registrations.newinvoice');
+    this.newinvoice.data = null;
+    this.newinvoice.customer_id = 0;
+    this.newinvoice.offering_id = 0;
+    this.newinvoice.registration_id = 0;
+    this.newinvoice.quantity = 1;
+    this.newinvoice.sections = {
+        'prices':{'label':'Price List', 'fields':{
+            'price_id':{'label':'Price', 'type':'select', 'options':{}},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Create Invoice', 'fn':'M.ciniki_courses_registrations.createInvoice();'},
+            }},
+        };
+    this.newinvoice.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.newinvoice.addClose('Cancel');
 
     //
     // Arguments:
@@ -179,27 +163,19 @@ function ciniki_courses_registrations() {
     this.showMenu = function(cb, oid) {
         this.menu.data = {};
         if( oid != null ) { this.menu.offering_id = oid; }
-        var rsp = M.api.getJSONCb('ciniki.courses.offeringRegistrationList', 
-            {'tnid':M.curTenantID, 'offering_id':this.menu.offering_id}, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                }
-                var p = M.ciniki_courses_registrations.menu;
-                p.data = rsp;
-//              if( rsp.registrations.length > 0 ) {
+            M.api.getJSONCb('ciniki.courses.offeringRegistrationList', 
+                {'tnid':M.curTenantID, 'offering_id':this.menu.offering_id}, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    var p = M.ciniki_courses_registrations.menu;
+                    p.data = rsp;
                     M.ciniki_courses_registrations.menu.sections.registrations.headerValues = ['Name', 'Paid'];
-//              } else {
-//                  M.ciniki_courses_registrations.menu.sections.registrations.headerValues = null;
-//              }
-//              if( M.curTenant.modules['ciniki.sapos'] != null ) {
-//                  M.ciniki_courses_registrations.menu.sections.registrations.num_cols = 2;
-//              } else {
                     M.ciniki_courses_registrations.menu.sections.registrations.num_cols = 2;
-//              }
-                M.ciniki_courses_registrations.menu.refresh();
-                M.ciniki_courses_registrations.menu.show(cb);
-            });
+                    M.ciniki_courses_registrations.menu.refresh();
+                    M.ciniki_courses_registrations.menu.show(cb);
+                });
     };
 
     this.showAdd = function(cb, oid) {

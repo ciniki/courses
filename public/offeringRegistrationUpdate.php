@@ -72,6 +72,23 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
     $registration = $rc['registration'];
 
     //
+    // Load the offering details to get condensed_date
+    //
+    $strsql = "SELECT id, condensed_date "
+        . "FROM ciniki_course_offerings "
+        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.118', 'msg'=>'Unable to load offering', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['item']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.119', 'msg'=>'Unable to find requested offering'));
+    }
+    $offering = $rc['item'];
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -137,6 +154,9 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
                 $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], array('customer_id'=>$args['student_id']));
                 if( $rc['stat'] == 'ok' && isset($rc['customer']['display_name']) ) {
                     $item_args['notes'] = $rc['customer']['display_name'];
+                    if( isset($offering['condensed_date']) && $offering['condensed_date'] != '' ) {
+                        $item_args['notes'] .= ($item_args['notes'] != '' ? ' - ' : '') . $offering['condensed_date'];
+                    }
                 }
             }
         }

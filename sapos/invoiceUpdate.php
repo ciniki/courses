@@ -20,7 +20,7 @@ function ciniki_courses_sapos_invoiceUpdate($ciniki, $tnid, $invoice_id, $item) 
         //
         // Check the course offering registration exists
         //
-        $strsql = "SELECT id, offering_id, customer_id, num_seats "
+        $strsql = "SELECT id, offering_id, customer_id, student_id, num_seats "
             . "FROM ciniki_course_offering_registrations "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
@@ -56,6 +56,9 @@ function ciniki_courses_sapos_invoiceUpdate($ciniki, $tnid, $invoice_id, $item) 
         //
         if( $registration['customer_id'] != $invoice['customer_id'] ) {
             $reg_args = array('customer_id'=>$invoice['customer_id']);
+            if( $registration['student_id'] == 0 ) {
+                $reg_args['student_id'] = $invoice['customer_id'];
+            }
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.courses.offering_registration', 
                 $registration['id'], $reg_args, 0x04);
             if( $rc['stat'] != 'ok' ) {

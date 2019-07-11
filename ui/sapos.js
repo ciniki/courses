@@ -111,7 +111,8 @@ function ciniki_courses_sapos() {
             }
         };
         this.registration.rowFn = function(s, i, d) {
-            if( s == 'invoice_details' && this._source != 'invoice' ) { 
+            if( s == 'invoice_details' && this._source != 'invoice' && this._source != 'pos' ) { 
+                console.log(this._source);
                 return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_courses_sapos.registrationEdit();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});'; 
             }
             if( s == 'student_details' ) {
@@ -205,9 +206,9 @@ function ciniki_courses_sapos() {
         if( args.offering_id != null ) {
             this.registrationAdd(cb, args.offering_id, args.price_id, args.saveseats);
         } else if( args.item_object != null && args.item_object == 'ciniki.courses.offering_registration' ) {
-            this.registrationEdit(cb, args.item_object_id, 0, args.source);
+            this.registrationEdit(cb, args.item_object_id, args.source);
         } else if( args.registration_id != null ) {
-            this.registrationEdit(cb, args.registration_id, 0, args.source);
+            this.registrationEdit(cb, args.registration_id, args.source);
         } else {
             console.log('UI Error: unrecognized object');
         }

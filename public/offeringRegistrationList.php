@@ -95,7 +95,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
-                'fields'=>array('id', 'customer_id', 'customer_name'=>'sort_name', 'num_seats', 
+                'fields'=>array('id', 'customer_id', 'customer_name'=>'sort_name', 'student_name', 'num_seats', 
                     'invoice_id', 'invoice_status', 'invoice_status_text'),
                 'maps'=>array('invoice_status_text'=>$status_maps)),
             ));
