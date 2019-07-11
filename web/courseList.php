@@ -223,7 +223,9 @@ function ciniki_courses_web_courseList($ciniki, $settings, $tnid, $type, $when) 
             }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x01) && $item['code'] != '' ) {
                 $rc['categories'][$cid]['list'][$lid]['title'] = $item['code'] . ' - ' . $item['course_name'];
-            } elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x20) && $item['offering_code'] != '' ) {
+            } elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x20) && $item['offering_code'] != '' 
+                && (!isset($settings['page-courses-hide-codes']) || $settings['page-courses-hide-codes'] != 'yes')
+                ) {
                 $rc['categories'][$cid]['list'][$lid]['title'] = $item['offering_code'] . ' - ' . $item['course_name'];
             } else {
                 $rc['categories'][$cid]['list'][$lid]['title'] = $item['course_name'];
