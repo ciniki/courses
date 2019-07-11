@@ -830,13 +830,21 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             if( $settings["page-courses-$type-active"] != 'yes' ) {
                 continue;
             }
-            if( $type == 'past' ) {
+            if( $type == 'upcoming' ) {
                 if( $settings['page-courses-current-active'] == 'yes' ) {
                     // If displaying the current list, then show past as purely past.
                     $rc = ciniki_courses_web_courseList($ciniki, $settings, $tnid, $coursetype, $type);
                 } else {
                     // Otherwise, include current courses in the past
-                    $rc = ciniki_courses_web_courseList($ciniki, $settings, $tnid, $coursetype, 'currentpast');
+                    $rc = ciniki_courses_web_courseList($ciniki, $settings, $tnid, $coursetype, 'upcomingcurrent');
+                }
+            } elseif( $type == 'past' ) {
+                if( $settings['page-courses-current-active'] == 'yes' ) {
+                    // If displaying the current list, then show past as purely past.
+                    $rc = ciniki_courses_web_courseList($ciniki, $settings, $tnid, $coursetype, $type);
+                } else {
+                    // Otherwise, include current courses in the past
+                    $rc = ciniki_courses_web_courseList($ciniki, $settings, $tnid, $coursetype, 'past');
                 }
             } else {
                 $rc = ciniki_courses_web_courseList($ciniki, $settings, $tnid, $coursetype, $type);
