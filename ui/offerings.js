@@ -14,7 +14,7 @@ function ciniki_courses_offerings() {
     //
     this.menu = new M.panel('Course Offerings',
         'ciniki_courses_offerings', 'menu',
-        'mc', 'medium narrowaside', 'sectioned', 'ciniki.courses.offerings.menu');
+        'mc', 'xlarge narrowaside', 'sectioned', 'ciniki.courses.offerings.menu');
     this.menu.data = {};
     this.menu.sections = {
         'other':{'label':'Options', 'aside':'yes', 'list':{
@@ -44,31 +44,55 @@ function ciniki_courses_offerings() {
             'upcoming':{'label':'Upcoming', 'fn':'M.ciniki_courses_offerings.menu.switchTab("upcoming");'},
             'past':{'label':'Past', 'fn':'M.ciniki_courses_offerings.menu.switchTab("past");'},
             }},
-        'current':{'label':'Current Offerings', 'type':'simplegrid', 'num_cols':1,
-            'visible':function() { return (M.ciniki_courses_offerings.menu.sections._tabs.selected == 'current' ? 'yes' : 'hidden'); },
-            'headerValues':null,
-            'cellClasses':['multiline', 'alignright'],
-            'noData':'No current offerings',
-            },
-        'upcoming':{'label':'Upcoming Offerings', 'type':'simplegrid', 'num_cols':1,
-            'visible':function() { return (M.ciniki_courses_offerings.menu.sections._tabs.selected == 'upcoming' ? 'yes' : 'hidden'); },
-            'headerValues':null,
-            'cellClasses':['multiline', 'alignright'],
-            'noData':'No upcoming offerings',
-            'addTxt':'Add Offering',
-            'addFn':'M.ciniki_courses_offerings.showEdit(\'M.ciniki_courses_offerings.menu.open();\',0,0);',
-            },
         '_pasttabs':{'label':'', 'type':'paneltabs', 'selected':'', 
             'visible':function() { return (M.ciniki_courses_offerings.menu.sections._tabs.selected == 'past' ? 'yes' : 'hidden'); },
             'tabs':{},
             },
-        'past':{'label':'Previous Offerings', 'type':'simplegrid', 'num_cols':1,
+        'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':1,
+            'cellClasses':['multiline'],
+            'hint':'Search course',
+            'noData':'No course found',
+            },
+        'current':{'label':'Current Offerings', 'type':'simplegrid', 'num_cols':5,
+            'visible':function() { return (M.ciniki_courses_offerings.menu.sections._tabs.selected == 'current' ? 'yes' : 'hidden'); },
+            'headerValues':['Code', 'Course', 'Category', 'Start', 'End', 'Registrations'],
+            'cellClasses':['', '', '', '', '', 'alignright'],
+            'sortable':'yes', 
+            'sortTypes':['text', 'text', 'text', 'date', 'date', 'number'],
+            'noData':'No current offerings',
+            },
+        'upcoming':{'label':'Upcoming Offerings', 'type':'simplegrid', 'num_cols':5,
+            'visible':function() { return (M.ciniki_courses_offerings.menu.sections._tabs.selected == 'upcoming' ? 'yes' : 'hidden'); },
+            'headerValues':['Code', 'Course', 'Category', 'Start', 'End', 'Registrations'],
+            'cellClasses':['', '', '', '', '', 'alignright'],
+            'sortable':'yes', 
+            'sortTypes':['text', 'text', 'text', 'date', 'date', 'number'],
+            'noData':'No upcoming offerings',
+            'addTxt':'Add Offering',
+            'addFn':'M.ciniki_courses_offerings.showEdit(\'M.ciniki_courses_offerings.menu.open();\',0,0);',
+            },
+        'past':{'label':'Previous Offerings', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return (M.ciniki_courses_offerings.menu.sections._tabs.selected == 'past' ? 'yes' : 'hidden'); },
-            'headerValues':null,
-            'cellClasses':['multiline', 'alignright'],
+            'headerValues':['Code', 'Course', 'Category', 'Start', 'End', 'Registrations'],
+            'cellClasses':['', '', '', '', '', 'alignright'],
+            'sortable':'yes', 
+            'sortTypes':['text', 'text', 'text', 'date', 'date', 'number'],
             'noData':'No previous offerings',
             },
         };
+    this.menu.liveSearchCb = function(s, i, v) {
+        if( s == 'search' && v != '' ) {
+            M.api.getJSONBgCb('ciniki.courses.offeringSearch', {'tnid':M.curTenantID, 'start_needle':v, 'limit':'25'}, function(rsp) {
+                M.ciniki_courses_offerings.menu.liveSearchShow('search',null,M.gE(M.ciniki_courses_offerings.menu.panelUID + '_' + s), rsp.offerings);
+                });
+        }
+    }
+    this.menu.liveSearchResultValue = function(s, f, i, j, d) {
+        return '<span class="maintext">' + (d.code != '' ? d.code + ' - ' : '') + d.course_name + (d.name != '' ? ' <span class="subdue">' + d.name + '</span>' : '') + '</span><span class="subtext">' + d.condensed_date + '</span>';
+    }
+    this.menu.liveSearchResultRowFn = function(s, f, i, j, d) {
+        return 'M.ciniki_courses_offerings.showOffering(\'M.ciniki_courses_offerings.menu.open();\',\'' + d.id + '\');'; 
+    }
     this.menu.sectionData = function(s) { 
         if( s == 'other' || s == '_reports' ) { return this.sections[s].list; }
         if( s == 'past' ) { return this.data.pastyears[this.sections._pasttabs.selected]; }
@@ -76,7 +100,15 @@ function ciniki_courses_offerings() {
     };
     this.menu.noData = function(s) { return this.sections[s].noData; }
     this.menu.cellValue = function(s, i, j, d) {
-        if( j == 0 ) {
+        switch(j) {
+            case 0: return d.offering_code;
+            case 1: return d.course_name;
+            case 2: return d.offering_name;
+            case 3: return d.start_date;
+            case 4: return d.end_date;
+            case 5: return d.num_registrations + '/' + d.num_seats;
+        }
+/*        if( j == 0 ) {
             var odate = '';
             if( d.start_date != null ) {
                 if( d.end_date != null && d.start_date != d.end_date ) {
@@ -93,7 +125,7 @@ function ciniki_courses_offerings() {
         }
         if( j == 1 ) {
             return d.num_registrations + '/' + d.num_seats;
-        }
+        } */
     };
     this.menu.rowFn = function(s, i, d) { 
         if( s == '_reports' ) { 
@@ -566,19 +598,13 @@ function ciniki_courses_offerings() {
         // Check if the registrations numbers should shown in menu
         //
         if( M.modFlagOn('ciniki.courses', 0x40) ) { 
-            this.menu.sections.current.num_cols = 2;
-            this.menu.sections.upcoming.num_cols = 2;
-            this.menu.sections.past.num_cols = 2;
-            this.menu.sections.current.headerValues = ['Course', 'Registrations'];
-            this.menu.sections.upcoming.headerValues = ['Course', 'Registrations'];
-            this.menu.sections.past.headerValues = ['Course', 'Registrations'];
+            this.menu.sections.current.num_cols = 6;
+            this.menu.sections.upcoming.num_cols = 6;
+            this.menu.sections.past.num_cols = 6;
         } else {
-            this.menu.sections.current.num_cols = 1;
-            this.menu.sections.upcoming.num_cols = 1;
-            this.menu.sections.past.num_cols = 1;
-            this.menu.sections.current.headerValues = null;
-            this.menu.sections.upcoming.headerValues = null;
-            this.menu.sections.past.headerValues = null;
+            this.menu.sections.current.num_cols = 5;
+            this.menu.sections.upcoming.num_cols = 5;
+            this.menu.sections.past.num_cols = 5;
         }
 
         if( args.course_id != null && args.course_id > 0 && args.add != null && args.add == 'yes' ) {
