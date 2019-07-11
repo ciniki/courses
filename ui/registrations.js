@@ -7,27 +7,30 @@ function ciniki_courses_registrations() {
     //
     this.menu = new M.panel('Registrations',
         'ciniki_courses_registrations', 'menu',
-        'mc', 'medium', 'sectioned', 'ciniki.courses.registrations.menu');
+        'mc', 'large narrowaside', 'sectioned', 'ciniki.courses.registrations.menu');
     this.menu.offering_id = 0;
     this.menu.sections = {
 //          'search':{'label':'', 'type':'livesearch'},
-        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':2,
+        'prices':{'label':'Add Registration', 'type':'simplegrid', 'num_cols':2 , 'aside':'yes'},
+        '_buttons':{'label':'', 'aside':'yes', 'buttons':{
+            'registrationspdf':{'label':'Class List (PDF)', 'fn':'M.ciniki_courses_registrations.menu.registrationsPDF(M.ciniki_courses_registrations.menu.offering_id);'},
+            'attendancepdf':{'label':'Attendance List (PDF)', 'fn':'M.ciniki_courses_registrations.menu.attendancePDF(M.ciniki_courses_registrations.menu.offering_id);'},
+            'registrationsexcel':{'label':'Class List (Excel)', 'fn':'M.ciniki_courses_registrations.menu.registrationsExcel(M.ciniki_courses_registrations.menu.offering_id);'},
+            }},
+        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3,
             'noData':'No registrations',
             'sortable':'yes',
             'sortTypes':['text', 'text'],
             'cellClasses':['multiline', 'multiline', ''],
             },
-        'prices':{'label':'Add Registration', 'type':'simplegrid', 'num_cols':2},
-        '_buttons':{'label':'', 'buttons':{
-            'registrationspdf':{'label':'Class List (PDF)', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsPDF(M.ciniki_courses_registrations.menu.offering_id);'},
-            'registrationsexcel':{'label':'Class List (Excel)', 'fn':'M.ciniki_courses_registrations.offeringRegistrationsExcel(M.ciniki_courses_registrations.menu.offering_id);'},
-            }},
         };
     this.menu.cellValue = function(s, i, j, d) {
         if( s == 'registrations' ) {
             switch(j) {
                 case 0: return '<span class="maintext">' + d.registration.customer_name + '</span>';
-                case 1: return '<span class="maintext">' + d.registration.invoice_status_text + '</span>';
+                case 1: return '<span class="maintext">' + d.registration.student_name + '</span>';
+                case 2: return '<span class="maintext">' + d.registration.invoice_status_text + '</span>';
+                case 3: return '<span class="maintext">' + d.registration.registration_amount_display + '</span>';
             }
         } 
         if( s == 'prices' ) {
@@ -48,6 +51,17 @@ function ciniki_courses_registrations() {
         if( s == 'prices' ) {
             return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'offering_id\':M.ciniki_courses_registrations.menu.offering_id,\'price_id\':\'' + d.price.id + '\',\'source\':\'offering\'});';
         }
+    };
+    this.menu.registrationsPDF = function(oid) {
+        M.api.openFile('ciniki.courses.offeringRegistrations', {'tnid':M.curTenantID, 'output':'pdf', 'offering_id':oid});
+    };
+
+    this.menu.attendancePDF = function(oid) {
+        M.api.openFile('ciniki.courses.offeringRegistrations', {'tnid':M.curTenantID, 'template':'attendance', 'output':'pdf', 'offering_id':oid});
+    };
+
+    this.menu.registrationsExcel = function(oid) {
+        M.api.openFile('ciniki.courses.offeringRegistrations', {'tnid':M.curTenantID, 'output':'excel', 'offering_id':oid});
     };
     this.menu.addClose('Back');
 
@@ -171,8 +185,8 @@ function ciniki_courses_registrations() {
                     }
                     var p = M.ciniki_courses_registrations.menu;
                     p.data = rsp;
-                    M.ciniki_courses_registrations.menu.sections.registrations.headerValues = ['Name', 'Paid'];
-                    M.ciniki_courses_registrations.menu.sections.registrations.num_cols = 2;
+                    M.ciniki_courses_registrations.menu.sections.registrations.headerValues = ['Name', 'Student', 'Paid', 'Amount'];
+                    M.ciniki_courses_registrations.menu.sections.registrations.num_cols = 4;
                     M.ciniki_courses_registrations.menu.refresh();
                     M.ciniki_courses_registrations.menu.show(cb);
                 });
@@ -377,13 +391,5 @@ function ciniki_courses_registrations() {
             }
         }
         M.startApp('ciniki.sapos.invoice',null,this.newinvoice.cb,'mc',{'customer_id':this.newinvoice.customer_id,'items':items});
-    };
-
-    this.offeringRegistrationsPDF = function(oid) {
-        M.api.openFile('ciniki.courses.offeringRegistrations', {'tnid':M.curTenantID, 'output':'pdf', 'offering_id':oid});
-    };
-
-    this.offeringRegistrationsExcel = function(oid) {
-        M.api.openFile('ciniki.courses.offeringRegistrations', {'tnid':M.curTenantID, 'output':'excel', 'offering_id':oid});
     };
 }

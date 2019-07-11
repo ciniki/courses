@@ -259,7 +259,8 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
                 . "ciniki_course_offering_registrations.invoice_id, "
                 . "ciniki_course_offering_registrations.notes, "
                 . "ciniki_sapos_invoices.payment_status AS invoice_status, "
-                . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status_text "
+                . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status_text, "
+                . "ciniki_sapos_invoice_items.total_amount AS registration_amount "
                 . "FROM ciniki_course_offering_registrations "
                 . "LEFT JOIN ciniki_customers AS c1 ON ("
                     . "ciniki_course_offering_registrations.customer_id = c1.id "
@@ -269,8 +270,15 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
                     . "ciniki_course_offering_registrations.student_id = c2.id "
                     . "AND c2.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
-                . "LEFT JOIN ciniki_sapos_invoices ON (ciniki_course_offering_registrations.invoice_id = ciniki_sapos_invoices.id "
+                . "LEFT JOIN ciniki_sapos_invoices ON ("
+                    . "ciniki_course_offering_registrations.invoice_id = ciniki_sapos_invoices.id "
                     . "AND ciniki_sapos_invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_sapos_invoice_items ON ("
+                    . "ciniki_sapos_invoices.id = ciniki_sapos_invoice_items.invoice_id "
+                    . "AND ciniki_sapos_invoice_items.object = 'ciniki.courses.offering_registration' "
+                    . "AND ciniki_course_offering_registrations.id = ciniki_sapos_invoice_items.object_id "
+                    . "AND ciniki_sapos_invoice_items.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE ciniki_course_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND ciniki_course_offering_registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
@@ -281,7 +289,7 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
                 array('container'=>'registrations', 'fname'=>'id',
                     'fields'=>array('id', 'customer_id', 'customer_type', 'student_id', 'student_type', 'customer_name', 
                         'student_name', 'student_age', 'num_seats', 
-                        'invoice_id', 'invoice_status', 'invoice_status_text', 'notes'),
+                        'invoice_id', 'invoice_status', 'invoice_status_text', 'registration_amount', 'notes'),
                     'maps'=>array('invoice_status_text'=>$status_maps)),
                 ));
             if( $rc['stat'] != 'ok' ) {

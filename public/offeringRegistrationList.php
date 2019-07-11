@@ -75,7 +75,8 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
             . "ciniki_course_offering_registrations.num_seats, "
             . "ciniki_course_offering_registrations.invoice_id, "
             . "ciniki_sapos_invoices.payment_status AS invoice_status, "
-            . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status_text "
+            . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status_text, "
+            . "ciniki_sapos_invoice_items.total_amount AS registration_amount "
             . "FROM ciniki_course_offering_registrations "
             . "LEFT JOIN ciniki_customers AS c1 ON ("
                 . "ciniki_course_offering_registrations.customer_id = c1.id "
@@ -85,8 +86,15 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
                 . "ciniki_course_offering_registrations.student_id = c2.id "
                 . "AND c2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_sapos_invoices ON (ciniki_course_offering_registrations.invoice_id = ciniki_sapos_invoices.id "
+            . "LEFT JOIN ciniki_sapos_invoices ON ("
+                . "ciniki_course_offering_registrations.invoice_id = ciniki_sapos_invoices.id "
                 . "AND ciniki_sapos_invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_sapos_invoice_items ON ("
+                . "ciniki_sapos_invoices.id = ciniki_sapos_invoice_items.invoice_id "
+                . "AND ciniki_sapos_invoice_items.object = 'ciniki.courses.offering_registration' "
+                . "AND ciniki_course_offering_registrations.id = ciniki_sapos_invoice_items.object_id "
+                . "AND ciniki_sapos_invoice_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE ciniki_course_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_offering_registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
@@ -95,8 +103,8 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
-                'fields'=>array('id', 'customer_id', 'customer_name'=>'sort_name', 'student_name', 'num_seats', 
-                    'invoice_id', 'invoice_status', 'invoice_status_text'),
+                'fields'=>array('id', 'customer_id', 'customer_name', 'student_name', 'num_seats', 
+                    'invoice_id', 'invoice_status', 'invoice_status_text', 'registration_amount'),
                 'maps'=>array('invoice_status_text'=>$status_maps)),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -106,6 +114,11 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
             $registrations = array();
         } else {
             $registrations = $rc['registrations'];
+            foreach($registrations as $rid => $reg) {
+                if( ($reg['registration']['registration_amount']) ) {
+                    $registrations[$rid]['registration']['registration_amount_display'] = '$' . number_format($reg['registration']['registration_amount'], 2);
+                }
+            }
         }
     } else {
         $strsql = "SELECT ciniki_course_offering_registrations.id, "
@@ -132,7 +145,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
-                'fields'=>array('id', 'customer_id', 'customer_name'=>'sort_name', 'num_seats', 'invoice_id')),
+                'fields'=>array('id', 'customer_id', 'customer_name'=>'sort_name', 'student_name', 'num_seats', 'invoice_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.47', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));

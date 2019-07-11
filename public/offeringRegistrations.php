@@ -20,6 +20,7 @@ function ciniki_courses_offeringRegistrations($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Class'), 
+        'template'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Template'), 
         'output'=>array('required'=>'no', 'blank'=>'no', 'default'=>'pdf', 'name'=>'Output Format'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -71,7 +72,11 @@ function ciniki_courses_offeringRegistrations($ciniki) {
     // Output PDF version
     //
     if( $args['output'] == 'pdf' ) {
-        $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'templates', 'offeringRegistrationsPDF');
+        if( isset($args['template']) && $args['template'] == 'attendance' ) {
+            $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'templates', 'offeringAttendancePDF');
+        } else {
+            $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'templates', 'offeringRegistrationsPDF');
+        }
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
