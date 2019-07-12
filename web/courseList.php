@@ -162,7 +162,6 @@ function ciniki_courses_web_courseList($ciniki, $settings, $tnid, $type, $when) 
             . "ORDER BY ciniki_courses.category, start_date_ts, LENGTH(ciniki_courses.code), ciniki_courses.code, ciniki_course_offerings.code, ciniki_courses.name "
             . "";
     } elseif( $when == 'upcomingcurrent' ) {
-        error_log('upcomingcurrent');
         $strsql .= "HAVING start_date = 'No dates set' OR end_date_ts >= UNIX_TIMESTAMP(DATE(UTC_TIMESTAMP())) "
             . "ORDER BY ciniki_courses.category, start_date_ts, LENGTH(ciniki_courses.code), ciniki_courses.code, ciniki_course_offerings.code, ciniki_courses.name "
             . "";
