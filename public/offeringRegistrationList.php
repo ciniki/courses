@@ -72,6 +72,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
             . "IFNULL(c1.display_name, '') AS customer_name, "
             . "IFNULL(c2.display_name, '') AS student_name, "
             . "IFNULL(c2.display_name, IFNULL(c1.display_name, '')) AS sort_name, "
+            . "IFNULL(TIMESTAMPDIFF(YEAR, c2.birthdate, CURDATE()), '') AS yearsold, "
             . "ciniki_course_offering_registrations.num_seats, "
             . "ciniki_course_offering_registrations.invoice_id, "
             . "ciniki_sapos_invoices.payment_status AS invoice_status, "
@@ -103,7 +104,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
-                'fields'=>array('id', 'customer_id', 'customer_name', 'student_name', 'num_seats', 
+                'fields'=>array('id', 'customer_id', 'customer_name', 'student_name', 'yearsold', 'num_seats', 
                     'invoice_id', 'invoice_status', 'invoice_status_text', 'registration_amount'),
                 'maps'=>array('invoice_status_text'=>$status_maps)),
             ));
@@ -114,11 +115,6 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
             $registrations = array();
         } else {
             $registrations = $rc['registrations'];
-            foreach($registrations as $rid => $reg) {
-                if( ($reg['registration']['registration_amount']) ) {
-                    $registrations[$rid]['registration']['registration_amount_display'] = '$' . number_format($reg['registration']['registration_amount'], 2);
-                }
-            }
         }
     } else {
         $strsql = "SELECT ciniki_course_offering_registrations.id, "
@@ -127,6 +123,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
             . "IFNULL(c1.display_name, '') AS customer_name, "
             . "IFNULL(c2.display_name, '') AS student_name, "
             . "IFNULL(c2.display_name, IFNULL(c1.display_name, '')) AS sort_name, "
+            . "TIMESTAMPDIFF(YEAR, IFNULL(c2.birthdate, ''), CURDATE()) AS yearsold, "
             . "ciniki_course_offering_registrations.num_seats, "
             . "ciniki_course_offering_registrations.invoice_id "
             . "FROM ciniki_course_offering_registrations "
@@ -145,7 +142,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'registrations', 'fname'=>'id', 'name'=>'registration',
-                'fields'=>array('id', 'customer_id', 'customer_name'=>'sort_name', 'student_name', 'num_seats', 'invoice_id')),
+                'fields'=>array('id', 'customer_id', 'customer_name'=>'sort_name', 'student_name', 'yearsold', 'num_seats', 'invoice_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.47', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
@@ -154,6 +151,15 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
             $registrations = array();
         } else {
             $registrations = $rc['registrations'];
+        }
+    }
+
+    //
+    // Setup registrations
+    //
+    foreach($registrations as $rid => $reg) {
+        if( isset($reg['registration']['registration_amount']) ) {
+            $registrations[$rid]['registration']['registration_amount_display'] = '$' . number_format($reg['registration']['registration_amount'], 2);
         }
     }
 

@@ -17,7 +17,7 @@ function ciniki_courses_registrations() {
             'attendancepdf':{'label':'Attendance List (PDF)', 'fn':'M.ciniki_courses_registrations.menu.attendancePDF(M.ciniki_courses_registrations.menu.offering_id);'},
             'registrationsexcel':{'label':'Class List (Excel)', 'fn':'M.ciniki_courses_registrations.menu.registrationsExcel(M.ciniki_courses_registrations.menu.offering_id);'},
             }},
-        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3,
+        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':4,
             'noData':'No registrations',
             'sortable':'yes',
             'sortTypes':['text', 'text'],
@@ -29,8 +29,9 @@ function ciniki_courses_registrations() {
             switch(j) {
                 case 0: return '<span class="maintext">' + d.registration.customer_name + '</span>';
                 case 1: return '<span class="maintext">' + d.registration.student_name + '</span>';
-                case 2: return '<span class="maintext">' + d.registration.invoice_status_text + '</span>';
-                case 3: return '<span class="maintext">' + d.registration.registration_amount_display + '</span>';
+                case 2: return '<span class="maintext">' + d.registration.yearsold + '</span>';
+                case 3: return '<span class="maintext">' + d.registration.invoice_status_text + '</span>';
+                case 4: return '<span class="maintext">' + d.registration.registration_amount_display + '</span>';
             }
         } 
         if( s == 'prices' ) {
@@ -185,8 +186,8 @@ function ciniki_courses_registrations() {
                     }
                     var p = M.ciniki_courses_registrations.menu;
                     p.data = rsp;
-                    M.ciniki_courses_registrations.menu.sections.registrations.headerValues = ['Name', 'Student', 'Paid', 'Amount'];
-                    M.ciniki_courses_registrations.menu.sections.registrations.num_cols = 4;
+                    M.ciniki_courses_registrations.menu.sections.registrations.headerValues = ['Name', 'Student', 'Age', 'Paid', 'Amount'];
+                    M.ciniki_courses_registrations.menu.sections.registrations.num_cols = 5;
                     M.ciniki_courses_registrations.menu.refresh();
                     M.ciniki_courses_registrations.menu.show(cb);
                 });
