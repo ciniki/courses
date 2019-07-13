@@ -152,7 +152,7 @@ function ciniki_courses_templates_offeringRegistrationsExcel(&$ciniki, $tnid, $o
         }
 
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['invoice_status_text'], false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['registration_amount'], $cstyle);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['registration_amount'], false);
         $cstyle = $objPHPExcelWorksheet->getStyle(PHPExcel_Cell::stringFromColumnIndex($col-1) . $row);
         $cstyle->getNumberFormat()->setFormatCode('$#,##0.00');
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['notes'], false);
