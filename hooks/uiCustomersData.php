@@ -39,48 +39,48 @@ function ciniki_courses_hooks_uiCustomersData($ciniki, $tnid, $args) {
             ),
         'data' => array(),
         );
-        $strsql = "SELECT regs.id, "
-            . "regs.customer_id, "
-            . "regs.student_id, "
-            . "IFNULL(customers.display_name, '') AS display_name, "
-            . "IFNULL(students.display_name, '') AS student_name, "
-            . "courses.name AS course_name, "
-            . "courses.code AS course_code, "
-            . "offerings.name AS offering_name, "
-            . "offerings.code AS offering_code, "
-            . "offerings.condensed_date "
-            . "FROM ciniki_course_offering_registrations AS regs "
-            . "INNER JOIN ciniki_course_offerings AS offerings ON ( "
-                . "regs.offering_id = offerings.id "
-                . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "INNER JOIN ciniki_courses AS courses ON ("
-                . "offerings.course_id = courses.id "
-                . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "LEFT JOIN ciniki_customers AS customers ON ("
-                . "regs.customer_id = customers.id "
-                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "LEFT JOIN ciniki_customers AS students ON ("
-                . "regs.student_id = students.id "
-                . "AND students.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE regs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "";
-        if( isset($args['customer_id']) ) {
-            $strsql .= "AND ("
-                . "regs.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-                . "OR regs.student_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
-                . ") ";
-        } elseif( isset($args['customer_ids']) && count($args['customer_ids']) > 0 ) {
-            $strsql .= "AND ("
-                . "regs.customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['customer_ids']) . ") "
-                . "OR regs.student_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['customer_ids']) . ") "
-                . ") ";
-        } else {
-            return array('stat'=>'ok');
-        }
+    $strsql = "SELECT regs.id, "
+        . "regs.customer_id, "
+        . "regs.student_id, "
+        . "IFNULL(customers.display_name, '') AS display_name, "
+        . "IFNULL(students.display_name, '') AS student_name, "
+        . "courses.name AS course_name, "
+        . "courses.code AS course_code, "
+        . "offerings.name AS offering_name, "
+        . "offerings.code AS offering_code, "
+        . "offerings.condensed_date "
+        . "FROM ciniki_course_offering_registrations AS regs "
+        . "INNER JOIN ciniki_course_offerings AS offerings ON ( "
+            . "regs.offering_id = offerings.id "
+            . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_courses AS courses ON ("
+            . "offerings.course_id = courses.id "
+            . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customers AS customers ON ("
+            . "regs.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customers AS students ON ("
+            . "regs.student_id = students.id "
+            . "AND students.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE regs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    if( isset($args['customer_id']) ) {
+        $strsql .= "AND ("
+            . "regs.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "OR regs.student_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . ") ";
+    } elseif( isset($args['customer_ids']) && count($args['customer_ids']) > 0 ) {
+        $strsql .= "AND ("
+            . "regs.customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['customer_ids']) . ") "
+            . "OR regs.student_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['customer_ids']) . ") "
+            . ") ";
+    } else {
+        return array('stat'=>'ok');
+    }
     $strsql .= "ORDER BY customers.display_name, students.display_name, offerings.date_added DESC, courses.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
