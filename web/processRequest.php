@@ -82,7 +82,7 @@ function ciniki_courses_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 if( count($rc['categories']) > 1 ) {
                     foreach($rc['categories'] as $cid => $cat) {
                         if( $cat['name'] != '' ) {
-                            $page['submenu'][$cid] = array('name'=>$cat['name'], 'url'=>$ciniki['request']['base_url'] . "/courses/" . urlencode($cat['name']));
+                            $page['submenu'][$cid] = array('name'=>$cat['name'], 'url'=>$args['base_url'] . "/" . urlencode($cat['name']));
                         }
                     }
                 }
