@@ -16,12 +16,20 @@ function ciniki_courses_registrations() {
             'registrationspdf':{'label':'Class List (PDF)', 'fn':'M.ciniki_courses_registrations.menu.registrationsPDF(M.ciniki_courses_registrations.menu.offering_id);'},
             'attendancepdf':{'label':'Attendance List (PDF)', 'fn':'M.ciniki_courses_registrations.menu.attendancePDF(M.ciniki_courses_registrations.menu.offering_id);'},
             'registrationsexcel':{'label':'Class List (Excel)', 'fn':'M.ciniki_courses_registrations.menu.registrationsExcel(M.ciniki_courses_registrations.menu.offering_id);'},
+            'email':{'label':'Email Class', 'fn':'M.ciniki_courses_registrations.menu.emailShow();'},
             }},
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':4,
             'noData':'No registrations',
             'sortable':'yes',
             'sortTypes':['text', 'text'],
             'cellClasses':['multiline', 'multiline', ''],
+            },
+        'messages':{'label':'Emails', 'type':'simplegrid', 'num_cols':2,
+            'cellClasses':['multiline', 'multiline'],
+            'headerValues':['Name/Date', 'Email/Subject'],
+            'sortable':'yes',
+            'sortTypes':['text','text'],
+            'noData':'No Emails Sent',
             },
         };
     this.menu.cellValue = function(s, i, j, d) {
@@ -40,30 +48,74 @@ function ciniki_courses_registrations() {
                 case 1: return d.price.unit_amount_display;
             }
         }
-    };
+        if( s == 'messages' ) {
+            switch(j) {
+                case 0: return '<span class="maintext">' + d.customer_name + '</span>'    
+                    + '<span class="subtext">' + d.status_text + ' - ' + d.date_sent + '</span>';
+                case 1: return '<span class="maintext">' + d.customer_email + '</span>' 
+                    + '<span class="subtext">' + d.subject + '</span>';
+            }
+        }
+    }
     this.menu.sectionData = function(s) {
         return this.data[s];
-    };
+    }
     this.menu.noData = function(s) { return this.sections[s].noData; }
     this.menu.rowFn = function(s, i, d) {
         if( s == 'registrations' ) {
-            return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'registration_id\':\'' + d.registration.id + '\',\'source\':\'offering\'});';
+            return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.menu.open();\',\'mc\',{\'registration_id\':\'' + d.registration.id + '\',\'source\':\'offering\'});';
         }
         if( s == 'prices' ) {
-            return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.showMenu();\',\'mc\',{\'offering_id\':M.ciniki_courses_registrations.menu.offering_id,\'price_id\':\'' + d.price.id + '\',\'source\':\'offering\'});';
+            return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_registrations.menu.open();\',\'mc\',{\'offering_id\':M.ciniki_courses_registrations.menu.offering_id,\'price_id\':\'' + d.price.id + '\',\'source\':\'offering\'});';
         }
-    };
+        if( s == 'messages' ) {
+            return 'M.startApp(\'ciniki.mail.main\',null,\'M.ciniki_courses_registrations.menu.open();\',\'mc\',{\'message_id\':\'' + d.id + '\'});';
+        }
+    }
     this.menu.registrationsPDF = function(oid) {
         M.api.openFile('ciniki.courses.offeringRegistrations', {'tnid':M.curTenantID, 'output':'pdf', 'offering_id':oid});
-    };
-
+    }
     this.menu.attendancePDF = function(oid) {
         M.api.openFile('ciniki.courses.offeringRegistrations', {'tnid':M.curTenantID, 'template':'attendance', 'output':'pdf', 'offering_id':oid});
-    };
-
+    }
+    this.menu.emailShow = function() {
+        var customers = [];
+        for(var i in this.data.registrations) {
+            customers[i] = {
+                'id':this.data.registrations[i].registration.customer_id,
+                'name':this.data.registrations[i].registration.customer_name,
+                };
+        }
+        M.startApp('ciniki.mail.omessage',
+            null,
+            'M.ciniki_courses_registrations.menu.open();',
+            'mc',
+            {'subject':'Re: ' + this.data.offering.name + ' (' + this.data.offering.condensed_date + ')', 
+                'list':customers, 
+                'object':'ciniki.courses.offering',
+                'object_id':this.offering_id,
+            });
+    }
     this.menu.registrationsExcel = function(oid) {
         M.api.openFile('ciniki.courses.offeringRegistrations', {'tnid':M.curTenantID, 'output':'excel', 'offering_id':oid});
-    };
+    }
+    this.menu.open = function(cb, oid) {
+        this.data = {};
+        if( oid != null ) { this.offering_id = oid; }
+            M.api.getJSONCb('ciniki.courses.offeringRegistrationList', 
+                {'tnid':M.curTenantID, 'offering_id':this.offering_id}, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    var p = M.ciniki_courses_registrations.menu;
+                    p.data = rsp;
+                    p.sections.registrations.headerValues = ['Name', 'Student', 'Age', 'Paid', 'Amount'];
+                    p.sections.registrations.num_cols = 5;
+                    p.refresh();
+                    p.show(cb);
+                });
+    }
     this.menu.addClose('Back');
 
     //
@@ -172,26 +224,8 @@ function ciniki_courses_registrations() {
             return false;
         } 
 
-        this.showMenu(cb, args.offering_id);
+        this.menu.open(cb, args.offering_id);
     }
-
-    this.showMenu = function(cb, oid) {
-        this.menu.data = {};
-        if( oid != null ) { this.menu.offering_id = oid; }
-            M.api.getJSONCb('ciniki.courses.offeringRegistrationList', 
-                {'tnid':M.curTenantID, 'offering_id':this.menu.offering_id}, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    }
-                    var p = M.ciniki_courses_registrations.menu;
-                    p.data = rsp;
-                    M.ciniki_courses_registrations.menu.sections.registrations.headerValues = ['Name', 'Student', 'Age', 'Paid', 'Amount'];
-                    M.ciniki_courses_registrations.menu.sections.registrations.num_cols = 5;
-                    M.ciniki_courses_registrations.menu.refresh();
-                    M.ciniki_courses_registrations.menu.show(cb);
-                });
-    };
 
     this.showAdd = function(cb, oid) {
         // Setup the edit panel for when the customer edit returns

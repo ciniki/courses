@@ -164,6 +164,31 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
     }
 
     //
+    // Get the course information and dates
+    //
+    $strsql = "SELECT offerings.condensed_date, "
+        . "courses.code, "
+        . "courses.name "
+        . "FROM ciniki_course_offerings AS offerings, ciniki_courses AS courses "
+        . "WHERE offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+        . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND offerings.course_id = courses.id "
+        . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+        array('container'=>'offerings', 'fname'=>'condensed_date', 
+            'fields'=>array('condensed_date', 'code', 'name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.123', 'msg'=>'Unable to load offering', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['offerings'][0]) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.124', 'msg'=>'Unable to load offering', 'err'=>$rc['err']));
+    }
+    $offering = $rc['offerings'][0];
+
+    //
     // Get the price list for the event
     //
     $strsql = "SELECT id, name, unit_amount "
@@ -189,6 +214,24 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
         $prices = array();
     }
 
-    return array('stat'=>'ok', 'registrations'=>$registrations, 'prices'=>$prices);
+    $rsp = array('stat'=>'ok', 'registrations'=>$registrations, 'prices'=>$prices, 'offering'=>$offering);
+
+    //
+    // Pull emails sent for this course
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessages');
+    $rc = ciniki_mail_hooks_objectMessages($ciniki, $args['tnid'], array(
+        'object' => 'ciniki.courses.offering',
+        'object_id' => $args['offering_id'],
+        'xml' => 'no',
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['messages']) ) {
+        $rsp['messages'] = $rc['messages'];
+    }
+
+    return $rsp;
 }
 ?>
