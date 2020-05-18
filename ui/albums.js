@@ -182,15 +182,15 @@ function ciniki_courses_albums() {
         }
     }
     this.album.remove = function() {
-        if( confirm('Are you sure you want to remove album?') ) {
-            M.api.getJSONCb('ciniki.courses.albumDelete', {'tnid':M.curTenantID, 'album_id':this.album_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove album?',null,function() {
+            M.api.getJSONCb('ciniki.courses.albumDelete', {'tnid':M.curTenantID, 'album_id':M.ciniki_courses_albums.album.album_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_courses_albums.album.close();
             });
-        }
+        });
     }
     this.album.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.album_id) < (this.nplist.length - 1) ) {
@@ -284,15 +284,15 @@ function ciniki_courses_albums() {
         }
     }
     this.image.remove = function() {
-        if( confirm('Are you sure you want to remove this image?') ) {
-            M.api.getJSONCb('ciniki.courses.albumImageDelete', {'tnid':M.curTenantID, 'albumimage_id':this.albumimage_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove this image?',null,function() {
+            M.api.getJSONCb('ciniki.courses.albumImageDelete', {'tnid':M.curTenantID, 'albumimage_id':M.ciniki_courses_albums.image.albumimage_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_courses_albums.image.close();
             });
-        }
+        });
     }
     this.image.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.albumimage_id) < (this.nplist.length - 1) ) {
@@ -329,7 +329,7 @@ function ciniki_courses_albums() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_courses_albums', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
         

@@ -147,7 +147,7 @@ function ciniki_courses_info() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_courses_info', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
 
@@ -302,7 +302,7 @@ function ciniki_courses_info() {
     };
 
     this.deleteFile = function() {
-        if( confirm('Are you sure you want to delete \'' + this.editfile.data.name + '\'?  All information about it will be removed and unrecoverable.') ) {
+        M.confirm('Are you sure you want to delete \'' + this.editfile.data.name + '\'?  All information about it will be removed and unrecoverable.',null,function() {
             var rsp = M.api.getJSONCb('ciniki.courses.fileDelete', {'tnid':M.curTenantID, 
                 'file_id':M.ciniki_courses_info.editfile.file_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
@@ -311,7 +311,7 @@ function ciniki_courses_info() {
                     } 
                     M.ciniki_courses_info.editfile.close();
                 });
-        }
+        });
     };
 
     this.downloadFile = function(fid) {

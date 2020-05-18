@@ -559,15 +559,15 @@ function ciniki_courses_offerings() {
         }
     }
     this.image.remove = function() {
-        if( confirm('Are you sure you want to remove image?') ) {
-            M.api.getJSONCb('ciniki.courses.imageDelete', {'tnid':M.curTenantID, 'course_image_id':this.course_image_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove image?',null,function() {
+            M.api.getJSONCb('ciniki.courses.imageDelete', {'tnid':M.curTenantID, 'course_image_id':M.ciniki_courses_offerings.image.course_image_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_courses_offerings.image.close();
             });
-        }
+        });
     }
     this.image.addButton('save', 'Save', 'M.ciniki_courses_offerings.image.save();');
     this.image.addClose('Cancel');
@@ -585,7 +585,7 @@ function ciniki_courses_offerings() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_courses_offerings', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
         
@@ -841,9 +841,9 @@ function ciniki_courses_offerings() {
     };
 
     this.deleteOffering = function() {
-        if( confirm('Are you sure you want to delete this course offering?') ) {
+        M.confirm('Are you sure you want to delete this course offering?',null,function() {
             var rsp = M.api.getJSONCb('ciniki.courses.offeringDelete', {'tnid':M.curTenantID, 
-                'offering_id':this.offering.offering_id}, function(rsp) {
+                'offering_id':M.ciniki_courses_offerings.offering.offering_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -851,6 +851,6 @@ function ciniki_courses_offerings() {
                 M.ciniki_courses_offerings.offering.close();
                 M.ciniki_courses_offerings.edit.reset();
             });
-        }
+        });
     };
 }

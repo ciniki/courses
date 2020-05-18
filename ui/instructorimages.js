@@ -61,7 +61,7 @@ function ciniki_courses_instructorimages() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_courses_instructorimages', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
 
@@ -133,16 +133,16 @@ function ciniki_courses_instructorimages() {
     };
 
     this.deleteImage = function() {
-        if( confirm('Are you sure you want to delete \'' + this.edit.data.name + '\'?') ) {
+        M.confirm('Are you sure you want to delete \'' + this.edit.data.name + '\'?',null,function() {
             var rsp = M.api.getJSONCb('ciniki.courses.instructorImageDelete', 
                 {'tnid':M.curTenantID, 
-                'instructor_image_id':this.edit.instructor_image_id}, function(rsp) {
+                'instructor_image_id':M.ciniki_courses_instructorimages.edit.instructor_image_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_courses_instructorimages.edit.close();
                 });
-        }
+        });
     };
 }

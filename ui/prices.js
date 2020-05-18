@@ -56,7 +56,7 @@ function ciniki_courses_prices() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_courses_prices', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 
@@ -156,16 +156,16 @@ function ciniki_courses_prices() {
     };
 
     this.deletePrice = function() {
-        if( confirm("Are you sure you want to remove this price?") ) {
+        M.confirm("Are you sure you want to remove this price?",null,function() {
             M.api.getJSONCb('ciniki.courses.offeringPriceDelete', 
                 {'tnid':M.curTenantID, 
-                'price_id':this.edit.price_id}, function(rsp) {
+                'price_id':M.ciniki_courses_prices.edit.price_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
                     M.ciniki_courses_prices.edit.close();   
                 });
-        }
+        });
     };
 }

@@ -180,7 +180,7 @@ function ciniki_courses_sapos() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_courses_sapos', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
 
@@ -321,15 +321,15 @@ function ciniki_courses_sapos() {
     };
 
     this.registrationDelete = function() {
-        if( confirm('Are you sure you want to remove this registration? It will remove it from the invoice as well.') ) {
-            M.api.getJSONCb('ciniki.courses.offeringRegistrationDelete', {'tnid':M.curTenantID, 'registration_id':this.registration.registration_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove this registration? It will remove it from the invoice as well.',null,function() {
+            M.api.getJSONCb('ciniki.courses.offeringRegistrationDelete', {'tnid':M.curTenantID, 'registration_id':M.ciniki_courses_sapos.registration.registration_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_courses_sapos.registration.close();
             });
-        }
+        });
 
     };
 }
