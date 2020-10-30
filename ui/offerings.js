@@ -199,7 +199,7 @@ function ciniki_courses_offerings() {
             'course_name':{'label':'Name', 'visible':'yes'},
             'status_text':{'label':'Status'},
             'level':{'label':'Level', 'visible':'yes'},
-            'type':{'label':'Type', 'visible':'yes'},
+            'type':{'label':'Type', 'visible':function() { return M.modFlagSet('ciniki.course', 0x10); }},
             'category':{'label':'Category', 'visible':'yes'},
             'web_visible':{'label':'Website'},
             }},

@@ -31,7 +31,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
-        'code'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Code'), 
+        'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Web Flags'), 
         'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Class Date'),
