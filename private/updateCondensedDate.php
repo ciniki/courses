@@ -43,6 +43,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
         $prev_time = '';
         $prev_dayofweek = '';
         $days = array(
+            '0' => 0,
             '1' => 0,
             '2' => 0,
             '3' => 0,
