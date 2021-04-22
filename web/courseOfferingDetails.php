@@ -40,6 +40,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
         . "ciniki_courses.level, "
         . "ciniki_courses.type, "
         . "ciniki_courses.category, "
+        . "ciniki_courses.short_description AS synopsis, "
         . "ciniki_courses.long_description, "
         . "ciniki_course_offering_classes.id AS class_id, "
         . "DATE_FORMAT(ciniki_course_offering_classes.class_date, '%W %b %e, %Y') AS class_date, "
@@ -68,7 +69,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
         array('container'=>'offerings', 'fname'=>'id', 
             'fields'=>array('id', 'webflags', 'course_id', 'name', 'code', 'offering_code', 'level', 'permalink', 
                 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
-                'level', 'type', 'category', 'long_description', 'condensed_date')),
+                'level', 'type', 'category', 'synopsis', 'long_description', 'condensed_date')),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'class_date', 'start_time', 'end_time')),
         ));

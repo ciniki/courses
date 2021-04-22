@@ -13,8 +13,8 @@ function ciniki_courses_instructors() {
             'ciniki_courses_instructors', 'menu',
             'mc', 'medium', 'sectioned', 'ciniki.courses.instructors.menu');
         this.menu.sections = {
-            'instructors':{'label':'', 'type':'simplegrid', 'num_cols':1,
-                'headerValues':null,
+            'instructors':{'label':'', 'type':'simplegrid', 'num_cols':2,
+                'headerValues':['name', 'status'],
                 'cellClasses':[''],
                 'addTxt':'Add Instructor',
                 'addFn':'M.ciniki_courses_instructors.showEdit(\'M.ciniki_courses_instructors.showMenu();\',0,0,0,0);',
@@ -24,10 +24,13 @@ function ciniki_courses_instructors() {
             return this.data[s];
         };
         this.menu.cellValue = function(s, i, j, d) {
-            return d.instructor.name;
+            switch(j) {
+                case 0: return d.name;
+                case 1: return d.status_text;
+            }
         };
         this.menu.rowFn = function(s, i, d) {
-            return 'M.ciniki_courses_instructors.showInstructor(\'M.ciniki_courses_instructors.showMenu();\',0,\'' + d.instructor.id + '\');';
+            return 'M.ciniki_courses_instructors.showInstructor(\'M.ciniki_courses_instructors.showMenu();\',0,\'' + d.id + '\');';
         };
         this.menu.addClose('Back');
 
@@ -36,14 +39,14 @@ function ciniki_courses_instructors() {
         //
         this.instructor = new M.panel('Instructor',
             'ciniki_courses_instructors', 'instructor',
-            'mc', 'medium', 'sectioned', 'ciniki.courses.instructors.instructor');
+            'mc', 'medium mediumaside', 'sectioned', 'ciniki.courses.instructors.instructor');
         this.instructor.instructor_id = 0;
         this.instructor.offering_instructor_id = 0;
         this.instructor.sections = {
-            '_image':{'label':'', 'type':'imageform', 'fields':{
+            '_image':{'label':'', 'type':'imageform', 'aside':'yes', 'fields':{
                 'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'history':'no'},
                 }},
-            'info':{'label':'', 'list':{
+            'info':{'label':'', 'aside':'yes', 'list':{
                 'name':{'label':'Name'},
                 'web_visible':{'label':'Web Settings'},
                 'url':{'label':'URL'},
@@ -137,7 +140,7 @@ function ciniki_courses_instructors() {
         //
         this.edit = new M.panel('Edit Instructor',
             'ciniki_courses_instructors', 'edit',
-            'mc', 'medium', 'sectioned', 'ciniki.courses.instructors.edit');
+            'mc', 'medium mediumaside', 'sectioned', 'ciniki.courses.instructors.edit');
         this.edit.default_data = {'first':'', 'last':'', 'webflags':0};
         this.edit.data = {};
         this.edit.course_id = 0;
@@ -145,10 +148,10 @@ function ciniki_courses_instructors() {
         this.edit.offering_instructor_id = 0;
         this.edit.instructor_id = 0;
         this.edit.sections = {
-            '_image':{'label':'', 'type':'imageform', 'fields':{
+            '_image':{'label':'', 'type':'imageform', 'aside':'yes', 'fields':{
                 'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
             }},
-            'instructor':{'label':'Instructor', 'fields':{
+            'instructor':{'label':'Instructor', 'aside':'yes', 'fields':{
                 'first':{'label':'First', 'type':'text', 'livesearch':'yes'},
                 'last':{'label':'Last', 'type':'text', 'livesearch':'yes'},
                 'webflags':{'label':'Web', 'type':'flags', 'join':'yes', 'toggle':'no', 'flags':this.webFlags},
