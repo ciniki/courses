@@ -40,7 +40,7 @@ function ciniki_courses_instructorList($ciniki) {
         . "IF((webflags&0x01)=0, 'Visible', 'Hidden') AS status_text "
         . "FROM ciniki_course_instructors "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "ORDER BY (webflags&0x01), name "
+        . "ORDER BY (webflags&0x01), last, first "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
