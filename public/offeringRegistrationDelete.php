@@ -18,6 +18,7 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'),
+        'invoice'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Keep Invoice'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -37,7 +38,8 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
     //
     // Get the existing registration information
     //
-    $strsql = "SELECT id, invoice_id, uuid FROM ciniki_course_offering_registrations "
+    $strsql = "SELECT id, invoice_id, uuid "
+        . "FROM ciniki_course_offering_registrations "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
         . "";
@@ -68,12 +70,29 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
     // Remove the item from the invoice
     //
     if( $registration['invoice_id'] > 0 ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
-        $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['tnid'], array('invoice_id'=>$registration['invoice_id'], 
-            'object'=>'ciniki.courses.offering_registration', 'object_id'=>$registration['id']));
-        if( $rc['stat'] != 'ok' ) {
-            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-            return $rc;
+        if( isset($args['invoice']) && $args['invoice'] == 'keep' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDisconnect');
+            $rc = ciniki_sapos_hooks_invoiceItemDisconnect($ciniki, $args['tnid'], array(
+                'invoice_id'=>$registration['invoice_id'], 
+                'object'=>'ciniki.courses.offering_registration', 
+                'object_id'=>$registration['id'],
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
+
+        } else {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
+            $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['tnid'], array(
+                'invoice_id'=>$registration['invoice_id'], 
+                'object'=>'ciniki.courses.offering_registration', 
+                'object_id'=>$registration['id'],
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
         }
     }
 

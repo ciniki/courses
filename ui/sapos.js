@@ -66,6 +66,10 @@ function ciniki_courses_sapos() {
                 }},
             '_buttons':{'label':'', 'buttons':{
                 'save':{'label':'Save', 'fn':'M.ciniki_courses_sapos.registrationSave();'},
+                'remove':{'label':'Delete Registration & Keep Invoice', 
+                    'visible':function() { return M.ciniki_courses_sapos.registration.data.invoice_status == 50 ? 'yes':'no';},
+                    'fn':'M.ciniki_courses_sapos.registrationDeleteKeepInvoice();',
+                    },
                 'delete':{'label':'Delete', 'fn':'M.ciniki_courses_sapos.registrationDelete();'},
                 }},
         };
@@ -112,7 +116,6 @@ function ciniki_courses_sapos() {
         };
         this.registration.rowFn = function(s, i, d) {
             if( s == 'invoice_details' && this._source != 'invoice' && this._source != 'pos' ) { 
-                console.log(this._source);
                 return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_courses_sapos.registrationEdit();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});'; 
             }
             if( s == 'student_details' ) {
@@ -319,6 +322,18 @@ function ciniki_courses_sapos() {
                 M.ciniki_courses_sapos.registration.close();
             });
     };
+
+    this.registrationDeleteKeepInvoice = function() {
+        M.confirm('Are you sure you want to remove this registration? ',null,function() {
+            M.api.getJSONCb('ciniki.courses.offeringRegistrationDelete', {'tnid':M.curTenantID, 'registration_id':M.ciniki_courses_sapos.registration.registration_id, 'invoice':'keep'}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_courses_sapos.registration.close();
+            });
+        });
+    }
 
     this.registrationDelete = function() {
         M.confirm('Are you sure you want to remove this registration? It will remove it from the invoice as well.',null,function() {

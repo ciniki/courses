@@ -45,7 +45,6 @@ function ciniki_courses_reports() {
     this.students.open = function(cb) {
         if( this.start_date != '' ) {
             M.api.getJSONCb('ciniki.courses.reportStudents', {'tnid':M.curTenantID, 'start_date':this.start_date, 'end_date':this.end_date}, function(rsp) {
-                console.log('cb');
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
