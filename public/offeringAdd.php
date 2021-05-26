@@ -153,7 +153,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
                 //
                 for($j=0;$j<6;$j++) {
                     $cur_date->add(new DateInterval('P1D'));
-                    $day = $cur_date->format('N');
+                    $day = $cur_date->format('w');
                     if( in_array($day, $args['days']) ) {
                         $class_args['class_date'] = date_format($cur_date, 'Y-m-d');
                         $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_class', $class_args, 0x04);
