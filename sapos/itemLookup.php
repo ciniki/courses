@@ -26,6 +26,7 @@ function ciniki_courses_sapos_itemLookup($ciniki, $tnid, $args) {
         $strsql = "SELECT ciniki_course_offerings.id, "
             . "ciniki_course_offerings.code AS offering_code, "
             . "ciniki_course_offerings.condensed_date, "
+            . "ciniki_course_offering_prices.name AS price_name, "
             . "ciniki_course_offering_prices.unit_amount, "
             . "ciniki_course_offering_prices.unit_discount_amount, "
             . "ciniki_course_offering_prices.unit_discount_percentage, "
@@ -58,7 +59,7 @@ function ciniki_courses_sapos_itemLookup($ciniki, $tnid, $args) {
             'object'=>'ciniki.courses.offering',
             'object_id'=>$offering['id'],
             'code'=>'',
-            'description'=>($offering['code'] != '' ? $offering['code'] . ' - ' : ($offering['offering_code'] != '' ? $offering['offering_code'] . ' - ': '')) . $offering['name'],
+            'description'=>($offering['code'] != '' ? $offering['code'] . ' - ' : ($offering['offering_code'] != '' ? $offering['offering_code'] . ' - ': '')) . $offering['name'] . ($offering['price_name'] != '' ? ' - ' . $offering['price_name'] : ''),
             'notes'=>$offering['condensed_date'],
             'price_id'=>$args['object_id'],
             'quantity'=>1,
