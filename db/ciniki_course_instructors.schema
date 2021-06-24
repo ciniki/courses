@@ -42,4 +42,4 @@ CREATE TABLE ciniki_course_instructors (
     last_updated datetime not null,
     primary key (id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';
