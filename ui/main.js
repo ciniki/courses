@@ -65,7 +65,7 @@ function ciniki_courses_main() {
         if( s == 'search' || s == 'offerings' ) {
             if( this.sections.offerings.dataMaps[j] == 'course_name' ) {
                 if( d.course_code != '' ) {
-                    return d.course_code + ' - ' . d.course_name;
+                    return d.course_code + ' - ' + d.course_name;
                 }
                 return d.course_name;
             }
