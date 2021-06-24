@@ -22,10 +22,13 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
-        'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
-        'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'), 
+        'course_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Course'), 
+        'name'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Name'), 
+        'code'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Web Flags'), 
+        'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start Date'), 
+        'end_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'End Date'), 
         'reg_flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration Flags'),
         'num_seats'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Number of Seats'),
         'condensed_date'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Dates'),
@@ -90,6 +93,15 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.offering', $args['offering_id'], $args, 0x07);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.109', 'msg'=>'Unable to update offering', 'err'=>$rc['err']));
+    }
+
+    //
+    // Update the condensed date for the course
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'updateCondensedDate');
+    $rc = ciniki_courses_updateCondensedDate($ciniki, $args['tnid'], $args['offering_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
     }
 
     //

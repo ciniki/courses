@@ -17,7 +17,8 @@
 # permalink:        The permalink for the course offering.
 # status:           The current status of the course offering.
 #
-#                       10 - active
+#                       10 - Active
+#                       90 - Archived
 #               
 # webflags:         The webflags for each offering.
 #
@@ -25,6 +26,9 @@
 #                       0x02 - Hide class dates
 #                       0x04 - 
 #                       0x08 - 
+#
+# start_date:       The first date for this offering.
+# end_date:         The last date for this offering.
 #
 # condensed_date:   The single string describing the dates for the course.
 #
@@ -50,6 +54,8 @@ CREATE TABLE ciniki_course_offerings (
     permalink varchar(150) not null,
     status tinyint unsigned not null,
     webflags tinyint unsigned not null,
+    start_date date not null,
+    end_date date not null,
     condensed_date varchar(150) not null,
     num_seats int not null,
     reg_flags tinyint unsigned not null,
@@ -58,4 +64,4 @@ CREATE TABLE ciniki_course_offerings (
     primary key (id),
     index (course_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

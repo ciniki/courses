@@ -87,7 +87,7 @@ function ciniki_courses_offeringRegistrations($ciniki) {
             return $rc;
         }
 
-        $title = $rc['offering']['code'] . '_' . $rc['offering']['course_name'] . '_' . $rc['offering']['course_name'];
+        $title = $rc['offering']['course_code'] . '_' . $rc['offering']['course_name'] . '_' . $rc['offering']['course_name'];
 
         $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
         if( isset($rc['pdf']) ) {
@@ -110,7 +110,7 @@ function ciniki_courses_offeringRegistrations($ciniki) {
             return $rc;
         }
 
-        $title = $rc['offering']['code'] . '_' . $rc['offering']['course_name'] . '_' . $rc['offering']['course_name'];
+        $title = $rc['offering']['course_code'] . '_' . $rc['offering']['course_name'] . '_' . $rc['offering']['course_name'];
 
         $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
 

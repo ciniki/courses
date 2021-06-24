@@ -46,6 +46,7 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
         public $header_height = 0;      // The height of the image and address
         public $tenant_details = array();
         public $courses_settings = array();
+        public $footer_text = '';
 
         public function Header() {
         }
@@ -54,6 +55,8 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
         public function Footer() {
             $this->SetY(-15);
             $this->SetFont('helvetica', 'I', 8);
+            $this->Cell(150, 10, $this->footer_text,
+                0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->Cell(0, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 
                 0, false, 'C', 0, '', 0, false, 'T', 'M');
         }
@@ -108,12 +111,20 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
     }
 
     //
+    // Setup the title
+    //
+    $title = ($offering['course_code'] != '' ? $offering['course_code'] : '');
+    $title .= ($offering['course_name'] != '' ? ($title != '' ? ' - ' : '') . $offering['course_name'] : '');
+    $session = ($offering['offering_code'] != '' ? $offering['offering_code'] : '');
+    $session .= ($offering['offering_name'] != '' ? ($session != '' ? ' - ' : '') . $offering['offering_name'] : '');
+
+    //
     // Determine the header details
     //
     $pdf->header_details = array(
         array('label'=>'Date(s)', 'value'=>$dates),
-        array('label'=>'Course', 'value'=>$offering['code'] . ' - ' . $offering['course_name']),
-        array('label'=>'Session', 'value'=>$offering['offering_name']),
+        array('label'=>'Course', 'value'=>$title),
+        array('label'=>'Session', 'value'=>$session),
         array('label'=>'Instructors', 'value'=>$instructors),
         array('label'=>'Registrations', 'value'=>count($offering['registrations'])),
         );
@@ -123,7 +134,8 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
     //
     $pdf->SetCreator('Ciniki');
     $pdf->SetAuthor($tenant_details['name']);
-    $pdf->SetTitle($offering['code'] . ' - ' . $offering['offering_name']);
+    $pdf->footer_text = $title . ($title != '' && $session != '' ? ' - ' : '') . $session;
+    $pdf->SetTitle($title . ($title != '' && $session != '' ? ' - ' : '') . $session);
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
 

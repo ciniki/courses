@@ -41,6 +41,7 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
     $strsql = "SELECT ciniki_course_offerings.id, "
         . "ciniki_course_offerings.course_id, "
         . "ciniki_course_offerings.name AS offering_name, "
+        . "ciniki_course_offerings.code AS offering_code, "
         . "ciniki_course_offerings.permalink, "
         . "ciniki_course_offerings.status, "
         . "ciniki_course_offerings.status AS status_text, "
@@ -49,7 +50,7 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
         . "ciniki_course_offerings.num_seats, "
         . "IF((ciniki_course_offerings.webflags&0x01)=1,'Hidden', 'Visible') AS web_visible, "
         . "ciniki_courses.name AS course_name, "
-        . "ciniki_courses.code, "
+        . "ciniki_courses.code AS course_code, "
         . "ciniki_courses.primary_image_id, "
         . "ciniki_courses.level, "
         . "ciniki_courses.type, "
@@ -65,10 +66,10 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
-            'fields'=>array('id', 'offering_name', 'permalink', 'status', 'status_text', 
+            'fields'=>array('id', 'offering_name', 'offering_code', 'permalink', 'status', 'status_text', 
                 'reg_flags', 'num_seats',
                 'webflags', 'web_visible', 
-                'primary_image_id', 'course_id', 'course_name', 'code', 'level', 'type', 
+                'primary_image_id', 'course_id', 'course_name', 'course_code', 'level', 'type', 
                 'category', 'flags', 'short_description', 'long_description'),
             'maps'=>array('status_text'=>array('10'=>'Active', '60'=>'Deleted'))),
         ));

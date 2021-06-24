@@ -30,15 +30,18 @@ function ciniki_courses_courseAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
-        'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
-        'code'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Code'), 
+        'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'), 
+        'code'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Code'), 
+        'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'name'=>'Status'), 
         'primary_image_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Image'), 
-        'level'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Level'), 
-        'type'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Type'), 
-        'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Category'), 
+        'level'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Level'), 
+        'type'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Type'), 
+        'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'), 
+        'medium'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Medium'), 
+        'ages'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Ages'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
-        'short_description'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Short Description'), 
-        'long_description'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Long Description'), 
+        'short_description'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Short Description'), 
+        'long_description'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Long Description'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -49,7 +52,9 @@ function ciniki_courses_courseAdd(&$ciniki) {
     if( $args['code'] != '' ) {
         $name = $args['code'] . '-' . $args['name'];
     }
-    $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($name)));
+//    $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($name)));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+    $args['permalink'] = ciniki_core_makePermalink($ciniki, $name);
 
     //  
     // Make sure this module is activated, and

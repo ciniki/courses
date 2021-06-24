@@ -22,15 +22,18 @@ function ciniki_courses_courseUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
-        'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
-        'code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Code'), 
+        'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'), 
+        'code'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Code'), 
+        'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
         'primary_image_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Image'), 
-        'level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Level'), 
-        'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'), 
-        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
+        'level'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Level'), 
+        'type'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Type'), 
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'), 
+        'medium'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Medium'), 
+        'ages'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Ages'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
-        'short_description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Description'), 
-        'long_description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Long Description'), 
+        'short_description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Short Description'), 
+        'long_description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Long Description'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -69,7 +72,8 @@ function ciniki_courses_courseUpdate(&$ciniki) {
         } else {
             $name = $args['code'] . '-' . $args['name'];
         }
-        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($name)));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $name);
     }
 
     //

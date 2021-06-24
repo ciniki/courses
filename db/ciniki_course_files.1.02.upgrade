@@ -1,0 +1,6 @@
+#
+# Add the fields for a code on the course offerings
+#
+ALTER TABLE ciniki_course_files ADD COLUMN course_id int not null AFTER tnid;
+UPDATE ciniki_course_files F, (SELECT course_id, file_id FROM ciniki_course_offering_files) AS O SET F.course_id = O.course_id WHERE F.id = O.file_id;
+ALTER TABLE ciniki_course_files COMMENT='v1.02';

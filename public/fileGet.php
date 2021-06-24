@@ -41,29 +41,42 @@ function ciniki_courses_fileGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki);
 
-    //
-    // Get the main information
-    //
-    $strsql = "SELECT ciniki_course_files.id, "
-        . "ciniki_course_files.type, "
-        . "ciniki_course_files.name, "
-        . "ciniki_course_files.permalink, "
-        . "ciniki_course_files.webflags, "
-        . "IF(ciniki_course_files.webflags&0x01=1,'Hidden','Visible') AS webvisible, "
-        . "IFNULL(DATE_FORMAT(publish_date, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS publish_date, "
-        . "ciniki_course_files.description "
-        . "FROM ciniki_course_files "
-        . "WHERE ciniki_course_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_course_files.id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
+    if( $args['file_id'] == 0 ) {
+        $file = array(
+            'id' => 0,
+            'type' => 20,
+            'name' => '',
+            'permalink' => '',
+            'webflags' => 0,
+            'publish_date' => '',
+            );
     }
-    if( !isset($rc['file']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.17', 'msg'=>'Unable to find file'));
+    else {
+        //
+        // Get the main information
+        //
+        $strsql = "SELECT files.id, "
+            . "files.type, "
+            . "files.name, "
+            . "files.permalink, "
+            . "files.webflags, "
+            . "IF(files.webflags&0x01=1,'Hidden','Visible') AS webvisible, "
+            . "IFNULL(DATE_FORMAT(publish_date, '" . ciniki_core_dbQuote($ciniki, $date_format) . "'), '') AS publish_date, "
+            . "files.description "
+            . "FROM ciniki_course_files AS files "
+            . "WHERE files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND files.id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( !isset($rc['file']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.17', 'msg'=>'Unable to find file'));
+        }
+        $file = isset($rc['file']) ? $rc['file'] : array();
     }
     
-    return array('stat'=>'ok', 'file'=>$rc['file']);
+    return array('stat'=>'ok', 'file'=>$file);
 }
 ?>

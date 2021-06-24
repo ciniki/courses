@@ -15,7 +15,47 @@
 // <rsp stat="ok" />
 //
 function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
-    $strsql = "SELECT DATE_FORMAT(class_date, '%a %b %e, %Y') AS class_date, "
+
+    //
+    // Get the current offering details
+    //
+    $strsql = "SELECT condensed_date, "
+        . "start_date, "
+        . "end_date, "
+        . "DATE_FORMAT(start_date, '%a %b %e, %Y') AS start_formatted, "
+        . "DATE_FORMAT(start_date, '%W') AS start_dayofweek, "
+        . "DATE_FORMAT(start_date, '%w') AS start_dayofweek_num, "
+        . "DATE_FORMAT(start_date, '%a') AS start_dayofweek_short, "
+        . "DATE_FORMAT(start_date, '%Y') AS start_year, "
+        . "DATE_FORMAT(start_date, '%b') AS start_month, "
+        . "DATE_FORMAT(start_date, '%e') AS start_day, "
+        . "DATE_FORMAT(start_date, '%e') AS start_ts, "
+        . "DATE_FORMAT(end_date, '%a %b %e, %Y') AS end_formatted, "
+        . "DATE_FORMAT(end_date, '%W') AS end_dayofweek, "
+        . "DATE_FORMAT(end_date, '%w') AS end_dayofweek_num, "
+        . "DATE_FORMAT(end_date, '%a') AS end_dayofweek_short, "
+        . "DATE_FORMAT(end_date, '%Y') AS end_year, "
+        . "DATE_FORMAT(end_date, '%b') AS end_month, "
+        . "DATE_FORMAT(end_date, '%e') AS end_day, "
+        . "DATE_FORMAT(end_date, '%e') AS end_ts "
+        . "FROM ciniki_course_offerings "
+        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'offering');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.148', 'msg'=>'Unable to load offering', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['offering']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.149', 'msg'=>'Unable to find requested offering'));
+    }
+    $offering = $rc['offering'];
+
+    //
+    // Get the dates
+    //
+    $strsql = "SELECT class_date AS org_class_date, "
+        . "DATE_FORMAT(class_date, '%a %b %e, %Y') AS class_date, "
         . "DATE_FORMAT(class_date, '%W') AS dayofweek, "
         . "DATE_FORMAT(class_date, '%w') AS dayofweek_num, "
         . "DATE_FORMAT(class_date, '%a') AS dayofweek_short, "
@@ -37,7 +77,51 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
     }
     if( isset($rc['date']) ) {
         $condensed_date = $rc['date']['class_date'] . ' ' . $rc['date']['start_time'] . ' - ' . $rc['date']['end_time'];
+        $first_date = $rc['date'];
+        $last_date = $rc['date'];
     } elseif( isset($rc['rows']) && count($rc['rows']) > 1 ) {
+        $dates = $rc['rows'];
+    } elseif( $offering['start_date'] == $offering['end_date'] ) {
+        $condensed_date = $offering['start_formatted'];
+    } elseif( $offering['start_year'] == $offering['end_year'] ) {
+        $condensed_date = $offering['start_dayofweek_short'] . ' ' . $offering['start_month'] . ' ' . $offering['start_day']
+            . ' - '
+            . $offering['end_dayofweek_short'] . ' ' . $offering['end_month'] . ' ' . $offering['end_day']
+            . ', ' . $offering['end_year'];
+    } else {
+        $condensed_date = $offering['start_formatted'] . ' - ' . $offering['end_formatted'];
+        
+/*        $dates = array(
+            array(
+                'org_class_date' => $offering['start_date'],
+                'class_date' => $offering['start_formatted'],
+                'dayofweek' => $offering['start_dayofweek'],
+                'dayofweek_num' => $offering['start_dayofweek_num'],
+                'dayofweek_short' => $offering['start_dayofweek_short'],
+                'year' => $offering['start_year'],
+                'month' => $offering['start_month'],
+                'day' => $offering['start_day'],
+                'start_time' => '12:00 AM',
+                'end_time' => '12:00 AM',
+                'ts' => $offering['start_ts'],
+                ),
+            array(
+                'org_class_date' => $offering['end_date'],
+                'class_date' => $offering['end_formatted'],
+                'dayofweek' => $offering['end_dayofweek'],
+                'dayofweek_num' => $offering['end_dayofweek_num'],
+                'dayofweek_short' => $offering['end_dayofweek_short'],
+                'year' => $offering['end_year'],
+                'month' => $offering['end_month'],
+                'day' => $offering['end_day'],
+                'start_time' => '12:00 AM',
+                'end_time' => '12:00 AM',
+                'ts' => $offering['end_ts'],
+                ),
+            ); */
+    }
+
+    if( isset($dates) ) {
         $first_date = null;
         $last_date = null;
         $prev_time = '';
@@ -56,7 +140,6 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
         $sameday = 'yes';
         $sametime = 'yes';
         $consecutive = 'yes';
-        $dates = $rc['rows'];
         $day_names = array();
         foreach($dates as $did => $date) {
 //          $date = $date;
@@ -103,6 +186,11 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
                 $max = $num;
             } 
         }
+        //
+        // Reduce time
+        //
+        $prev_time = preg_replace('/([0-9]*[0-9]:[0-9][0-9]) PM( - [0-9]*[0-9]:[0-9][0-9] PM)/', "$1$2", $prev_time);
+        $prev_time = preg_replace('/([0-9]*[0-9]:[0-9][0-9]) AM( - [0-9]*[0-9]:[0-9][0-9] AM)/', "$1$2", $prev_time);
         
         $condensed_date = '';
         if( $sameday == 'yes' && $sametime == 'yes' ) {
@@ -191,10 +279,28 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
                 }
             }
         }
-    } else {
-        $condensed_date = '';
     }
-    
+
+    $update_args = array();
+    if( $condensed_date != $offering['condensed_date'] ) {
+        $update_args['condensed_date'] = $condensed_date;
+    } 
+    if( isset($first_date) && $first_date['org_class_date'] != $offering['start_date'] ) {
+        $update_args['start_date'] = $first_date['org_class_date'];
+    } 
+    if( isset($last_date) && $last_date['org_class_date'] != $offering['end_date'] ) {
+        $update_args['end_date'] = $last_date['org_class_date'];
+    }
+
+    if( count($update_args) > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.courses.offering', $offering_id, $update_args, 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.150', 'msg'=>'Unable to update the offering', 'err'=>$rc['err']));
+        }
+    }
+   
+   /*
     $strsql = "UPDATE ciniki_course_offerings SET last_updated = UTC_TIMESTAMP()"
         . ", condensed_date = '" . ciniki_core_dbQuote($ciniki, $condensed_date) . "' "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -212,6 +318,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
     $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $tnid, 2, 'ciniki_course_offerings', $offering_id, 'condensed_date', $condensed_date);
     $ciniki['syncqueue'][] = array('push'=>'ciniki.courses.offering',
         'args'=>array('id'=>$offering_id));
+    */
 
     return array('stat'=>'ok', 'condensed_date'=>$condensed_date);
 }

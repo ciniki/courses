@@ -34,7 +34,8 @@ function ciniki_courses_fileUpdate(&$ciniki) {
     $args = $rc['args'];
 
     if( isset($args['name']) && (!isset($args['permalink']) || $args['permalink'] == '') ) {
-        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['name'])));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
     }
 
     //  
@@ -51,9 +52,32 @@ function ciniki_courses_fileUpdate(&$ciniki) {
     // Check the permalink doesn't already exist
     //
     if( isset($args['permalink']) ) {
+        //
+        // Get the main information
+        //
+        $strsql = "SELECT files.id, "
+            . "files.course_id, "
+            . "files.permalink "
+            . "FROM ciniki_course_files AS files "
+            . "WHERE files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND files.id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( !isset($rc['file']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.144', 'msg'=>'Unable to find file'));
+        }
+        $file = isset($rc['file']) ? $rc['file'] : array();
+
+        //
+        // Check permalink
+        //
         $strsql = "SELECT id, name, permalink FROM ciniki_course_files "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+            . "AND course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'courses');

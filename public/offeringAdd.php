@@ -30,11 +30,12 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
-        'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
-        'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'), 
+        'name'=>array('required'=>'yes', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Name'), 
+        'code'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Web Flags'), 
-        'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Class Date'),
+        'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start Date'),
+        'end_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'End Date'),
         'days'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Days of the week for courses'),
         'skip_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Skip Date'),
         'start_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Start Time'),
@@ -99,6 +100,9 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     // Set the default condensed date to blank, it will be updated if class_date has been specified
     //
     $args['condensed_date'] = '';
+    if( isset($args['end_date']) && isset($args['class_date']) ) {
+        $args['start_date'] = $args['class_date'];
+    }
 
     //
     // Add the offering
@@ -114,7 +118,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     //
     // Check if we should add some dates
     //
-    if( isset($args['class_date']) && $args['class_date'] != '' ) {
+    if( isset($args['class_date']) && $args['class_date'] != '' && !isset($args['end_date']) ) {
         if( isset($args['num_weeks']) && $args['num_weeks'] != '' && $args['num_weeks'] > 1 ) {
             $repeat = $args['num_weeks'];
         } else {
@@ -171,14 +175,15 @@ function ciniki_courses_offeringAdd(&$ciniki) {
                 $cur_date = date_add($cur_date, new DateInterval('P7D'));
             }
         }
-        //
-        // Update the condensed date
-        //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'updateCondensedDate');
-        $rc = ciniki_courses_updateCondensedDate($ciniki, $args['tnid'], $offering_id);
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
+    }
+
+    //
+    // Update the condensed date
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'updateCondensedDate');
+    $rc = ciniki_courses_updateCondensedDate($ciniki, $args['tnid'], $offering_id);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
     }
 
     //

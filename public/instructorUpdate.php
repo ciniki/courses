@@ -24,6 +24,7 @@ function ciniki_courses_instructorUpdate(&$ciniki) {
         'instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'), 
         'first'=>array('required'=>'no', 'blank'=>'no', 'name'=>'First Name'), 
         'last'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Last Name'), 
+        'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'name'=>'Webflags'), 
         'primary_image_id'=>array('required'=>'no', 'name'=>'Level'), 
         'short_bio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Bio'), 

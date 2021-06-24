@@ -31,10 +31,22 @@ function ciniki_courses_hooks_uiSettings($ciniki, $tnid, $args) {
         ) {
         $menu_item = array(
             'priority'=>5200,
+            'label'=>'Programs', 
+            'edit'=>array('app'=>'ciniki.courses.main'),
+            );
+        $rsp['menu_items'][] = $menu_item;
+//        $rsp['archived_items'][] = $menu_item;
+
+        //
+        // To be removed when finished converting to programs
+        //
+        $menu_item = array(
+            'priority'=>5199,
             'label'=>'Courses', 
             'edit'=>array('app'=>'ciniki.courses.offerings'),
             );
-        $rsp['menu_items'][] = $menu_item;
+//        $rsp['menu_items'][] = $menu_item;
+        $rsp['archived_items'][] = $menu_item;
     } 
 
     if( isset($ciniki['tenant']['modules']['ciniki.courses'])

@@ -24,7 +24,7 @@ function ciniki_courses_courseSearchField($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Search String'), 
-        'field'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('type', 'category'), 'name'=>'Field'), 
+        'field'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('level', 'type', 'category', 'medium', 'ages'), 'name'=>'Field'), 
         'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -47,6 +47,7 @@ function ciniki_courses_courseSearchField($ciniki) {
     $strsql = "SELECT DISTINCT ciniki_courses." . $args['field'] . " AS name "
         . "FROM ciniki_courses "
         . "WHERE ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_courses.status < 90 " // Only non-archived fields
         . "";
     $strsql .= "AND ciniki_courses." . $args['field'] . " LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' ";
     $strsql .= "AND ciniki_courses." . $args['field'] . " <> '' ";

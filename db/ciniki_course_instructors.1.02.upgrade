@@ -1,0 +1,7 @@
+#
+# Add the fields for a code on the course offerings
+#
+ALTER TABLE ciniki_course_instructors ADD COLUMN status tinyint unsigned not null AFTER permalink;
+UPDATE ciniki_course_instructors SET status = 10 WHERE (webflags&0x01) = 0;
+UPDATE ciniki_course_instructors SET status = 90 WHERE (webflags&0x01) = 0x01;
+ALTER TABLE ciniki_course_instructors COMMENT='v1.02';

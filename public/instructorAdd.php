@@ -33,6 +33,7 @@ function ciniki_courses_instructorAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'first'=>array('required'=>'no', 'blank'=>'no', 'name'=>'First Name'), 
         'last'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Last Name'), 
+        'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
         'primary_image_id'=>array('required'=>'no', 'default'=>'0', 'name'=>'Level'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'name'=>'Webflags'), 
         'short_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Short Bio'), 

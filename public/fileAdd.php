@@ -33,7 +33,8 @@ function ciniki_courses_fileAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
-        'type'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('1', '2', '20'), 'name'=>'Type'),
+        'course_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Course'),
+        'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
         'description'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Description'), 
         'webflags'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Web Flags'), 
@@ -46,7 +47,8 @@ function ciniki_courses_fileAdd(&$ciniki) {
     $args = $rc['args'];
 
     $name = $args['name'];
-    $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($name)));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+    $args['permalink'] = ciniki_core_makePermalink($ciniki, $name);
 
     //  
     // Make sure this module is activated, and
@@ -65,6 +67,7 @@ function ciniki_courses_fileAdd(&$ciniki) {
     $strsql = "SELECT id FROM ciniki_course_files "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+        . "AND course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
     if( $rc['stat'] != 'ok' ) {

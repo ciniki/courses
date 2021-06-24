@@ -1,0 +1,10 @@
+#
+# Add the fields for a code on the course offerings
+#
+ALTER TABLE ciniki_course_offerings ADD COLUMN start_date date not null AFTER webflags;
+ALTER TABLE ciniki_course_offerings ADD COLUMN end_date date not null AFTER start_date;
+UPDATE ciniki_course_offerings O, (SELECT offering_id, MIN(class_date) AS min, MAX(class_date) AS max FROM ciniki_course_offering_classes GROUP BY offering_id) AS C SET start_date = C.min, end_date = C.max WHERE O.id = C.offering_id;
+UPDATE ciniki_course_offerings SET status = 90 where status = 60;
+UPDATE ciniki_course_offerings SET status = 90 WHERE YEAR(end_date) < 2021;
+CREATE INDEX search on ciniki_course_offerings (status, start_date, end_date);
+ALTER TABLE ciniki_course_offerings COMMENT='v1.04';

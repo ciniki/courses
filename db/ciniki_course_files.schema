@@ -9,9 +9,9 @@
 # uuid:             The Universal Unique ID for the file.
 # tnid:             The tenant the file is for.
 #
-# type:             The type of file, used for sorting and web display.
-#                   **future** In the future this table can be used to store
-#                   class notes, handouts, lectures, powerpoints, etc.
+# course_id:        The ID of the course the file is attached to.
+#
+# type:             The type of file, used for sorting and web display.     *** DEPRECATED Jun 2021 ***
 #
 #                   0 - unknown
 #                   1 - Membership Application
@@ -47,6 +47,7 @@ create table ciniki_course_files (
     id int not null auto_increment,
     uuid char(36) not null,
     tnid int not null,
+    course_id int not null,
     type tinyint unsigned not null,
     extension varchar(10) not null,
     status tinyint unsigned not null,
@@ -63,4 +64,4 @@ create table ciniki_course_files (
     unique index (tnid, permalink), 
     index (name),
     index uuid (uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

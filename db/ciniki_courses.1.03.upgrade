@@ -1,0 +1,9 @@
+#
+# Add field for store course options
+#
+ALTER TABLE ciniki_courses ADD COLUMN status tinyint unsigned not null AFTER permalink;
+ALTER TABLE ciniki_courses ADD COLUMN medium varchar(150) not null AFTER category;
+ALTER TABLE ciniki_courses ADD COLUMN ages varchar(150) not null AFTER medium;
+UPDATE ciniki_courses SET status = 30;
+UPDATE ciniki_courses C, (SELECT course_id, end_date FROM ciniki_course_offerings GROUP BY course_id) AS O SET status = 90 WHERE C.id = O.course_id AND YEAR(O.end_date) < 2021;
+ALTER TABLE ciniki_courses COMMENT='v1.03';

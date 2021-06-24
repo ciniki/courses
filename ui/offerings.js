@@ -149,7 +149,7 @@ function ciniki_courses_offerings() {
     }
     this.menu.open = function(cb) {
         // Get the list of existing offerings
-        M.api.getJSONCb('ciniki.courses.offeringList', {'tnid':M.curTenantID, 'upcoming':'yes', 'current':'yes', 'past':'yes', 'files':'yes', 'limit':'26'}, function(rsp) {
+        M.api.getJSONCb('ciniki.courses.offeringListV1', {'tnid':M.curTenantID, 'upcoming':'yes', 'current':'yes', 'past':'yes', 'files':'yes', 'limit':'26'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -182,7 +182,7 @@ function ciniki_courses_offerings() {
     this.menu.addClose('Back');
 
     //
-    // The offering panel will show the information for a course offering.  Courses
+    // The offering panel will show the information for a course offering.  Course
     // can be offered multiple times.
     //
     this.offering = new M.panel('Course Offering',
@@ -305,39 +305,39 @@ function ciniki_courses_offerings() {
     };
     this.offering.cellValue = function(s, i, j, d) {
         if( s == 'classes' && j == 0 ) { 
-            return '<span class="maintext">' + d.class.class_date + '</span><span class="subdue"> ' + d.class.start_time + ' - ' + d.class.end_time + '</span>';
+            return '<span class="maintext">' + d.class_date + '</span><span class="subdue"> ' + d.start_time + ' - ' + d.end_time + '</span>';
         }
         if( s == 'prices' ) {
             switch(j) {
-                case 0: return d.price.name + (d.price.available_to_text!=''?' <span class="subdue">(' + d.price.available_to_text + ')</span>':'');
-                case 1: return d.price.unit_amount_display;
+                case 0: return d.name + (d.available_to_text!=''?' <span class="subdue">(' + d.available_to_text + ')</span>':'');
+                case 1: return d.unit_amount_display;
             }
         }
         if( s == 'instructors' && j == 0 ) { 
-            return '<span class="maintext">' + d.instructor.name + '</span>';
+            return '<span class="maintext">' + d.name + '</span>';
         }
         if( s == 'files' && j == 0 ) { 
-            return '<span class="maintext">' + d.file.name + '</span>';
+            return '<span class="maintext">' + d.name + '</span>';
         }
 //          else if( s == 'customers' && j == 0 ) { 
-//              return '<span class="maintext">' + d.customer.name + '</span>';
+//              return '<span class="maintext">' + d.name + '</span>';
 //          }
     };
     this.offering.rowFn = function(s, i, d) {
         if( s == 'classes' ) {
-            return 'M.startApp(\'ciniki.courses.classes\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'class_id\':\'' + d.class.id + '\'});';
+            return 'M.startApp(\'ciniki.courses.classes\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'class_id\':\'' + d.id + '\'});';
         }
         if( s == 'prices' ) {
-            return 'M.startApp(\'ciniki.courses.prices\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'price_id\':\'' + d.price.id + '\'});';
+            return 'M.startApp(\'ciniki.courses.prices\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'price_id\':\'' + d.id + '\'});';
         }
         if( s == 'instructors' ) {
-            return 'M.startApp(\'ciniki.courses.instructors\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_instructor_id\':\'' + d.instructor.id + '\'});';
+            return 'M.startApp(\'ciniki.courses.instructors\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_instructor_id\':\'' + d.id + '\'});';
         }
-        if( s == 'files' ) {
-            return 'M.startApp(\'ciniki.courses.files\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'file_id\':\'' + d.file.file_id + '\',\'offering_file_id\':\'' + d.file.id + '\'});';
-        }
+//        if( s == 'files' ) {
+//            return 'M.startApp(\'ciniki.courses.files\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'file_id\':\'' + d.file_id + '\',\'offering_file_id\':\'' + d.id + '\'});';
+//        }
         if( s == 'customers' ) {
-            return 'M.startApp(\'ciniki.courses.customers\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_customer_id\':\'' + d.customer.id + '\'});';
+            return 'M.startApp(\'ciniki.courses.customers\',null,\'M.ciniki_courses_offerings.showOffering();\',\'mc\',{\'offering_customer_id\':\'' + d.id + '\'});';
         }
     };
     this.offering.addButton('edit', 'Edit', 'M.ciniki_courses_offerings.showEdit(\'M.ciniki_courses_offerings.showOffering();\',M.ciniki_courses_offerings.offering.offering_id,0);');

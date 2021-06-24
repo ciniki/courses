@@ -28,9 +28,9 @@ function ciniki_courses_flags($ciniki, $modules) {
 //        array('flag'=>array('bit'=>'11', 'name'=>'')),
 //        array('flag'=>array('bit'=>'12', 'name'=>'')),
 //      0x1000
-//        array('flag'=>array('bit'=>'13', 'name'=>'')),
-//        array('flag'=>array('bit'=>'14', 'name'=>'')),
-//        array('flag'=>array('bit'=>'15', 'name'=>'')),
+        array('flag'=>array('bit'=>'13', 'name'=>'Course Mediums')),
+        array('flag'=>array('bit'=>'14', 'name'=>'Course Ages')),
+        array('flag'=>array('bit'=>'15', 'name'=>'Course Categories')),
 //        array('flag'=>array('bit'=>'16', 'name'=>'')),
         );
 

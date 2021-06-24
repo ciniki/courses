@@ -53,44 +53,57 @@ function ciniki_courses_offeringPriceGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
 
-    $strsql = "SELECT ciniki_course_offering_prices.id, "
-        . "ciniki_course_offering_prices.offering_id, "
-        . "ciniki_course_offering_prices.name, "
-        . "ciniki_course_offering_prices.available_to, "
-        . "ciniki_course_offering_prices.valid_from, "
-        . "ciniki_course_offering_prices.valid_to, "
-        . "ciniki_course_offering_prices.unit_amount, "
-        . "ciniki_course_offering_prices.unit_discount_amount, "
-        . "ciniki_course_offering_prices.unit_discount_percentage, "
-        . "ciniki_course_offering_prices.taxtype_id, "
-        . "ciniki_course_offering_prices.webflags "
-        . "FROM ciniki_course_offering_prices "
-        . "WHERE ciniki_course_offering_prices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_course_offering_prices.id = '" . ciniki_core_dbQuote($ciniki, $args['price_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-    $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
-        array('container'=>'prices', 'fname'=>'id', 'name'=>'price',
-            'fields'=>array('id', 'offering_id', 'name', 'available_to', 'valid_from', 'valid_to', 
-                'unit_amount', 'unit_discount_amount', 'unit_discount_percentage',
-                'taxtype_id', 'webflags'),
-            'utctotz'=>array('valid_from'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
-                'valid_to'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+    if( $args['price_id'] == 0 ) {
+        $price = array(
+            'id' => 0,
+            'offering_id' => 0,
+            'name' => '',
+            'available_to' => 0,
+            'valid_from' => '',
+            'valid_to' => '',
+            'unit_amount' => '',
+            'unit_discount_amount' => '',
+            'unit_discount_percentage' => '',
+            'taxtype_id' => 0,
+            'webflags' => 0,
+            );
+    } 
+    else {
+        $strsql = "SELECT prices.id, "
+            . "prices.offering_id, "
+            . "prices.name, "
+            . "prices.available_to, "
+            . "prices.valid_from, "
+            . "prices.valid_to, "
+            . "prices.unit_amount, "
+            . "prices.unit_discount_amount, "
+            . "prices.unit_discount_percentage, "
+            . "prices.taxtype_id, "
+            . "prices.webflags "
+            . "FROM ciniki_course_offering_prices AS prices "
+            . "WHERE prices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND prices.id = '" . ciniki_core_dbQuote($ciniki, $args['price_id']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+            array('container'=>'prices', 'fname'=>'id', 'name'=>'price',
+                'fields'=>array('id', 'offering_id', 'name', 'available_to', 'valid_from', 'valid_to', 
+                    'unit_amount', 'unit_discount_amount', 'unit_discount_percentage',
+                    'taxtype_id', 'webflags'),
+                'naprices'=>array('unit_amount', 'unit_discount_amount'),
+                'utctotz'=>array('valid_from'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                    'valid_to'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                    ),
                 ),
-            ),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( !isset($rc['prices']) || !isset($rc['prices'][0]) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.42', 'msg'=>'Unable to find price'));
+        }
+        $price = $rc['prices'][0];
     }
-    if( !isset($rc['prices']) || !isset($rc['prices'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.42', 'msg'=>'Unable to find price'));
-    }
-    $price = $rc['prices'][0]['price'];
-
-    $price['unit_amount'] = numfmt_format_currency($intl_currency_fmt,
-        $price['unit_amount'], $intl_currency);
-    $price['unit_discount_amount'] = numfmt_format_currency($intl_currency_fmt,
-        $price['unit_discount_amount'], $intl_currency);
 
     return array('stat'=>'ok', 'price'=>$price);
 }

@@ -40,28 +40,48 @@ function ciniki_courses_offeringSearch($ciniki) {
     }
 
     //
-    // Get the list of 
+    // Load the date format strings for the user
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+    $date_format = ciniki_users_dateFormat($ciniki, 'php');
+
+    //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'maps');
+    $rc = ciniki_courses_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
+    // Get the list of offerings
     //
     $strsql = "SELECT offerings.id, "
         . "offerings.course_id, "
-        . "courses.name AS course_name, "
-        . "offerings.name, "
-        . "offerings.code, "
-        . "offerings.permalink, "
+        . "IFNULL(courses.code, '??') AS course_code, "
+        . "IFNULL(courses.name, '??') AS course_name, "
+        . "IFNULL(offerings.permalink, '') AS course_permalink, "
+        . "offerings.name AS offering_name, "
+        . "offerings.code AS offering_code, "
+        . "offerings.permalink AS offering_permalink, "
         . "offerings.status, "
         . "offerings.webflags, "
+        . "offerings.start_date, "
+        . "offerings.end_date, "
         . "offerings.condensed_date, "
         . "offerings.reg_flags, "
         . "offerings.num_seats, "
-        . "MIN(classes.class_date) AS first_date "
+        . "COUNT(DISTINCT registrations.id) AS num_registrations "
         . "FROM ciniki_course_offerings AS offerings "
         . "LEFT JOIN ciniki_courses AS courses ON ("
             . "offerings.course_id = courses.id "
             . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "LEFT JOIN ciniki_course_offering_classes AS classes ON ("
-            . "offerings.id = classes.offering_id "
-            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "LEFT JOIN ciniki_course_offering_registrations AS registrations ON ("
+            . "offerings.id = registrations.offering_id "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ("
@@ -74,24 +94,22 @@ function ciniki_courses_offeringSearch($ciniki) {
             . "OR offerings.code LIKE '%_" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
         . ") "
         . "GROUP BY offerings.id "
-        . "ORDER BY first_date DESC "
+        . "ORDER BY course_code, offering_code, course_name, offering_name "
         . "";
-    if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
-        $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";
-    } else {
-        $strsql .= "LIMIT 25 ";
-    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 
-            'fields'=>array('id', 'course_id', 'course_name', 'name', 'code', 'permalink', 'status', 'webflags', 
-                'condensed_date', 'reg_flags', 'num_seats')),
+            'fields'=>array('id', 'course_id', 'course_code', 'course_name', 'offering_name', 'offering_code', 
+                'course_permalink', 'offering_permalink', 'status', 'status_text'=>'status', 'webflags', 'condensed_date', 
+                'start_date', 'end_date', 
+                'reg_flags', 'num_seats', 'num_registrations',
+                ),
+            'maps'=>array('status_text'=>$maps['offering']['status']),
+            'dtformat'=>array('start_date'=>$date_format,
+                'end_date'=>$date_format,
+                ),
+            ),
         ));
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    $offerings = isset($rc['offerings']) ? $rc['offerings'] : array();
-
-    return array('stat'=>'ok', 'offerings'=>$offerings);
+    return $rc;
 }
 ?>

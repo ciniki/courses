@@ -46,6 +46,7 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
         public $header_height = 0;      // The height of the image and address
         public $tenant_details = array();
         public $courses_settings = array();
+        public $footer_text = '';
 
         public function Header() {
         }
@@ -54,15 +55,17 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
         public function Footer() {
             $this->SetY(-15);
             $this->SetFont('helvetica', 'I', 8);
+            $this->Cell(150, 10, $this->footer_text,
+                0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->Cell(0, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 
-                0, false, 'C', 0, '', 0, false, 'T', 'M');
+                0, false, 'R', 0, '', 0, false, 'T', 'M');
         }
     }
 
     //
     // Start a new document
     //
-    $pdf = new MYPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
+    $pdf = new MYPDF('L', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
     //
     // Figure out the header tenant name and address information
@@ -109,12 +112,20 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
     }
 
     //
+    // Setup the title
+    //
+    $title = ($offering['course_code'] != '' ? $offering['course_code'] : '');
+    $title .= ($offering['course_name'] != '' ? ($title != '' ? ' - ' : '') . $offering['course_name'] : '');
+    $session = ($offering['offering_code'] != '' ? $offering['offering_code'] : '');
+    $session .= ($offering['offering_name'] != '' ? ($session != '' ? ' - ' : '') . $offering['offering_name'] : '');
+
+    //
     // Determine the header details
     //
     $pdf->header_details = array(
         array('label'=>'Date(s)', 'value'=>$dates),
-        array('label'=>'Course', 'value'=>$offering['code'] . ' - ' . $offering['course_name']),
-        array('label'=>'Session', 'value'=>$offering['offering_name']),
+        array('label'=>'Course', 'value'=>$title),
+        array('label'=>'Session', 'value'=>$session),
         array('label'=>'Instructors', 'value'=>$instructors),
         array('label'=>'Registrations', 'value'=>count($offering['registrations'])),
         );
@@ -124,7 +135,8 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
     //
     $pdf->SetCreator('Ciniki');
     $pdf->SetAuthor($tenant_details['name']);
-    $pdf->SetTitle($offering['code'] . ' - ' . $offering['offering_name']);
+    $pdf->footer_text = $title . ($title != '' && $session != '' ? ' - ' : '') . $session;
+    $pdf->SetTitle($title . ($title != '' && $session != '' ? ' - ' : '') . $session);
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
 
@@ -167,12 +179,12 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
     //
     // Add the information to the first page
     //
-    $w = array(25, 75);
+    $w = array(30, 120);
     foreach($pdf->header_details as $detail) {
         $pdf->SetFillColor(224);
-        $pdf->SetX($pdf->left_margin + 80);
+        $pdf->SetX($pdf->left_margin + 93);
         $pdf->SetFont('', 'B');
-        $pdf->Cell($w[0], 6, $detail['label'], 1, 0, 'L', 1);
+        $pdf->Cell($w[0], 6, $detail['label'], 1, 0, 'R', 1);
         $pdf->SetFillColor(255);
         $pdf->SetFont('', '');
         $pdf->Cell($w[1], 6, $detail['value'], 1, 0, 'L', 1);
@@ -194,16 +206,16 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
     // Add the registrations
     //
     if( $parents == 'yes' ) {
-        $w = array((180-($num_classes*$date_width))/2, (180-($num_classes*$date_width))/2);
+        $w = array((243-($num_classes*$date_width))/2, (243-($num_classes*$date_width))/2);
     } else {
-        $w = array((180-($num_classes*$date_width)), 0);
+        $w = array((243-($num_classes*$date_width)), 0);
     }
     $pdf->SetFillColor(224);
     $pdf->SetFont('', 'B');
     $pdf->SetCellPadding(2);
-    $pdf->Cell($w[0], 17, 'Student', 1, 0, 'L', 1);
+    $pdf->Cell($w[0], 24, 'Student', 1, 0, 'L', 1);
     if( $parents == 'yes' ) {
-        $pdf->Cell($w[1], 17, 'Parent', 1, 0, 'L', 1);
+        $pdf->Cell($w[1], 24, 'Parent', 1, 0, 'L', 1);
     }
     //$pdf->Cell($w[2], 6, 'Feb 16', 1, 0, 'L', 1);
     $x = $pdf->getX();
@@ -211,13 +223,13 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
         $pdf->setX($x);
         $pdf->StartTransform();
         $pdf->Rotate(90);
-        $pdf->TranslateX(-17);
-        $pdf->MultiCell(17, $date_width, preg_replace("/, [0-9]+/", '', $class['class_date']), 1, 'L', 1, 0);
+        $pdf->TranslateX(-24);
+        $pdf->MultiCell(24, $date_width, preg_replace("/, [0-9]+/", '', $class['class_date']), 1, 'L', 1, 0);
         $pdf->StopTransform();
         $x += $date_width;
         $w[] = $date_width;
     }
-    $pdf->Ln(17);
+    $pdf->Ln(24);
     $pdf->SetFillColor(236);
     $pdf->SetTextColor(0);
     $pdf->SetFont('');
@@ -329,12 +341,24 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
             $pdf->AddPage();
             $pdf->SetFillColor(224);
             $pdf->SetFont('', 'B');
-            $pdf->Cell($w[0], 6, 'Student', 1, 0, 'L', 1);
+            $pdf->SetCellPadding(2);
+            $pdf->Cell($w[0], 24, 'Student', 1, 0, 'L', 1);
             if( $parents == 'yes' ) {
-                $pdf->Cell($w[1], 6, 'Parent', 1, 0, 'L', 1);
+                $pdf->Cell($w[1], 24, 'Parent', 1, 0, 'L', 1);
             }
-            $pdf->Cell($w[2], 6, 'Status', 1, 0, 'L', 1);
-            $pdf->Ln();
+            //$pdf->Cell($w[2], 6, 'Feb 16', 1, 0, 'L', 1);
+            $x = $pdf->getX();
+            foreach($offering['classes'] as $class) {
+                $pdf->setX($x);
+                $pdf->StartTransform();
+                $pdf->Rotate(90);
+                $pdf->TranslateX(-24);
+                $pdf->MultiCell(24, $date_width, preg_replace("/, [0-9]+/", '', $class['class_date']), 1, 'L', 1, 0);
+                $pdf->StopTransform();
+                $x += $date_width;
+                $w[] = $date_width;
+            }
+            $pdf->Ln(24);
             $pdf->SetFillColor(236);
             $pdf->SetTextColor(0);
             $pdf->SetFont('');
