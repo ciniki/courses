@@ -1381,7 +1381,7 @@ function ciniki_courses_main() {
             'webflags':{'label':'Web', 'type':'flags', 'join':'yes', 'toggle':'no', 'flags':{'1':{'name':'Hidden'}}},
             'url':{'label':'URL', 'type':'text'},
             }},
-        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'offerings', 'tabs':{
+        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'bio', 'tabs':{
             'bio':{'label':'Bio', 'fn':'M.ciniki_courses_main.instructor.switchTab("bio");'},
             'offerings':{'label':'Programs', 'fn':'M.ciniki_courses_main.instructor.switchTab("offerings");'},
             }},
