@@ -317,7 +317,7 @@ function ciniki_courses_main() {
             null,
             'M.ciniki_courses_main.offering.open();',
             'mc',
-            {'subject':'Re: ' + this.data.name + ' (' + this.data.condensed_date + ')', 
+            {'subject':'Re: ' + this.data.course_name + ' - ' + this.data.name + ' (' + this.data.condensed_date + ')', 
                 'list':customers, 
                 'object':'ciniki.courses.offering',
                 'object_id':this.offering_id,
