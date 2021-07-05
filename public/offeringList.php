@@ -205,7 +205,7 @@ function ciniki_courses_offeringList($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.127', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.155', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
         }
         $rsp['years'] = isset($rc['stats']) ? $rc['stats'] : array();
 
@@ -221,7 +221,7 @@ function ciniki_courses_offeringList($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
         $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.courses', 'num');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.145', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.157', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
         }
         $num_items = isset($rc['num']) ? $rc['num'] : '';
 
@@ -243,7 +243,7 @@ function ciniki_courses_offeringList($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
         $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.courses', 'num');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.145', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.158', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
         }
         $num_items = isset($rc['num']) ? $rc['num'] : '';
 

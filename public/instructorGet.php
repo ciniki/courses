@@ -173,7 +173,7 @@ function ciniki_courses_instructorGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.136', 'msg'=>'Unable to load offerings', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.156', 'msg'=>'Unable to load offerings', 'err'=>$rc['err']));
         }
         $instructor['offerings'] = isset($rc['offerings']) ? $rc['offerings'] : array();
     }

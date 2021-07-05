@@ -195,7 +195,7 @@ function ciniki_courses_courseList($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.127', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.153', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
         }
         $stats = isset($rc['stats']) ? $rc['stats'] : array();
         $count = 0;

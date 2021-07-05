@@ -56,7 +56,7 @@ function ciniki_courses_sapos_cartItemCheck($ciniki, $tnid, $customer, $args) {
             return $rc;
         }
         if( !isset($rc['offerings']) || count($rc['offerings']) < 1 ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.52', 'msg'=>'No course found.'));     
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.152', 'msg'=>'No course found.'));     
         }
         $item = array_pop($rc['offerings']);
 

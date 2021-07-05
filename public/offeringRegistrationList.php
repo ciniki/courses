@@ -109,7 +109,7 @@ function ciniki_courses_offeringRegistrationList($ciniki) {
                 'maps'=>array('invoice_status_text'=>$status_maps)),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.46', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.151', 'msg'=>'Unable to get the list of registrations', 'err'=>$rc['err']));
         }
         if( !isset($rc['registrations']) ) {
             $registrations = array();
