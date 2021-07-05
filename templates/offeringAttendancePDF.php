@@ -337,7 +337,7 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
         if( $lh2 > $lh ) { $lh = $lh2; }
 
         // Check if we need a page break
-        if( $pdf->getY() > ($pdf->getPageHeight() - $lh - $pdf->top_margin - $pdf->header_height) ) {
+        if( $pdf->getY() > ($pdf->getPageHeight() - $lh - $pdf->top_margin - 5) ) {
             $pdf->AddPage();
             $pdf->SetFillColor(224);
             $pdf->SetFont('', 'B');
