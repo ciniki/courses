@@ -107,10 +107,15 @@ function ciniki_courses_offeringList($ciniki) {
     }
     if( isset($args['year']) && $args['year'] != 'all' ) {
         if( $args['year'] == 'upcoming' ) {
-            $strsql .= "AND offerings.start_date > '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' ";
+            $strsql .= "AND offerings.start_date > '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
+                . "AND offerings.status < 90 "
+                . "AND courses.status < 90 "
+                . "";
         } elseif( $args['year'] == 'current' ) {
             $strsql .= "AND offerings.start_date <= '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
                 . "AND offerings.end_date >= '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
+                . "AND offerings.status < 90 "
+                . "AND courses.status < 90 "
                 . "";
         } elseif( $args['year'] == 'recent' ) {
             $strsql .= "AND offerings.end_date > '" . ciniki_core_dbQuote($ciniki, $recent_dt->format('Y-m-d')) . "' "
@@ -236,7 +241,13 @@ function ciniki_courses_offeringList($ciniki) {
         //
         $strsql = "SELECT COUNT(*) AS num_offerings "
             . "FROM ciniki_course_offerings AS offerings "
+            . "INNER JOIN ciniki_courses AS courses ON ("
+                . "offerings.course_id = courses.id "
+                . "AND courses.status < 90 "
+                . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND offerings.status < 90 "
             . "AND start_date <= '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
             . "AND end_date >= '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
             . "";
@@ -258,7 +269,13 @@ function ciniki_courses_offeringList($ciniki) {
         //
         $strsql = "SELECT COUNT(*) AS num_offerings "
             . "FROM ciniki_course_offerings AS offerings "
+            . "INNER JOIN ciniki_courses AS courses ON ("
+                . "offerings.course_id = courses.id "
+                . "AND courses.status < 90 "
+                . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND offerings.status < 90 "
             . "AND start_date > '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
