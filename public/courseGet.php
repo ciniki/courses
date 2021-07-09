@@ -174,7 +174,7 @@ function ciniki_courses_courseGet($ciniki) {
             . "WHERE offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $course['id']) . "' "
             . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "GROUP BY offerings.id "
-            . "ORDER BY offerings.end_date DESC, courses.code, courses.name, offerings.code, offerings.name "
+            . "ORDER BY offerings.status, offerings.start_date, courses.code, courses.name, offerings.code, offerings.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
