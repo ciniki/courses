@@ -78,11 +78,11 @@ function ciniki_courses_sapos_itemSearch($ciniki, $tnid, $args) {
 
     $items = array();
     foreach($courses as $cid => $course) {
-        if( $course['course_code'] != '' ) {
-            $course['course_name'] = $course['course_code'] . ' - ' . $course['course_name'];
-        } elseif( $course['offering_code'] != '' ) {
-            $course['course_name'] = $course['offering_code'] . ' - ' . $course['course_name'];
-        } 
+//        if( $course['course_code'] != '' ) {
+//            $course['course_name'] = $course['course_code'] . ' - ' . $course['course_name'];
+//        } elseif( $course['offering_code'] != '' ) {
+//            $course['course_name'] = $course['offering_code'] . ' - ' . $course['course_name'];
+//        } 
         if( $course['offering_name'] != '' ) {
             $course['course_name'] .= ' - ' . $course['offering_name'];
         }
@@ -92,6 +92,7 @@ function ciniki_courses_sapos_itemSearch($ciniki, $tnid, $args) {
                     'status'=>0,
                     'object'=>'ciniki.courses.offering_price',
                     'object_id'=>$price['id'],
+                    'code'=>$course['offering_code'],
                     'description'=>$course['course_name'],
                     'quantity'=>1,
                     'unit_amount'=>$price['unit_amount'],
@@ -112,6 +113,7 @@ function ciniki_courses_sapos_itemSearch($ciniki, $tnid, $args) {
                 'status'=>0,
                 'object'=>'ciniki.courses.offering',
                 'object_id'=>$course['id'],
+                'code'=>$course['offering_code'],
                 'description'=>$course['course_name'],
                 'quantity'=>1,
                 'unit_amount'=>0,

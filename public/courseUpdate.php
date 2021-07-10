@@ -65,12 +65,12 @@ function ciniki_courses_courseUpdate(&$ciniki) {
                 return $rc;
             }
             if( !isset($args['code']) ) {
-                $name = $rc['course']['code'] . '-' . $args['name'];
+                $name = $args['name'] . ($rc['course']['code'] != '' ? '-' . $rc['course']['code'] : '');
             } else {
-                $name = $args['code'] . '-' . $rc['course']['name'];
+                $name = $rc['course']['name'] . ($args['code'] != '' ? '-' . $args['code'] : '');
             }
         } else {
-            $name = $args['code'] . '-' . $args['name'];
+            $name = $args['name'] . ($args['code'] != '' ? '-' . $args['code'] : '');
         }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
         $args['permalink'] = ciniki_core_makePermalink($ciniki, $name);

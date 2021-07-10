@@ -115,7 +115,7 @@ function ciniki_courses_courseList($ciniki) {
         . "WHERE courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . $filter_sql
         . "GROUP BY courses.id "
-        . "ORDER BY courses.code, courses.name "
+        . "ORDER BY courses.name, courses.code "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(

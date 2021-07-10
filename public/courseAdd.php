@@ -50,7 +50,7 @@ function ciniki_courses_courseAdd(&$ciniki) {
 
     $name = $args['name'];
     if( $args['code'] != '' ) {
-        $name = $args['code'] . '-' . $args['name'];
+        $name = $args['name'] . '-' . $args['code'];
     }
 //    $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($name)));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
