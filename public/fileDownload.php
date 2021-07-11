@@ -40,10 +40,22 @@ function ciniki_courses_fileDownload($ciniki) {
     }   
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Get the uuid for the file
     //
     $strsql = "SELECT ciniki_course_files.id, "
-        . "ciniki_course_files.name, ciniki_course_files.extension, "
+        . "ciniki_course_files.uuid, "
+        . "ciniki_course_files.name, "
+        . "ciniki_course_files.extension, "
         . "ciniki_course_files.binary_content "
         . "FROM ciniki_course_files "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
@@ -73,6 +85,14 @@ function ciniki_courses_fileDownload($ciniki) {
     header('Content-Disposition: attachment;filename="' . $filename . '"');
     header('Content-Length: ' . strlen($rc['file']['binary_content']));
     header('Cache-Control: max-age=0');
+
+    //
+    // Get the storage filename
+    //
+    $storage_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $rc['file']['uuid'][0] . '/' . $rc['file']['uuid'];
+    if( file_exists($storage_filename) ) {  
+        $rc['file']['binary_content'] = file_get_contents($storage_filename);    
+    }
 
     print $rc['file']['binary_content'];
     exit();

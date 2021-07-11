@@ -62,9 +62,20 @@ function ciniki_courses_fileAdd(&$ciniki) {
     $modules = $rc['modules'];
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Check the permalink doesn't already exist
     //
-    $strsql = "SELECT id FROM ciniki_course_files "
+    $strsql = "SELECT id "
+        . "FROM ciniki_course_files "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "AND course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
@@ -100,10 +111,33 @@ function ciniki_courses_fileAdd(&$ciniki) {
     //
     if( $args['extension'] != 'pdf' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.13', 'msg'=>'The file must be a PDF file.'));
-        
     }
 
-    $args['binary_content'] = file_get_contents($_FILES['uploadfile']['tmp_name']);
+    //
+    // Get a new UUID
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
+    $rc = ciniki_core_dbUUID($ciniki, 'ciniki.courses');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $args['uuid'] = $rc['uuid'];
+
+    //
+    // Move the file to ciniki-storage
+    //
+    $storage_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $args['uuid'][0] . '/' . $args['uuid'];
+    if( !is_dir(dirname($storage_filename)) ) {
+        if( !mkdir(dirname($storage_filename), 0700, true) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.159', 'msg'=>'Unable to add file'));
+        }
+    }
+
+    if( !rename($_FILES['uploadfile']['tmp_name'], $storage_filename) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.160', 'msg'=>'Unable to add file'));
+    }
+
+    $args['binary_content'] = '';//file_get_contents($_FILES['uploadfile']['tmp_name']);
 
     //
     // Add the file

@@ -49,7 +49,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
             . "AND ciniki_course_offering_prices.id = '" . ciniki_core_dbQuote($ciniki, $args['price_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.products', array(
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'offerings', 'fname'=>'offering_id',
                 'fields'=>array('offering_id', 'price_id', 'price_name', 'code', 'course_code', 'offering_id', 'description', 'reg_flags', 'num_seats', 
                     'available_to', 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id',
@@ -76,7 +76,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
         //
         if( ($item['available_to']|0xF0) > 0 ) {
             if( ($item['available_to']&$customer['price_flags']) == 0 ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.53', 'msg'=>"I'm sorry, but this product is not available to you."));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.53', 'msg'=>"I'm sorry, but this course is not available to you."));
             }
         }
 
