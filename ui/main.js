@@ -151,7 +151,11 @@ function ciniki_courses_main() {
             'condensed_date':{'label':'Dates', 'type':'text', 'editable':'no'},
             }},
         '_reg':{'label':'Registration Options', 'aside':'yes', 'fields':{
-            'reg_flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Track Registrations'},'2':{'name':'Online Registrations'}}},
+            'reg_flags':{'label':'Options', 'type':'flags', 'flags':{
+                '1':{'name':'Track Registrations'},
+                '2':{'name':'Online Registrations'},
+                '4':{'name':'Sold Out'},
+                }},
             'num_seats':{'label':'Number of Seats', 'type':'text', 'size':'small'},
             'seats_sold':{'label':'Seats Sold', 'type':'text', 'editable':'no'},
             }},

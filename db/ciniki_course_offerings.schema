@@ -39,7 +39,7 @@
 #                       0x01 - Admin registrations enabled
 #                       0x02 - Online registrations enabled
 #                       0x04 -
-#                       0x08 - 
+#                       0x08 - Sold Out (Mark as sold out on website)
 #
 # date_added:       The UTC date and time the record was added.
 # last_updated:     The UTC date and time the record was last changed;
