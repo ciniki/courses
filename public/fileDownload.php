@@ -81,10 +81,6 @@ function ciniki_courses_fileDownload($ciniki) {
     } else {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.16', 'msg'=>'Unsupported file type'));
     }
-    // Specify Filename
-    header('Content-Disposition: attachment;filename="' . $filename . '"');
-    header('Content-Length: ' . strlen($rc['file']['binary_content']));
-    header('Cache-Control: max-age=0');
 
     //
     // Get the storage filename
@@ -94,7 +90,13 @@ function ciniki_courses_fileDownload($ciniki) {
         $rc['file']['binary_content'] = file_get_contents($storage_filename);    
     }
 
+    // Specify Filename
+    header('Content-Disposition: attachment;filename="' . $filename . '"');
+    header('Content-Length: ' . strlen($rc['file']['binary_content']));
+    header('Cache-Control: max-age=0');
+
     print $rc['file']['binary_content'];
+
     exit();
     
     return array('stat'=>'binary');
