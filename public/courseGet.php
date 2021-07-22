@@ -158,6 +158,7 @@ function ciniki_courses_courseGet($ciniki) {
             . "courses.name AS course_name, "
             . "offerings.code AS offering_code, "
             . "offerings.name AS offering_name, "
+            . "offerings.status, "
             . "offerings.start_date, "
             . "offerings.end_date, "
             . "offerings.num_seats, "
@@ -178,6 +179,7 @@ function ciniki_courses_courseGet($ciniki) {
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+            array('container'=>'status', 'fname'=>'status', 'fields'=>array('status')),
             array('container'=>'offerings', 'fname'=>'id', 
                 'fields'=>array('id', 'course_id', 'course_code', 'course_name', 
                     'offering_id'=>'id', 'offering_code', 'offering_name',
@@ -192,7 +194,16 @@ function ciniki_courses_courseGet($ciniki) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.136', 'msg'=>'Unable to load offerings', 'err'=>$rc['err']));
         }
-        $course['offerings'] = isset($rc['offerings']) ? $rc['offerings'] : array();
+        $course['offerings'] = array();
+        if( isset($rc['status']) ) {
+            foreach($rc['status'] as $s) {
+                if( $s['status'] == 10 ) {
+                    $course['offerings'] = $s['offerings'];
+                } elseif( $s['status'] == 90 ) {
+                    $course['archived'] = $s['offerings'];
+                }
+            }
+        }
     }
 
     return array('stat'=>'ok', 'course'=>$course);

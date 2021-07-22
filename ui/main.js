@@ -980,8 +980,18 @@ function ciniki_courses_main() {
             'addTxt':'Add Image',
             'addFn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.courseimage.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
             },
-        'offerings':{'label':'Sessions', 'type':'simplegrid', 'num_cols':7,
+        'offerings':{'label':'Active Sessions', 'type':'simplegrid', 'num_cols':7,
             'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'offerings' ? 'yes' : 'hidden';},
+            'headerValues':[],
+            'noData':'No sessions',
+            'sortable':'yes',
+            'sortTypes':[],
+            'dataMaps':[],
+            'addTxt':'Add Session',
+            'addFn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.offering.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
+            },
+        'archived':{'label':'Archived Sessions', 'type':'simplegrid', 'num_cols':7,
+            'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'offerings' && M.ciniki_courses_main.course.data.archived != null ? 'yes' : 'hidden';},
             'headerValues':[],
             'noData':'No sessions',
             'sortable':'yes',
@@ -1026,7 +1036,7 @@ function ciniki_courses_main() {
         if( s == 'files' ) {
             return d.name;
         }
-        if( s == 'offerings' ) {
+        if( s == 'offerings' || s == 'archived' ) {
             if( this.sections.offerings.dataMaps[j] == 'registrations' ) {
                 return d.num_registrations + '/' + d.num_seats;
             }
@@ -1044,7 +1054,7 @@ function ciniki_courses_main() {
     this.course.switchTab = function(t) {
         this.sections._tabs.selected = t;
         this.refreshSection('_tabs');
-        this.showHideSections(['_short_description', '_long_description', 'files', 'images', '_images', 'offerings']);
+        this.showHideSections(['_short_description', '_long_description', 'files', 'images', '_images', 'offerings', 'archived']);
     }
     this.course.open = function(cb, cid, list) {
         if( cid != null ) { this.course_id = cid; }
