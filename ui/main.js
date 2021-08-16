@@ -289,7 +289,6 @@ function ciniki_courses_main() {
     this.offering.removeInstructor = function(i) {
         if( this.data.instructors[i] != null ) {
             M.confirm("Are you sure you want to remove " + this.data.instructors[i].name + "?",null,function() {
-                console.log('test: ' + i);
                 M.api.getJSONCb('ciniki.courses.offeringInstructorDelete', {'tnid':M.curTenantID, 'offering_instructor_id':M.ciniki_courses_main.offering.data.instructors[i].id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
