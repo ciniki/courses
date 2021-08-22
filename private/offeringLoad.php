@@ -197,7 +197,7 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
             . "description "
             . "FROM ciniki_course_images "
             . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $offering['course_id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.lapt', array(

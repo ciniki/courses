@@ -84,6 +84,15 @@ function ciniki_courses_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
         }
         $reg_id = $rc['id'];
 
+        //
+        // Update the sold out flag
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringSoldOutUpdate');
+        $rc = ciniki_courses_offeringSoldOutUpdate($ciniki, $tnid, $offering['id']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.163', 'msg'=>'Unable to update', 'err'=>$rc['err']));
+        }
+
         return array('stat'=>'ok', 'object'=>'ciniki.courses.offering_registration', 'object_id'=>$reg_id);
     }
 
@@ -155,6 +164,15 @@ function ciniki_courses_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
         }
         $reg_id = $rc['id'];
 
+        //
+        // Update the sold out flag
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringSoldOutUpdate');
+        $rc = ciniki_courses_offeringSoldOutUpdate($ciniki, $tnid, $offering['id']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.164', 'msg'=>'Unable to update', 'err'=>$rc['err']));
+        }
+
         return array('stat'=>'ok', 'object'=>'ciniki.courses.offering_registration', 'object_id'=>$reg_id);
     }
 
@@ -165,7 +183,7 @@ function ciniki_courses_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
         //
         // Check the registration exists
         //
-        $strsql = "SELECT id, invoice_id "
+        $strsql = "SELECT id, offering_id, invoice_id "
             . "FROM ciniki_course_offering_registrations "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
@@ -190,6 +208,16 @@ function ciniki_courses_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
+
+            //
+            // Update the sold out flag
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringSoldOutUpdate');
+            $rc = ciniki_courses_offeringSoldOutUpdate($ciniki, $tnid, $registration['id']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.165', 'msg'=>'Unable to update', 'err'=>$rc['err']));
+            }
+
             return array('stat'=>'ok');
         }
     }
