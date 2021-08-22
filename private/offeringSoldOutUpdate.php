@@ -29,7 +29,9 @@ function ciniki_courses_offeringSoldOutUpdate(&$ciniki, $tnid, $offering_id) {
     //
     // Check if the offering is marked as sold out
     //
-    if( ($offering['reg_flags']&0x08) == 0 && $offering['seats_sold'] >= $offering['num_seats'] ) {
+    if( ($offering['reg_flags']&0x03) > 0 && ($offering['reg_flags']&0x08) == 0 
+        && $offering['seats_sold'] >= $offering['num_seats'] 
+        ) {
 
         $update_args['reg_flags'] = $offering['reg_flags'] | 0x08;
 
