@@ -28,6 +28,10 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
     }
     $offering = $rc['offering'];
 
+    if( !isset($offering['registrations']) ) {
+        $offering['registrations'] = array();
+    }
+
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
     //
     // Load TCPDF library
