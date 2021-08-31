@@ -63,6 +63,7 @@ function ciniki_courses_reportStudents($ciniki) {
         . "courses.code AS course_code, "
         . "customers.id AS customer_id, "
         . "customers.display_name, "
+        . "IFNULL(prices.name, '') AS price_name, "
         . "emails.email AS emails "
         . "FROM ciniki_course_offering_classes AS classes "
         . "INNER JOIN ciniki_course_offering_registrations AS registrations ON ("
@@ -76,6 +77,16 @@ function ciniki_courses_reportStudents($ciniki) {
         . "INNER JOIN ciniki_courses AS courses ON ("
             . "offerings.course_id = courses.id "
             . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_sapos_invoice_items AS items ON ("
+            . "registrations.invoice_id = items.invoice_id "
+            . "AND items.object_id = registrations.id "
+            . "AND items.object = 'ciniki.courses.offering_registration' "
+            . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_course_offering_prices AS prices ON ("
+            . "items.price_id = prices.id "
+            . "AND prices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS customers ON ("
             . "registrations.student_id = customers.id "
@@ -97,7 +108,7 @@ function ciniki_courses_reportStudents($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'customers', 'fname'=>'id', 
-            'fields'=>array('id', 'customer_id', 'display_name', 'offering_name', 'offering_code', 'course_code', 'course_name', 'condensed_date', 'emails'),
+            'fields'=>array('id', 'customer_id', 'display_name', 'offering_name', 'offering_code', 'course_code', 'course_name', 'condensed_date', 'price_name', 'emails'),
             'lists'=>array('emails'),
             ),
         ));

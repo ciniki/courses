@@ -299,7 +299,8 @@ function ciniki_courses_offeringGet($ciniki) {
             . "ciniki_course_offering_registrations.invoice_id, "
             . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status, "
             . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status_text, "
-            . "IFNULL(ciniki_sapos_invoice_items.total_amount, 0) AS registration_amount "
+            . "IFNULL(ciniki_sapos_invoice_items.total_amount, 0) AS registration_amount, "
+            . "IFNULL(prices.name, '') AS price_name "
             . "FROM ciniki_course_offering_registrations "
             . "LEFT JOIN ciniki_customers AS c1 ON ("
                 . "ciniki_course_offering_registrations.customer_id = c1.id "
@@ -319,6 +320,10 @@ function ciniki_courses_offeringGet($ciniki) {
                 . "AND ciniki_course_offering_registrations.id = ciniki_sapos_invoice_items.object_id "
                 . "AND ciniki_sapos_invoice_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_course_offering_prices AS prices ON ("
+                . "ciniki_sapos_invoice_items.price_id = prices.id "
+                . "AND prices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE ciniki_course_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_offering_registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
             . "ORDER BY sort_name "
@@ -327,7 +332,7 @@ function ciniki_courses_offeringGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'customer_id', 'customer_name', 'student_name', 'yearsold', 'num_seats', 
-                    'invoice_id', 'invoice_status', 'invoice_status_text', 'registration_amount'),
+                    'invoice_id', 'invoice_status', 'invoice_status_text', 'registration_amount', 'price_name'),
                 'naprices'=>array('registration_amount'),
                 'maps'=>array('invoice_status_text'=>$status_maps)),
             ));

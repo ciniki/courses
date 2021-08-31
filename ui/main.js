@@ -185,11 +185,11 @@ function ciniki_courses_main() {
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3, 
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden';},
             'noData':'No Registrations',
-            'headerValues':['Name', 'Student', 'Age', 'Paid', 'Amount'],
-            'headerClasses':['', '', '', 'alignright', 'alignright'],
-            'cellClasses':['', '', '', 'alignright', 'alignright'],
+            'headerValues':['Name', 'Student', 'Age', 'Paid', 'Price', 'Amount'],
+            'headerClasses':['', '', '', 'alignright', 'alignright', 'alignright'],
+            'cellClasses':['', '', '', 'alignright', 'alignright', 'alignright'],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'number', 'text', 'number'],
+            'sortTypes':['text', 'text', 'number', 'text', 'text', 'number'],
             },
         'messages':{'label':'Emails', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'emails' ? 'yes' : 'hidden';},
@@ -244,7 +244,8 @@ function ciniki_courses_main() {
                 case 1: return d.student_name;
                 case 2: return d.yearsold;
                 case 3: return d.invoice_status_text;
-                case 4: return d.registration_amount;
+                case 4: return d.price_name;
+                case 5: return d.registration_amount;
             }
         } 
         if( s == 'messages' ) {
@@ -1521,11 +1522,11 @@ function ciniki_courses_main() {
             'download':{'label':'Download Excel', 'fn':'M.ciniki_courses_main.students.downloadExcel();'},
             }},
         'customers':{'label':'Students',
-            'type':'simplegrid', 'num_cols':3,
-            'headerValues':['Student', 'Program', 'Date'],
+            'type':'simplegrid', 'num_cols':4,
+            'headerValues':['Student', 'Program', 'Date', 'Price'],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'text'],
-            'cellClasses':['', '', ''],
+            'sortTypes':['text', 'text', 'text', 'number'],
+            'cellClasses':['', '', '', ''],
             }
     }
     this.students.cellValue = function(s, i, j, d) {
@@ -1533,6 +1534,7 @@ function ciniki_courses_main() {
             case 0: return d.display_name;
             case 1: return d.course_name;
             case 2: return d.condensed_date;
+            case 3: return d.price_name;
         }
     }
     this.students.fieldValue = function(s, i, d) {
@@ -1788,7 +1790,7 @@ function ciniki_courses_main() {
         // Setup registrations list on offering
         //
         if( M.modOn('ciniki.sapos') ) {
-            this.offering.sections.registrations.num_cols = 5;
+            this.offering.sections.registrations.num_cols = 6;
         } else {
             this.offering.sections.registrations.num_cols = 3;
         }
