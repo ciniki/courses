@@ -1047,7 +1047,7 @@ function ciniki_courses_main() {
         if( s == 'files' ) {
             return 'M.ciniki_courses_main.course.save("M.ciniki_courses_main.coursefile.open(\'M.ciniki_courses_main.course.open();\',' + d.id + ',M.ciniki_courses_main.course.course_id);");';
         }
-        if( s == 'offerings' ) {
+        if( s == 'offerings' || s == 'archived' ) {
             return 'M.ciniki_courses_main.course.save("M.ciniki_courses_main.offering.open(\'M.ciniki_courses_main.course.open();\',' + d.id + ',M.ciniki_courses_main.course.course_id);");';
         }
     }
