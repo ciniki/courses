@@ -93,7 +93,8 @@ function ciniki_courses_sapos() {
         };
         this.registration.listFn = function(s, i, d) {
             if( s == 'course' && this._source != 'offering' ) {
-                return 'M.startApp(\'ciniki.courses.offerings\',null,\'M.ciniki_courses_sapos.registrationEdit();\',\'mc\',{\'offering_id\':\'' + this.data.offering_id + '\'});'; 
+                return 'M.startApp(\'ciniki.courses.main\',null,\'M.ciniki_courses_sapos.registrationEdit();\',\'mc\',{\'offering_id\':\'' + this.data.offering_id + '\'});'; 
+                //return 'M.startApp(\'ciniki.courses.offerings\',null,\'M.ciniki_courses_sapos.registrationEdit();\',\'mc\',{\'offering_id\':\'' + this.data.offering_id + '\'});'; 
             }
             return '';
         };
