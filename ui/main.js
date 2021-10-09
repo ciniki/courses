@@ -229,7 +229,7 @@ function ciniki_courses_main() {
             switch(j) {
                 case 0: return M.multiline(d.name, M.subdue(' ', d.available_to_text, ''));
                 case 1: return d.unit_amount_display;
-                case 2: return M.btn('+ Reg', 'M.ciniki_courses_main.offering.save(\'M.ciniki_courses_main.offering.addReg(' + d.id + ');\');');
+                case 2: return M.btn('+&nbsp;Reg', 'M.ciniki_courses_main.offering.save(\'M.ciniki_courses_main.offering.addReg(' + d.id + ');\');');
             }
         }
         if( s == 'instructors' ) {
