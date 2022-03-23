@@ -16,6 +16,17 @@ function ciniki_courses_sapos_itemSearch($ciniki, $tnid, $args) {
         return array('stat'=>'ok', 'items'=>array());
     }
 
+    //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+   
+    $dt = new DateTime('now', new DateTimezone($intl_timezone));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki);
 
@@ -40,10 +51,13 @@ function ciniki_courses_sapos_itemSearch($ciniki, $tnid, $args) {
 //        . "UNIX_TIMESTAMP(MIN(ciniki_course_offering_classes.class_date)) AS start_date_ts, "
 //        . "UNIX_TIMESTAMP(MAX(ciniki_course_offering_classes.class_date)) AS end_date_ts "
         . "FROM ciniki_course_offerings "
-        . "LEFT JOIN ciniki_course_offering_prices ON (ciniki_course_offerings.id = ciniki_course_offering_prices.offering_id "
+        . "INNER JOIN ciniki_course_offering_prices ON ("
+            . "ciniki_course_offerings.id = ciniki_course_offering_prices.offering_id "
             . "AND ciniki_course_offering_prices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_courses ON (ciniki_course_offerings.course_id = ciniki_courses.id "
+        . "INNER JOIN ciniki_courses ON ("
+            . "ciniki_course_offerings.course_id = ciniki_courses.id "
+            . "AND ciniki_courses.status < 90 "
             . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
 //        . "LEFT JOIN ciniki_course_offering_classes ON (ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "
@@ -51,16 +65,20 @@ function ciniki_courses_sapos_itemSearch($ciniki, $tnid, $args) {
 //            . ") "
         . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (ciniki_course_offerings.reg_flags&0x03) > 0 "
+        . "AND ciniki_course_offerings.end_date >= '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "' "
         . "AND (ciniki_courses.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_courses.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_courses.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_courses.code LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_course_offerings.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR ciniki_course_offerings.code LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR ciniki_course_offerings.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR ciniki_course_offerings.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . ") "
         . "GROUP BY ciniki_course_offerings.id, ciniki_course_offering_prices.id "
-        . "HAVING end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
+//        . "HAVING end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
         . "";
+        error_log(print_r($strsql,true));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'courses', 'fname'=>'id',
