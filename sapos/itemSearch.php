@@ -78,7 +78,6 @@ function ciniki_courses_sapos_itemSearch($ciniki, $tnid, $args) {
         . "GROUP BY ciniki_course_offerings.id, ciniki_course_offering_prices.id "
 //        . "HAVING end_date_ts >= UNIX_TIMESTAMP(UTC_TIMESTAMP()) "
         . "";
-        error_log(print_r($strsql,true));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'courses', 'fname'=>'id',
