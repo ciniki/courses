@@ -29,9 +29,13 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'webflags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Web Flags'), 
         'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start Date'), 
         'end_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'End Date'), 
-        'reg_flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration Flags'),
         'num_seats'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Number of Seats'),
+        'reg_flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration Flags'),
         'condensed_date'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Dates'),
+        'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
+        'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
+        'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
+        'paid_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Paid Content'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -67,10 +71,12 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
     //
     if( (isset($args['name']) || isset($args['code'])) && (!isset($args['permalink']) || $args['permalink'] == '') ) {  
         if( isset($args['code']) || $offering['code'] != '' ) {
-            $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower((isset($args['name']) ? $args['name'] : $offering['name']) . '-' . (isset($args['code']) ? $args['code'] : $offering['code']))));
+            $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower((isset($args['name']) ? $args['name'] : $offering['name']) . '-' . (isset($args['code']) ? $args['code'] : $offering['code']))));
         } else {
-            $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower(isset($args['name']) ? $args['name'] : $offering['name'])));
+            $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower(isset($args['name']) ? $args['name'] : $offering['name'])));
         }
+        $args['permalink'] = preg_replace('/\-\-\-/', '-', $args['permalink']);
+        $args['permalink'] = preg_replace('/\-\-/', '-', $args['permalink']);
         $strsql = "SELECT id, name, permalink FROM ciniki_course_offerings "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "

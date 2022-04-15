@@ -34,6 +34,10 @@
 #                           0x02 - 
 #                           0x04 - 
 #                           0x08 - 
+#                           0x10 - Timeless Course (no dates)
+#                           0x20 - Session Details
+#                           0x40 - Paid Content
+#                           0x80 - 
 #
 # short_description:    The short description of the event (optional).
 # long_description:     The longer text description of the event (optional).

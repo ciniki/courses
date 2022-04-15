@@ -20,6 +20,7 @@ function ciniki_courses_offeringGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
+        'course_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Course'),
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'),
         'classes'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Classes'),
         'instructors'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Instructor'),
@@ -74,7 +75,7 @@ function ciniki_courses_offeringGet($ciniki) {
 
     if( $args['offering_id'] == 0 ) {
         $offering = array(
-            'course_id' => 0,
+            'course_id' => isset($args['course_id']) ? $args['course_id'] : 0,
             'name' => '',
             'code' => '',
             'permalink' => '',
@@ -85,7 +86,26 @@ function ciniki_courses_offeringGet($ciniki) {
             'condensed_date' => '',
             'num_seats' => '',
             'reg_flags' => 0,
+            'primary_image_id' => 0,
+            'synopsis' => '',
+            'content' => '',
+            'paid_content' => '',
             );
+        if( isset($args['course_id']) ) {
+            $strsql = "SELECT flags "
+                . "FROM ciniki_courses "
+                . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'course');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.168', 'msg'=>'Unable to load course', 'err'=>$rc['err']));
+            }
+            if( !isset($rc['course']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.169', 'msg'=>'Unable to find requested course'));
+            }
+            $offering['course_flags'] = $rc['course']['flags'];
+        }
     } 
     //
     // Get the main information
@@ -104,10 +124,15 @@ function ciniki_courses_offeringGet($ciniki) {
             . "ciniki_course_offerings.start_date, "
             . "ciniki_course_offerings.end_date, "
             . "ciniki_course_offerings.condensed_date, "
+            . "ciniki_course_offerings.primary_image_id, "
+            . "ciniki_course_offerings.synopsis, "
+            . "ciniki_course_offerings.content, "
+            . "ciniki_course_offerings.paid_content, "
             . "IF((ciniki_course_offerings.webflags&0x01)=1,'Hidden', 'Visible') AS web_visible, "
             . "ciniki_courses.name AS course_name, "
             . "ciniki_courses.code AS course_code, "
-            . "ciniki_courses.primary_image_id, "
+            . "ciniki_courses.flags AS course_flags, "
+//            . "ciniki_courses.primary_image_id, "
             . "ciniki_courses.status AS course_status, "
             . "ciniki_courses.level, "
             . "ciniki_courses.type, "
@@ -128,8 +153,9 @@ function ciniki_courses_offeringGet($ciniki) {
             array('container'=>'offerings', 'fname'=>'id',
                 'fields'=>array('id', 'name', 'code', 'permalink', 'status', 'status_text', 
                     'reg_flags', 'num_seats', 'start_date', 'end_date', 'condensed_date', 'webflags', 'web_visible', 
-                    'primary_image_id', 'course_id', 'course_status', 'course_name', 'course_code', 'level', 'type', 
-                    'category', 'flags', 'short_description', 'long_description',
+                    'primary_image_id', 'synopsis', 'content', 'paid_content',
+                    'course_id', 'course_status', 'course_name', 'course_code', 'course_flags',
+                    'level', 'type', 'category', 'flags', 'short_description', 'long_description',
                     ),
                 'dtformat'=>array('start_date'=>$date_format,
                     'end_date'=>$date_format,

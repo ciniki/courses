@@ -1,0 +1,8 @@
+#
+# Add the fields for a code on the course offerings
+#
+ALTER TABLE ciniki_course_offerings ADD COLUMN primary_image_id int not null AFTER reg_flags;
+ALTER TABLE ciniki_course_offerings ADD COLUMN synopsis varchar(2000) not null AFTER primary_image_id;
+ALTER TABLE ciniki_course_offerings ADD COLUMN content text not null AFTER synopsis;
+ALTER TABLE ciniki_course_offerings ADD COLUMN paid_content text not null AFTER content;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.05';

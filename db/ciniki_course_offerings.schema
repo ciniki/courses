@@ -41,6 +41,11 @@
 #                       0x04 -
 #                       0x08 - Sold Out (Mark as sold out on website)
 #
+# primary_image_id: The main image for the offering.
+# synopsis:         The synopsis for the offering.
+# content:          The main content for the offering.
+# paid_content:     The content available once paid.
+#
 # date_added:       The UTC date and time the record was added.
 # last_updated:     The UTC date and time the record was last changed;
 #
@@ -59,9 +64,13 @@ CREATE TABLE ciniki_course_offerings (
     condensed_date varchar(150) not null,
     num_seats int not null,
     reg_flags tinyint unsigned not null,
+    primary_image_id int not null,
+    synopsis varchar(2000) not null,
+    content text not null,
+    paid_content text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     index (course_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

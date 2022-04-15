@@ -123,8 +123,12 @@ function ciniki_courses_objects($ciniki) {
             'start_date'=>array('name'=>'Start Date', 'default'=>''),
             'end_date'=>array('name'=>'End Date', 'default'=>''),
             'condensed_date'=>array('name'=>'Condensed Text Date'),
-            'reg_flags'=>array('name'=>'Registration Options', 'default'=>0),
             'num_seats'=>array('name'=>'Number of Seats', 'default'=>0),
+            'reg_flags'=>array('name'=>'Registration Options', 'default'=>0),
+            'primary_image_id'=>array('name'=>'Image', 'default'=>0, 'ref'=>'ciniki.images.image'),
+            'synopsis'=>array('name'=>'Synopsis', 'default'=>''),
+            'content'=>array('name'=>'Content', 'default'=>''),
+            'paid_content'=>array('name'=>'Paid Content', 'default'=>''),
             ),
         'history_table'=>'ciniki_course_history',
         );

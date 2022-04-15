@@ -41,9 +41,12 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'start_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Start Time'),
         'end_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'End Time'),
         'num_weeks'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Num Weeks'),
-        'reg_flags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Registration Flags'),
         'num_seats'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Number of Seats'),
-        )); 
+        'reg_flags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Registration Flags'),
+        'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
+        'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
+        'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
+        'paid_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Paid Content'),
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -61,10 +64,12 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     $modules = $rc['modules'];
 
     if( isset($args['code']) && $args['code'] != '' ) {
-        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['name'] . '-' . $args['code'])));
+        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($args['name'] . '-' . $args['code'])));
     } else {
-        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['name'])));
+        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($args['name'])));
     }
+    $args['permalink'] = preg_replace('/\-\-\-/', '-', $args['permalink']);
+    $args['permalink'] = preg_replace('/\-\-/', '-', $args['permalink']);
 
     //
     // Check the permalink doesn't already exist
