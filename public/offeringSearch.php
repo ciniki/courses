@@ -62,6 +62,7 @@ function ciniki_courses_offeringSearch($ciniki) {
         . "offerings.course_id, "
         . "IFNULL(courses.code, '??') AS course_code, "
         . "IFNULL(courses.name, '??') AS course_name, "
+        . "IFNULL(courses.flags, 0) AS course_flags, "
         . "IFNULL(offerings.permalink, '') AS course_permalink, "
         . "offerings.name AS offering_name, "
         . "offerings.code AS offering_code, "
@@ -101,7 +102,7 @@ function ciniki_courses_offeringSearch($ciniki) {
         array('container'=>'offerings', 'fname'=>'id', 
             'fields'=>array('id', 'course_id', 'course_code', 'course_name', 'offering_name', 'offering_code', 
                 'course_permalink', 'offering_permalink', 'status', 'status_text'=>'status', 'webflags', 'condensed_date', 
-                'start_date', 'end_date', 
+                'start_date', 'end_date', 'course_flags',
                 'reg_flags', 'num_seats', 'num_registrations',
                 ),
             'maps'=>array('status_text'=>$maps['offering']['status']),
