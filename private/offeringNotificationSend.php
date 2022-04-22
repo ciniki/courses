@@ -79,7 +79,7 @@ function ciniki_courses_offeringNotificationSend(&$ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerEmails');
         $rc = ciniki_customers_hooks_customerEmails($ciniki, $tnid, array('customer_id' => $args['customer_id']));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.188', 'msg'=>'Unable to load customer details', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.193', 'msg'=>'Unable to load customer details', 'err'=>$rc['err']));
         }
         $student = isset($rc['customer']) ? $rc['customer'] : array();
         if( isset($student['display_name']) && $student['display_name'] != '' ) {
