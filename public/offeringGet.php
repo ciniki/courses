@@ -61,9 +61,10 @@ function ciniki_courses_offeringGet($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timeFormat');
     $time_format = ciniki_users_timeFormat($ciniki);
+    $php_time_format = ciniki_users_timeFormat($ciniki, 'php');
 
     //
-    // Load event maps
+    // Load courses maps
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'maps');
     $rc = ciniki_courses_maps($ciniki);
@@ -400,6 +401,85 @@ function ciniki_courses_offeringGet($ciniki) {
             return $rc;
         }
         $offering['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
+
+        //
+        // Pull the notifications and queue for this offering
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x080000) ) {
+            $strsql = "SELECT notifications.id, "
+                . "notifications.name, "
+                . "notifications.ntrigger, "
+                . "notifications.ntrigger AS ntrigger_text, "
+                . "notifications.ntype, "
+                . "notifications.ntype AS ntype_text, "
+                . "notifications.offset_days, "
+                . "notifications.status, "
+                . "notifications.status AS status_text, "
+                . "TIME_FORMAT(notifications.time_of_day, '%l:%i %p') AS time_of_day, "
+                . "notifications.subject "
+                . "FROM ciniki_course_offering_notifications AS notifications "
+                . "WHERE notifications.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+                . "AND notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'notifications', 'fname'=>'id', 
+                    'fields'=>array('id', 'name', 'ntrigger', 'ntrigger_text', 'ntype', 'ntype_text', 
+                        'offset_days', 'status', 'status_text', 'time_of_day', 
+                        'subject'),
+                    'maps'=>array(
+                        'ntrigger_text' => $maps['offering_notification']['ntrigger'],
+                        'ntype_text' => $maps['offering_notification']['ntype'],
+                        'status_text' => $maps['offering_notification']['status'],
+                        ),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.170', 'msg'=>'Unable to load offering_notifications', 'err'=>$rc['err']));
+            }
+            $offering['notifications'] = isset($rc['notifications']) ? $rc['notifications'] : array();
+
+            //
+            // Load any queued messages
+            //
+            $strsql = "SELECT queue.id, "
+                . "queue.scheduled_dt AS date_text, "
+                . "queue.scheduled_dt AS time_text, "
+                . "registrations.customer_id, "
+                . "customers.display_name AS customer_name, "
+                . "registrations.student_id, "
+                . "customers.display_name AS student_name "
+                . "FROM ciniki_course_offering_registrations AS registrations "
+                . "INNER JOIN ciniki_course_offering_nqueue AS queue ON ("
+                    . "registrations.id = queue.registration_id "
+                    . "AND queue.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_customers AS customers ON ("
+                    . "registrations.customer_id = customers.id "
+                    . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_customers AS students ON ("
+                    . "registrations.student_id = students.id "
+                    . "AND students.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'queue', 'fname'=>'id', 
+                    'fields'=>array('id', 'date_text', 'time_text', 'customer_id', 'customer_name',
+                        'student_id', 'student_name'),
+                    'utctotz'=>array(
+                        'date_text'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                        'time_text'=>array('timezone'=>$intl_timezone, 'format'=>$php_time_format),
+                        ),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.171', 'msg'=>'Unable to open notification queue', 'err'=>$rc['err']));
+            }
+        }
     }
 
     //

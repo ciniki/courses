@@ -211,6 +211,38 @@ function ciniki_courses_objects($ciniki) {
             ),
         'history_table'=>'ciniki_course_history',
         );
+    $objects['offering_notification'] = array(
+        'name'=>'Offering Notification',
+        'sync'=>'yes',
+        'o_name'=>'notification',
+        'o_container'=>'notifications',
+        'table'=>'ciniki_course_offering_notifications',
+        'fields'=>array(
+            'offering_id'=>array('name'=>'Program Session', 'ref'=>'ciniki.courses.offering'),
+            'name'=>array('name'=>'Name'),
+            'ntrigger'=>array('name'=>'Trigger'),
+            'ntype'=>array('name'=>'Notification Type', 'default'=>10),
+            'offset_days'=>array('name'=>'Offset Days', 'default'=>0),
+            'status'=>array('name'=>'Status', 'default'=>0),
+            'time_of_day'=>array('name'=>'Time of Day', 'default'=>''),
+            'subject'=>array('name'=>'Subject', 'default'=>''),
+            'content'=>array('name'=>'Content'),
+            ),
+        'history_table'=>'ciniki_course_history',
+        );
+    $objects['offering_nqueue'] = array(
+        'name'=>'Offering Notification Queue',
+        'sync'=>'yes',
+        'o_name'=>'notification',
+        'o_container'=>'queue',
+        'table'=>'ciniki_course_offering_nqueue',
+        'fields'=>array(
+            'scheduled_dt'=>array('name'=>'Scheduled Date/Time'),
+            'notification_id'=>array('name'=>'Notification', 'ref'=>'ciniki.courses.offering_notification'),
+            'registration_id'=>array('name'=>'Registration', 'ref'=>'ciniki.courses.offering_registration'),
+            ),
+        'history_table'=>'ciniki_course_history',
+        );
     $objects['album'] = array(
         'name'=>'Photo Album',
         'sync'=>'yes',

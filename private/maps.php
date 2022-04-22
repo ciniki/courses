@@ -41,6 +41,23 @@ function ciniki_courses_maps($ciniki) {
             0x40=>'Dealers',
             0x80=>'Distributors',
         ));
+    $maps['offering_notification'] = array(
+        'ntrigger' => array(
+            '20' => 'Payment Received',
+            '40' => 'After Payment',
+            '60' => 'Offering Start',
+            '90' => 'Offering End',
+            ),
+        'ntype' => array(
+            '10' => 'Email',
+            '20' => 'SMS',
+            ),
+        'status' => array(
+            '0' => 'Inactive',
+            '10' => 'Require Approval',
+            '20' => 'Auto Send',
+            ),
+        );
 
     return array('stat'=>'ok', 'maps'=>$maps);
 }

@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_courses_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer, $args) {
+function ciniki_courses_sapos_cartItemPaymentReceived(&$ciniki, $tnid, $customer, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
@@ -74,6 +74,20 @@ function ciniki_courses_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer,
         $rc = ciniki_courses_offeringSoldOutUpdate($ciniki, $tnid, $offering['id']);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.167', 'msg'=>'Unable to update', 'err'=>$rc['err']));
+        }
+
+        //
+        // Check for any messages that should be sent after payment
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNotificationSend');
+        $rc = ciniki_courses_offeringNotificationSend($ciniki, $tnid, array(
+            'customer_id' => $args['customer_id'],
+            'student_id' => $args['student_id'],
+            'offering_id' => $offering['id'],
+            'ntrigger' => 20,
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.172', 'msg'=>'Unable to send notification', 'err'=>$rc['err']));
         }
 
         return array('stat'=>'ok', 'object'=>'ciniki.courses.offering_registration', 'object_id'=>$reg_id);
