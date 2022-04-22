@@ -38,7 +38,7 @@ function ciniki_courses_wng_fileDownload($ciniki, $tnid, $course_id, $permalink)
         return $rc;
     }
     if( !isset($rc['file']) ) {
-        return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.courses.72', 'msg'=>'Unable to find requested file'));
+        return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.courses.192', 'msg'=>'Unable to find requested file'));
     }
     $rc['file']['filename'] = $rc['file']['name'] . '.' . $rc['file']['extension'];
 
