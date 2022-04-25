@@ -2052,6 +2052,7 @@ function ciniki_courses_main() {
 
         this.course.sections.archived.headerValues = this.course.sections.offerings.headerValues;
         this.course.sections.archived.dataMaps = this.course.sections.offerings.dataMaps;
+        this.course.sections.archived.cellClasses = this.course.sections.offerings.cellClasses;
         this.course.sections.archived.num_cols = this.course.sections.archived.dataMaps.length;
 
         this.courses.sections.search.livesearchcols = this.courses.sections.courses.num_cols;
