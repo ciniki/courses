@@ -22,6 +22,7 @@ function ciniki_courses_offeringGet($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Course'),
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'),
+        'copy_offering_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Offering'),
         'classes'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Classes'),
         'instructors'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Instructor'),
         'prices'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Prices'),
@@ -106,6 +107,25 @@ function ciniki_courses_offeringGet($ciniki) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.169', 'msg'=>'Unable to find requested course'));
             }
             $offering['course_flags'] = $rc['course']['flags'];
+        }
+        if( isset($args['copy_offering_id']) && $args['copy_offering_id'] > 0 ) {
+            $strsql = "SELECT offerings.id, "
+                . "offerings.name, "
+                . "offerings.reg_flags, "
+                . "offerings.num_seats "
+                . "FROM ciniki_course_offerings AS offerings "
+                . "WHERE offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['copy_offering_id']) . "' "
+                . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'offering');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.200', 'msg'=>'Unable to load offering', 'err'=>$rc['err']));
+            }
+            if( isset($rc['offering']) ) {
+                $offering['name'] = $rc['offering']['name'];
+                $offering['reg_flags'] = $rc['offering']['reg_flags'];
+                $offering['num_seats'] = $rc['offering']['num_seats'];
+            }
         }
     } 
     //

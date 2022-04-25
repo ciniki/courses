@@ -30,6 +30,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
+        'copy_offering_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Copy Offering'), 
         'name'=>array('required'=>'yes', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Name'), 
         'code'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60'), 'name'=>'Status'), 
@@ -86,6 +87,116 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     }
     if( $rc['num_rows'] > 0 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.29', 'msg'=>'You already have a course with this name, please choose another name'));
+    }
+
+    //
+    // Load offering if copy_offering_id specified
+    //
+    if( isset($args['copy_offering_id']) && $args['copy_offering_id'] > 0 ) {
+        $strsql = "SELECT offerings.id, "
+            . "offerings.primary_image_id, "
+            . "offerings.synopsis, "
+            . "offerings.content, "
+            . "offerings.paid_content "
+            . "FROM ciniki_course_offerings AS offerings "
+            . "WHERE offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['copy_offering_id']) . "' "
+            . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'offering');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.201', 'msg'=>'Unable to load offering', 'err'=>$rc['err']));
+        }
+        if( isset($rc['offering']) ) {
+            $offering = $rc['offering'];
+            if( !isset($args['primary_image_id']) ) {
+                $args['primary_image_id'] = $rc['offering']['primary_image_id'];
+            }
+            if( !isset($args['synopsis']) ) {
+                $args['synopsis'] = $rc['offering']['synopsis'];
+            }
+            if( !isset($args['content']) ) {
+                $args['content'] = $rc['offering']['content'];
+            }
+            if( !isset($args['paid_content']) ) {
+                $args['paid_content'] = $rc['offering']['paid_content'];
+            }
+            //
+            // Load offering prices
+            //
+            $strsql = "SELECT prices.id, "
+                . "prices.name, "
+                . "prices.available_to, "
+                . "prices.valid_from, "
+                . "prices.valid_to, "
+                . "prices.unit_amount, "
+                . "prices.unit_discount_amount, "
+                . "prices.unit_discount_percentage, "
+                . "prices.taxtype_id, "
+                . "prices.webflags "
+                . "FROM ciniki_course_offering_prices AS prices "
+                . "WHERE prices.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+                . "AND prices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY prices.name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'prices', 'fname'=>'id',
+                    'fields'=>array('name', 'available_to', 'valid_from', 'valid_to', 
+                        'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id', 'webflags',
+                        ),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $offering['prices'] = isset($rc['prices']) ? $rc['prices'] : array();
+
+            //
+            // Load offering instructors
+            //
+            $strsql = "SELECT instructors.id, "
+                . "instructors.instructor_id "
+                . "FROM ciniki_course_offering_instructors AS instructors "
+                . "WHERE instructors.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+                . "AND instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'instructors', 'fname'=>'id', 'fields'=>array('instructor_id')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $offering['instructors'] = isset($rc['instructors']) ? $rc['instructors'] : array();
+
+            //
+            // Load offering notifications
+            //
+            $strsql = "SELECT notifications.id, "
+                . "notifications.name, "
+                . "notifications.ntrigger, "
+                . "notifications.ntype, "
+                . "notifications.offset_days, "
+                . "notifications.status, "
+                . "notifications.time_of_day, "
+                . "notifications.subject, "
+                . "notifications.content "
+                . "FROM ciniki_course_offering_notifications AS notifications "
+                . "WHERE notifications.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+                . "AND notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY notifications.name "
+                . "";
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'notifications', 'fname'=>'id',
+                    'fields'=>array('name', 'ntrigger', 'ntype', 'offset_days', 
+                        'status', 'time_of_day', 'subject', 'content',
+                        ),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $offering['notifications'] = isset($rc['notifications']) ? $rc['notifications'] : array();
+        }
     }
 
     //  
@@ -190,6 +301,50 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     $rc = ciniki_courses_updateCondensedDate($ciniki, $args['tnid'], $offering_id);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Add prices from copy offering
+    //
+    if( isset($offering['prices']) ) {
+        foreach($offering['prices'] as $price) {
+            $price['offering_id'] = $offering_id;
+            $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_price', $price, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
+        }
+    }
+
+
+    //
+    // Add instructors from copy offering
+    //
+    if( isset($offering['instructors']) ) {
+        foreach($offering['instructors'] as $instructor) {
+            $instructor['course_id'] = $args['course_id'];
+            $instructor['offering_id'] = $offering_id;
+            $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_instructor', $instructor, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
+        }
+    }
+
+    //
+    // Add notifications from copy offering
+    //
+    if( isset($offering['notifications']) ) {
+        foreach($offering['notifications'] as $notification) {
+            $notification['offering_id'] = $offering_id;
+            $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_notification', $notification, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
+        }
     }
 
     //
