@@ -31,7 +31,7 @@ function ciniki_courses_wng_fileDownload($ciniki, $tnid, $course_id, $permalink)
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND course_id = '" . ciniki_core_dbQuote($ciniki, $course_id) . "' "
         . "AND CONCAT_WS('.', permalink, extension) = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' "
-        . "AND (webflags&0x01) = 0 "        // Make sure file is to be visible
+        . "AND (webflags&0x01) = 0x01 "        // Make sure file is to be visible
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
     if( $rc['stat'] != 'ok' ) {
