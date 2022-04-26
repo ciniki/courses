@@ -31,6 +31,7 @@ function ciniki_courses_objects($ciniki) {
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             'short_description'=>array('name'=>'Synopsis', 'default'=>''),
             'long_description'=>array('name'=>'Description', 'default'=>''),
+            'paid_content'=>array('name'=>'Paid Content', 'default'=>''),
             ),
         'history_table'=>'ciniki_course_history',
         );

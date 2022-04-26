@@ -42,6 +42,8 @@
 # short_description:    The short description of the event (optional).
 # long_description:     The longer text description of the event (optional).
 #
+# paid_content:         The paid content for the course.
+#
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
 #
@@ -62,8 +64,9 @@ CREATE TABLE ciniki_courses (
     flags tinyint unsigned not null,
     short_description varchar(2000) not null,
     long_description varchar(20000) not null,
+    paid_content text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

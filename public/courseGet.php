@@ -76,7 +76,8 @@ function ciniki_courses_courseGet($ciniki) {
             . "ciniki_courses.ages, "
             . "ciniki_courses.flags, "
             . "ciniki_courses.short_description, "
-            . "ciniki_courses.long_description "
+            . "ciniki_courses.long_description, "
+            . "ciniki_courses.paid_content "
             . "FROM ciniki_courses "
             . "WHERE ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_courses.id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
@@ -86,7 +87,7 @@ function ciniki_courses_courseGet($ciniki) {
             array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
                 'fields'=>array('id', 'name', 'code', 'status', 'primary_image_id', 
                     'level', 'type', 'category', 'medium', 'ages',
-                    'flags', 'short_description', 'long_description',
+                    'flags', 'short_description', 'long_description', 'paid_content',
                     )),
             ));
         if( $rc['stat'] != 'ok' ) {
