@@ -38,6 +38,16 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     }
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Get the current settings for the course offering file
     //
     $strsql = "SELECT id, uuid "
@@ -83,6 +93,9 @@ function ciniki_courses_offeringFileDelete(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+
+    $storage_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $file['uuid'][0] . '/' . $file['uuid'];
+    unlink($storage_filename);
 
     //
     // Remove the file

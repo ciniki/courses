@@ -513,15 +513,15 @@ function ciniki_courses_main() {
         }
     }
     this.offering.remove = function() {
-        if( confirm('Are you sure you want to remove offering?') ) {
-            M.api.getJSONCb('ciniki.courses.offeringDelete', {'tnid':M.curTenantID, 'offering_id':this.offering_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove \'' + this.data.name + '\'?  All information about it will be removed and unrecoverable.',null,function() {
+            M.api.getJSONCb('ciniki.courses.offeringDelete', {'tnid':M.curTenantID, 'offering_id':M.ciniki_courses_main.offering.offering_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_courses_main.offering.close();
             });
-        }
+        });
     }
     this.offering.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.offering_id) < (this.nplist.length - 1) ) {
@@ -1366,15 +1366,15 @@ function ciniki_courses_main() {
         }
     }
     this.course.remove = function() {
-        if( confirm('Are you sure you want to remove course?') ) {
-            M.api.getJSONCb('ciniki.courses.courseDelete', {'tnid':M.curTenantID, 'course_id':this.course_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove \'' + this.data.name + '\' program?  All information about it will be removed and unrecoverable.',null,function() {
+            M.api.getJSONCb('ciniki.courses.courseDelete', {'tnid':M.curTenantID, 'course_id':M.ciniki_courses_main.course.course_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_courses_main.course.close();
             });
-        }
+        });
     }
     this.course.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.course_id) < (this.nplist.length - 1) ) {

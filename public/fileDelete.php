@@ -40,6 +40,16 @@ function ciniki_courses_fileDelete(&$ciniki) {
     }   
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Get the uuid of the courses item to be deleted
     //
     $strsql = "SELECT uuid FROM ciniki_course_files "
@@ -54,6 +64,12 @@ function ciniki_courses_fileDelete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.14', 'msg'=>'Unable to find existing item'));
     }
     $uuid = $rc['file']['uuid'];
+
+    //
+    // Remove the file from storage
+    //
+    $storage_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $uuid[0] . '/' . $uuid;
+    unlink($storage_filename);
 
     //
     // Delete the file

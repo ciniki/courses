@@ -65,10 +65,10 @@ function ciniki_courses_courseDelete(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
     $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.courses', 'num');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.137', 'msg'=>'Unable to load get the number of offerings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.137', 'msg'=>'Unable to load get the number of sessions', 'err'=>$rc['err']));
     }
     if( $rc['num'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.138', 'msg'=>'There are still offerings for this course.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.138', 'msg'=>'There are still sessions for this course.'));
     }
     
     //

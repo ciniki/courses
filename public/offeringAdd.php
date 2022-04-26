@@ -90,6 +90,16 @@ function ciniki_courses_offeringAdd(&$ciniki) {
     }
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Load offering if copy_offering_id specified
     //
     if( isset($args['copy_offering_id']) && $args['copy_offering_id'] > 0 ) {
@@ -167,6 +177,31 @@ function ciniki_courses_offeringAdd(&$ciniki) {
                 return $rc;
             }
             $offering['instructors'] = isset($rc['instructors']) ? $rc['instructors'] : array();
+
+            //
+            // Load offering files
+            //
+            $strsql = "SELECT files.id, "
+                . "files.uuid, "
+                . "files.extension, "
+                . "files.status, "
+                . "files.name, "
+                . "files.permalink, "
+                . "files.webflags, "
+                . "files.description, "
+                . "files.org_filename "
+                . "FROM ciniki_course_offering_files AS files "
+                . "WHERE files.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+                . "AND files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'files', 'fname'=>'id', 'fields'=>array('uuid', 'extension', 'status', 'name', 'permalink',
+                    'webflags', 'description', 'org_filename')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $offering['files'] = isset($rc['files']) ? $rc['files'] : array();
 
             //
             // Load offering notifications
@@ -317,7 +352,6 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         }
     }
 
-
     //
     // Add instructors from copy offering
     //
@@ -330,6 +364,29 @@ function ciniki_courses_offeringAdd(&$ciniki) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
                 return $rc;
             }
+        }
+    }
+
+    //
+    // Add files from copy offering
+    //
+    if( isset($offering['files']) ) {
+        foreach($offering['files'] as $file) {
+            $file['offering_id'] = $offering_id;
+            $old_uuid = $file['uuid'];
+            unset($file['uuid']);
+            $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_file', $file, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
+            $uuid = $rc['uuid'];
+            //
+            // Copy the file in storage
+            //
+            $old_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $old_uuid[0] . '/' . $old_uuid;
+            $new_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $uuid[0] . '/' . $uuid;
+            copy($old_filename, $new_filename);
         }
     }
 

@@ -34,6 +34,16 @@ function ciniki_courses_offeringDelete(&$ciniki) {
         return $rc;
     }   
 
+    //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
     //  
     // Turn off autocommit
     //  
@@ -88,6 +98,11 @@ function ciniki_courses_offeringDelete(&$ciniki) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
                 return $rc;
             }
+            //
+            // Remove file in storage
+            //
+            $storage_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $row['uuid'][0] . '/' . $row['uuid'];
+            unlink($storage_filename);
         }
     }
 
