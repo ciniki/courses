@@ -2180,6 +2180,22 @@ function ciniki_courses_main() {
         this.offerings.sections.search.dataMaps = this.offerings.sections.offerings.dataMaps;
 
         //
+        // Setup paid content flags for images and files
+        //
+        this.courseimage.sections.general.fields.flags.flags = {'1':{'name':'Visible'}};
+        this.coursefile.sections.info.fields.webflags.flags = {'1':{'name':'Visible'}};
+        this.offeringfile.sections.info.fields.webflags.flags = {'1':{'name':'Visible'}};
+        this.course.sections.files.num_cols = 2;
+        this.offering.sections.files.num_cols = 2;
+        if( M.modFlagOn('ciniki.courses', 0x040000) ) {
+            this.course.sections.files.num_cols = 3;
+            this.offering.sections.files.num_cols = 3;
+            this.courseimage.sections.general.fields.flags.flags['5'] = {'name':'Paid Content'};
+            this.coursefile.sections.info.fields.webflags.flags['5'] = {'name':'Paid Content'};
+            this.offeringfile.sections.info.fields.webflags.flags['5'] = {'name':'Paid Content'};
+        }
+
+        //
         // Setup the tax types
         //
         if( M.curTenant.modules['ciniki.taxes'] != null ) {
