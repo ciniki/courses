@@ -137,8 +137,6 @@ function ciniki_courses_fileAdd(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.160', 'msg'=>'Unable to add file'));
     }
 
-    $args['binary_content'] = '';//file_get_contents($_FILES['uploadfile']['tmp_name']);
-
     //
     // Add the file
     //

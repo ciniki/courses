@@ -70,7 +70,8 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     //
     // Remove any files attached to the offering
     //
-    $strsql = "SELECT id, uuid FROM ciniki_course_offering_files "
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_course_offering_files "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
         . "";

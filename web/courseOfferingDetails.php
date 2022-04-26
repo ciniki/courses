@@ -108,7 +108,8 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
     //
     // Check if there are files for this course to be displayed
     //
-    if( ($ciniki['tenant']['modules']['ciniki.courses']['flags']&0x08) == 0x08 ) {
+    // FIXME: Needs to convert to new table
+/*    if( ($ciniki['tenant']['modules']['ciniki.courses']['flags']&0x08) == 0x08 ) {
         $strsql = "SELECT ciniki_course_files.id, "
             . "ciniki_course_files.name, "
             . "ciniki_course_files.permalink, ciniki_course_files.extension "
@@ -129,7 +130,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
         if( isset($rc['files']) ) {
             $offering['files'] = $rc['files'];
         }
-    }
+    } */
 
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0200) ) {
         $strsql = "SELECT id, "

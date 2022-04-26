@@ -101,14 +101,17 @@ function ciniki_courses_courseGet($ciniki) {
         // Get the list of files
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x08) ) {
-            $strsql = "SELECT id, name "
+            $strsql = "SELECT id, "
+                . "name, "
+                . "if((webflags&0x01)=0x01, 'Yes', 'No') AS visible, "
+                . "if((webflags&0x10)=0x10, 'Yes', 'No') AS paid_content "
                 . "FROM ciniki_course_files "
                 . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
-                array('container'=>'files', 'fname'=>'id', 'fields'=>array('id', 'name')),
+                array('container'=>'files', 'fname'=>'id', 'fields'=>array('id', 'name', 'visible', 'paid_content')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.143', 'msg'=>'Unable to load files', 'err'=>$rc['err']));

@@ -1,60 +1,115 @@
 <?php
 //
 // Description
-// ===========
-// This method will add a new course to the courses table.
+// -----------
+// This method will add a new course offering file for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// tnid:         The ID of the tenant to add the course to.
+// tnid:        The ID of the tenant to add the Course Offering File to.
 //
 // Returns
 // -------
-// <rsp stat='ok' id='34' />
 //
 function ciniki_courses_offeringFileAdd(&$ciniki) {
-    //  
+    //
     // Find all the required and optional arguments
-    //  
+    //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
-        'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
-        'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
-        'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
-        )); 
-    if( $rc['stat'] != 'ok' ) { 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'),
+        'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'),
+        'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
+        'webflags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
+        ));
+    if( $rc['stat'] != 'ok' ) {
         return $rc;
-    }   
+    }
     $args = $rc['args'];
 
-    //  
-    // Make sure this module is activated, and
-    // check permission to run this function for this tenant
-    //  
+    //
+    // Check access to tnid as owner
+    //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'checkAccess');
-    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringFileAdd'); 
-    if( $rc['stat'] != 'ok' ) { 
+    $rc = ciniki_courses_checkAccess($ciniki, $args['tnid'], 'ciniki.courses.offeringFileAdd');
+    if( $rc['stat'] != 'ok' ) {
         return $rc;
-    }   
-    $modules = $rc['modules'];
+    }
 
-    //  
-    // Turn off autocommit
-    //  
+    //
+    // Setup permalink
+    //
+    if( !isset($args['permalink']) || $args['permalink'] == '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+    }
+
+    //
+    // Make sure the permalink is unique
+    //
+    $strsql = "SELECT id, name, permalink "
+        . "FROM ciniki_course_offering_files "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( $rc['num_rows'] > 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.203', 'msg'=>'You already have a course offering file with that name, please choose another.'));
+    }
+
+    //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
+    // Start transaction
+    //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbInsert');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.courses');
-    if( $rc['stat'] != 'ok' ) { 
+    if( $rc['stat'] != 'ok' ) {
         return $rc;
-    }   
+    }
+
+    //
+    // Check to see if an image was uploaded
+    //
+    if( isset($_FILES['uploadfile']['error']) && $_FILES['uploadfile']['error'] == UPLOAD_ERR_INI_SIZE ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.11', 'msg'=>'Upload failed, file too large.'));
+    }
+    // FIXME: Add other checkes for $_FILES['uploadfile']['error']
+
+    //
+    // Make sure a file was submitted
+    //
+    if( !isset($_FILES) || !isset($_FILES['uploadfile']) || $_FILES['uploadfile']['tmp_name'] == '' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.12', 'msg'=>'No file specified.'));
+    }
+
+    $args['org_filename'] = $_FILES['uploadfile']['name'];
+    $args['extension'] = preg_replace('/^.*\.([a-zA-Z]+)$/', '$1', $args['org_filename']);
+
+    //
+    // Check the extension is a PDF, currently only accept PDF files
+    //
+    if( $args['extension'] != 'pdf' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.13', 'msg'=>'The file must be a PDF file.'));
+    }
 
     //
     // Get a new UUID
@@ -62,54 +117,37 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
     $rc = ciniki_core_dbUUID($ciniki, 'ciniki.courses');
     if( $rc['stat'] != 'ok' ) {
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
         return $rc;
     }
     $args['uuid'] = $rc['uuid'];
 
     //
-    // Add the course to the database
+    // Move the file to ciniki-storage
     //
-    $strsql = "INSERT INTO ciniki_course_offering_files (uuid, tnid, "
-        . "course_id, offering_id, file_id, "
-        . "date_added, last_updated) VALUES ("
-        . "'" . ciniki_core_dbQuote($ciniki, $args['uuid']) . "', "
-        . "'" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "', "
-        . "'" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "', "
-        . "'" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "', "
-        . "'" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "', "
-        . "UTC_TIMESTAMP(), UTC_TIMESTAMP())"
-        . "";
-    $rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.courses');
-    if( $rc['stat'] != 'ok' ) { 
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-        return $rc;
-    }
-    if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.34', 'msg'=>'Unable to add course'));
-    }
-    $offering_file_id = $rc['insert_id'];
-
-    //
-    // Add all the fields to the change log
-    //
-    $changelog_fields = array(
-        'uuid',
-        'course_id',
-        'offering_id',
-        'file_id',
-        );
-    foreach($changelog_fields as $field) {
-        if( isset($args[$field]) ) {
-            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.courses', 
-                'ciniki_course_history', $args['tnid'], 
-                1, 'ciniki_course_offering_files', $offering_file_id, $field, $args[$field]);
+    $storage_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $args['uuid'][0] . '/' . $args['uuid'];
+    if( !is_dir(dirname($storage_filename)) ) {
+        if( !mkdir(dirname($storage_filename), 0700, true) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.159', 'msg'=>'Unable to add file'));
         }
     }
 
+    if( !rename($_FILES['uploadfile']['tmp_name'], $storage_filename) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.160', 'msg'=>'Unable to add file'));
+    }
+
     //
-    // Commit the database changes
+    // Add the course offering file to the database
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_file', $args, 0x04);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+        return $rc;
+    }
+    $file_id = $rc['id'];
+
+    //
+    // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.courses');
     if( $rc['stat'] != 'ok' ) {
@@ -123,9 +161,12 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
     ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
 
-    $ciniki['syncqueue'][] = array('push'=>'ciniki.courses.offering_file', 
-        'args'=>array('id'=>$offering_file_id));
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.courses.offering_file', 'object_id'=>$file_id));
 
-    return array('stat'=>'ok', 'id'=>$offering_file_id);
+    return array('stat'=>'ok', 'id'=>$file_id);
 }
 ?>

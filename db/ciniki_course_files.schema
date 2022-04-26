@@ -31,7 +31,14 @@
 #
 # webflags:         Flags for displaying the file on the website.
 #
-#                   0x01 - Hidden, Do now show the file on the website
+#                   0x01 - Visible, show the file on the website
+#                   0x02 - 
+#                   0x04 - 
+#                   0x08 - 
+#                   0x10 - Paid Content, only visible if customer has paid for course
+#                   0x20 - 
+#                   0x40 - 
+#                   0x80 - 
 #
 # description:      The file description, for display in the list.
 # org_filename:     The filename as specified on the remote system uploading the file.

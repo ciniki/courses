@@ -47,7 +47,7 @@ function ciniki_courses_fileGet($ciniki) {
             'type' => 20,
             'name' => '',
             'permalink' => '',
-            'webflags' => 0,
+            'webflags' => 1,
             'publish_date' => '',
             );
     }

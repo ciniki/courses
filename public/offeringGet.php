@@ -267,62 +267,24 @@ function ciniki_courses_offeringGet($ciniki) {
         }
         $offering['instructors'] = isset($rc['instructors']) ? $rc['instructors'] : array();
 
-/* TO BE REMOVED, Files now attached to courses only
-        if( isset($args['files']) && $args['files'] == 'yes' ) {
-            $strsql = "SELECT ciniki_course_offering_files.id, "
-                . "ciniki_course_files.id AS file_id, "
-                . "ciniki_course_files.name "
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x08) ) {
+            $strsql = "SELECT id, "
+                . "name, "
+                . "if((webflags&0x01)=0x01, 'Yes', 'No') AS visible, "
+                . "if((webflags&0x10)=0x10, 'Yes', 'No') AS paid_content "
                 . "FROM ciniki_course_offering_files "
-                . "LEFT JOIN ciniki_course_files ON (ciniki_course_offering_files.file_id = ciniki_course_files.id "
-                    . "AND ciniki_course_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "') "
-                . "WHERE ciniki_course_offering_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND ciniki_course_offering_files.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-                . "ORDER BY ciniki_course_files.name "
+                . "WHERE offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "";
-            $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
-                array('container'=>'files', 'fname'=>'id', 'name'=>'file',
-                    'fields'=>array('id', 'file_id', 'name')),
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'files', 'fname'=>'id', 'fields'=>array('id', 'name', 'visible', 'paid_content')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return $rc;
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.202', 'msg'=>'Unable to load files', 'err'=>$rc['err']));
             }
-            if( isset($rc['files']) ) {
-                $offering['files'] = $rc['files'];
-            } else {
-                $offering['files'] = array();
-            }
+            $offering['files'] = isset($rc['files']) ? $rc['files'] : array();
         }
-
-        $strsql = "SELECT id, "
-            . "name, "
-            . "flags, "
-            . "image_id, "
-            . "description "
-            . "FROM ciniki_course_images "
-            . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $offering['course_id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.lapt', array(
-            array('container'=>'images', 'fname'=>'id', 
-                'fields'=>array('id', 'name', 'flags', 'image_id', 'description')),
-        ));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        $offering['images'] = isset($rc['images']) ? $rc['images'] : array();
-
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheThumbnail');
-        foreach($offering['images'] as $img_id => $img) {
-            if( isset($img['image_id']) && $img['image_id'] > 0 ) {
-                $rc = ciniki_images_loadCacheThumbnail($ciniki, $args['tnid'], $img['image_id'], 75);
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                $offering['images'][$img_id]['image_data'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
-            }
-        }
-*/
 
         //
         // Get the list of registrations

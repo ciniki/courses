@@ -165,7 +165,12 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
     }
 
     if( isset($args['files']) && $args['files'] == 'yes' ) {
-        $strsql = "SELECT ciniki_course_offering_files.id, "
+        
+        //
+        // FIXME:
+        //
+
+/*        $strsql = "SELECT ciniki_course_offering_files.id, "
             . "ciniki_course_files.id AS file_id, "
             . "ciniki_course_files.name "
             . "FROM ciniki_course_offering_files "
@@ -186,7 +191,7 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
             $offering['files'] = $rc['files'];
         } else {
             $offering['files'] = array();
-        }
+        } */
     }
 
     if( isset($args['images']) && $args['images'] == 'yes' ) {
