@@ -1357,6 +1357,9 @@ function ciniki_courses_main() {
             }
             var p = M.ciniki_courses_main.course;
             p.data = rsp.course;
+            if( (p.data.flags&0x40) == 0 && p.sections._tabs.selected == 'paid' ) {
+                p.sections._tabs.selected = 'info';
+            }
             p.refresh();
             p.show(cb);
         });
