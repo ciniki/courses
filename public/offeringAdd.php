@@ -204,6 +204,27 @@ function ciniki_courses_offeringAdd(&$ciniki) {
             $offering['files'] = isset($rc['files']) ? $rc['files'] : array();
 
             //
+            // Load offering images
+            //
+            $strsql = "SELECT images.id, "
+                . "images.name, "
+                . "images.permalink, "
+                . "images.flags, "
+                . "images.image_id, "
+                . "images.description "
+                . "FROM ciniki_course_offering_images AS images "
+                . "WHERE images.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+                . "AND images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'images', 'fname'=>'id', 'fields'=>array('name', 'permalink', 'flags', 'image_id', 'description')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $offering['images'] = isset($rc['images']) ? $rc['images'] : array();
+
+            //
             // Load offering notifications
             //
             $strsql = "SELECT notifications.id, "
@@ -387,6 +408,20 @@ function ciniki_courses_offeringAdd(&$ciniki) {
             $old_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $old_uuid[0] . '/' . $old_uuid;
             $new_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $uuid[0] . '/' . $uuid;
             copy($old_filename, $new_filename);
+        }
+    }
+
+    //
+    // Add images from copy offering
+    //
+    if( isset($offering['images']) ) {
+        foreach($offering['images'] as $image) {
+            $image['offering_id'] = $offering_id;
+            $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.offering_image', $image, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
         }
     }
 

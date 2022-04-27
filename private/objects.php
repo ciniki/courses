@@ -184,6 +184,22 @@ function ciniki_courses_objects($ciniki) {
             ),
         'history_table'=>'ciniki_course_history',
         );
+    $objects['offering_image'] = array(
+        'name'=>'Course Offering Image',
+        'sync'=>'yes',
+        'o_name'=>'image',
+        'o_container'=>'images',
+        'table'=>'ciniki_course_offering_images',
+        'fields'=>array(
+            'offering_id'=>array('name'=>'Offering', 'ref'=>'ciniki.courses.offering'),
+            'name'=>array('name'=>'Name', 'default'=>''),
+            'permalink'=>array('name'=>'Permalink', 'default'=>''),
+            'flags'=>array('name'=>'Options', 'default'=>0),
+            'image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image'),
+            'description'=>array('name'=>'Description', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_course_history',
+        );
     $objects['offering_price'] = array(
         'name'=>'Course Offering Price',
         'sync'=>'yes',

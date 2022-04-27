@@ -93,10 +93,10 @@ function ciniki_courses_offeringFileGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.207', 'msg'=>'Course Offering File not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.206', 'msg'=>'Course Offering File not found', 'err'=>$rc['err']));
         }
         if( !isset($rc['files'][0]) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.208', 'msg'=>'Unable to find Course Offering File'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.207', 'msg'=>'Unable to find Course Offering File'));
         }
         $file = $rc['files'][0];
     }

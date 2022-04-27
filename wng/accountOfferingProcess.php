@@ -161,6 +161,38 @@ function ciniki_courses_wng_accountOfferingProcess(&$ciniki, $tnid, &$request, $
                 }
             }
         }
+
+        //
+        // Load offering images
+        //
+        $strsql = "SELECT images.id, "
+            . "images.name, "
+            . "images.permalink, "
+            . "images.flags, "
+            . "images.image_id, "
+            . "images.description "
+            . "FROM ciniki_course_offering_images AS images "
+            . "WHERE images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND images.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['offering_id']) . "' "
+            . "AND (images.flags&0x01) = 0x01 "    // Visible
+            . "ORDER BY images.name "
+            . "";
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
+            array('container'=>'images', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'permalink', 'flags', 'image_id', 'description')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['images']) ) {
+            foreach($rc['images'] as $image) {
+                if( ($image['flags']&0x10) == 0x10 ) {
+                    $offering['paid_content_images'][$image['permalink']] = $image;
+                } else {
+                    $offering['images'][$image['permalink']] = $image;
+                }
+            }
+        }
     }
 
     //
@@ -247,6 +279,10 @@ function ciniki_courses_wng_accountOfferingProcess(&$ciniki, $tnid, &$request, $
             'content' => $content,
             );
     }
+
+    //
+    // Check for any paid images
+    //
 
 
     return array('stat'=>'ok', 'blocks'=>$blocks);

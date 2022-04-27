@@ -107,6 +107,30 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     }
 
     //
+    // Remove any images attached to the offering
+    //
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_course_offering_images "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'file');
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+        return $rc;
+    }
+    if( isset($rc['rows']) ) {
+        $files = $rc['rows'];
+        foreach($files as $rid => $row) {
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering_image', $row['id'], $row['uuid'], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
+        }
+    }
+
+    //
     // Remove any classes attached to the offering
     //
     $strsql = "SELECT id, uuid FROM ciniki_course_offering_classes "

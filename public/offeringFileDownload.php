@@ -66,7 +66,7 @@ function ciniki_courses_offeringFileDownload($ciniki) {
         return $rc;
     }
     if( !isset($rc['file']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.15', 'msg'=>'Unable to find file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.204', 'msg'=>'Unable to find file'));
     }
     $filename = $rc['file']['name'] . '.' . $rc['file']['extension'];
 
@@ -78,7 +78,7 @@ function ciniki_courses_offeringFileDownload($ciniki) {
     if( $rc['file']['extension'] == 'pdf' ) {
         header('Content-Type: application/pdf');
     } else {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.16', 'msg'=>'Unsupported file type'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.205', 'msg'=>'Unsupported file type'));
     }
 
     //

@@ -1,0 +1,53 @@
+#
+# Description
+# -----------
+# This table stores the images for an offering.
+#
+# Fields
+# ------
+# id:               The ID of the offering image.
+# uuid:             The Universal Unique ID.
+# tnid:             The ID of the tenant the offering is attached to.
+#
+# offering_id:      The ID of the offering from the ciniki_courses table.
+# 
+# name:             The name for the image.
+# permalink:        The permalink for the image, to be used in the url.
+#
+# flags:            The flags for displaying on the website.  This allows
+#                   for a participant to upload images without them being
+#                   displayed on the website.  This could be used for 
+#                   artists to submit porfolios and determine which ones show up.
+#
+#                       0x01 - Visible (show on the website)
+#                       0x02 - 
+#                       0x04 - 
+#                       0x08 - 
+#                       0x10 - Paid Content, only available to registered customers
+#                       0x20 - 
+#                       0x40 - 
+#                       0x80 - 
+#
+# image_id:         The ID of the image in the ciniki.images module.
+#
+# description:      The description for the image.
+#
+# date_added:       The UTC date and time the image was added to the course.
+# last_updated:     The UTC date and time the image was last updated.
+#
+create table ciniki_course_offering_images (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+    offering_id int not null,
+    name varchar(200) not null,
+    permalink varchar(200) not null,
+    flags tinyint unsigned not null,
+    image_id int not null,
+    description varchar(6000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (offering_id, permalink),
+    index (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

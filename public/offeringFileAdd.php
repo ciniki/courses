@@ -90,7 +90,7 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     // Check to see if an image was uploaded
     //
     if( isset($_FILES['uploadfile']['error']) && $_FILES['uploadfile']['error'] == UPLOAD_ERR_INI_SIZE ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.11', 'msg'=>'Upload failed, file too large.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.34', 'msg'=>'Upload failed, file too large.'));
     }
     // FIXME: Add other checkes for $_FILES['uploadfile']['error']
 
@@ -98,7 +98,7 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     // Make sure a file was submitted
     //
     if( !isset($_FILES) || !isset($_FILES['uploadfile']) || $_FILES['uploadfile']['tmp_name'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.12', 'msg'=>'No file specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.35', 'msg'=>'No file specified.'));
     }
 
     $args['org_filename'] = $_FILES['uploadfile']['name'];
@@ -108,7 +108,7 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     // Check the extension is a PDF, currently only accept PDF files
     //
     if( $args['extension'] != 'pdf' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.13', 'msg'=>'The file must be a PDF file.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.36', 'msg'=>'The file must be a PDF file.'));
     }
 
     //
@@ -127,12 +127,12 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
     $storage_filename = $tenant_storage_dir . '/ciniki.courses/files/' . $args['uuid'][0] . '/' . $args['uuid'];
     if( !is_dir(dirname($storage_filename)) ) {
         if( !mkdir(dirname($storage_filename), 0700, true) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.159', 'msg'=>'Unable to add file'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.37', 'msg'=>'Unable to add file'));
         }
     }
 
     if( !rename($_FILES['uploadfile']['tmp_name'], $storage_filename) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.160', 'msg'=>'Unable to add file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.210', 'msg'=>'Unable to add file'));
     }
 
     //

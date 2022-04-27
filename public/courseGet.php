@@ -134,7 +134,7 @@ function ciniki_courses_courseGet($ciniki) {
                 . "AND images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "ORDER BY images.date_added, images.name "
                 . "";
-            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.blog', array(
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
                 array('container'=>'images', 'fname'=>'id', 'name'=>'image',
                     'fields'=>array('id', 'image_id', 'name', 'description')),
                 ));

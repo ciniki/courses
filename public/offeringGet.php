@@ -267,6 +267,9 @@ function ciniki_courses_offeringGet($ciniki) {
         }
         $offering['instructors'] = isset($rc['instructors']) ? $rc['instructors'] : array();
 
+        //
+        // Load the offering files
+        //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x08) ) {
             $strsql = "SELECT id, "
                 . "name, "
@@ -284,6 +287,39 @@ function ciniki_courses_offeringGet($ciniki) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.202', 'msg'=>'Unable to load files', 'err'=>$rc['err']));
             }
             $offering['files'] = isset($rc['files']) ? $rc['files'] : array();
+        }
+
+        //
+        // Load the offering images
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0200) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheThumbnail');
+            $strsql = "SELECT images.id, "
+                . "images.image_id, "
+                . "images.name, "
+                . "images.description "
+                . "FROM ciniki_course_offering_images AS images "
+                . "WHERE images.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+                . "AND images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY images.date_added, images.name "
+                . "";
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'images', 'fname'=>'id', 'name'=>'image',
+                    'fields'=>array('id', 'image_id', 'name', 'description')),
+                ));
+            if( $rc['stat'] != 'ok' ) { 
+                return $rc;
+            }
+            $offering['images'] = isset($rc['images']) ? $rc['images'] : array();
+            foreach($offering['images'] as $img_id => $img) {
+                if( isset($img['image_id']) && $img['image_id'] > 0 ) {
+                    $rc = ciniki_images_loadCacheThumbnail($ciniki, $args['tnid'], $img['image_id'], 75);
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    $offering['images'][$img_id]['image_data'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
+                }
+            }
         }
 
         //
