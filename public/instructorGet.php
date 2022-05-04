@@ -22,6 +22,7 @@ function ciniki_courses_instructorGet($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'),
         'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'),
+        'form_submission_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Form Submission'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -45,6 +46,31 @@ function ciniki_courses_instructorGet($ciniki) {
     $time_format = ciniki_users_timeFormat($ciniki, 'php');
 
     if( !isset($args['instructor_id']) || $args['instructor_id'] == 0 ) {
+        if( isset($args['form_submission_id']) && $args['form_submission_id'] != null ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'formSubmissionParse');
+            $rc = ciniki_courses_formSubmissionParse($ciniki, $args['tnid'], $args['form_submission_id']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.222', 'msg'=>'Unable to load form submission', 'err'=>$rc['err']));
+            }
+            $form_instructor = isset($rc['instructor']) ? $rc['instructor'] : array();
+        }
+        $course = array(
+            'id' => 0,
+            'name' => isset($form_course['name']) ? $form_course['name'] : '',
+            'code' => '',
+            'status' => 10,
+            'primary_image_id' => isset($form_course['primary_image_id']) ? $form_course['primary_image_id'] : 0,
+            'level' => '',
+            'type' => '',
+            'category' => '',
+            'medium' => '',
+            'ages' => '',
+            'flags' => 0,
+            'short_description' => isset($form_course['short_description']) ? $form_course['short_description'] : '',
+            'long_description' => isset($form_course['long_description']) ? $form_course['long_description'] : '',
+            'files' => array(),
+            'images' => array(),
+            );
         $instructor = array(
             'id' => 0,
             'first' => '',

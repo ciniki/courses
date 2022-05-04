@@ -21,6 +21,7 @@ function ciniki_courses_courseGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'),
+        'form_submission_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Form Submission'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -42,20 +43,29 @@ function ciniki_courses_courseGet($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     if( $args['course_id'] == 0 ) {
+        if( isset($args['form_submission_id']) && $args['form_submission_id'] != null ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'formSubmissionParse');
+            $rc = ciniki_courses_formSubmissionParse($ciniki, $args['tnid'], $args['form_submission_id']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.222', 'msg'=>'Unable to load form submission', 'err'=>$rc['err']));
+            }
+            $form_course = isset($rc['course']) ? $rc['course'] : array();
+        }
         $course = array(
             'id' => 0,
-            'name' => '',
+            'name' => isset($form_course['name']) ? $form_course['name'] : '',
             'code' => '',
             'status' => 10,
-            'primary_image_id' => 0,
-            'level' => '',
-            'type' => '',
-            'category' => '',
-            'medium' => '',
-            'ages' => '',
+            'primary_image_id' => isset($form_course['primary_image_id']) ? $form_course['primary_image_id'] : 0,
+            'level' => isset($form_course['level']) ? $form_course['level'] : '',
+            'type' => isset($form_course['type']) ? $form_course['type'] : '',
+            'category' => isset($form_course['category']) ? $form_course['category'] : '',
+            'medium' => isset($form_course['medium']) ? $form_course['medium'] : '',
+            'ages' => isset($form_course['ages']) ? $form_course['ages'] : '',
             'flags' => 0,
-            'short_description' => '',
-            'long_description' => '',
+            'short_description' => isset($form_course['short_description']) ? $form_course['short_description'] : '',
+            'long_description' => isset($form_course['long_description']) ? $form_course['long_description'] : '',
+            'materials_list' => isset($form_course['materials_list']) ? $form_course['materials_list'] : '',
             'files' => array(),
             'images' => array(),
             );
@@ -77,6 +87,7 @@ function ciniki_courses_courseGet($ciniki) {
             . "ciniki_courses.flags, "
             . "ciniki_courses.short_description, "
             . "ciniki_courses.long_description, "
+            . "ciniki_courses.materials_list, "
             . "ciniki_courses.paid_content "
             . "FROM ciniki_courses "
             . "WHERE ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -87,7 +98,7 @@ function ciniki_courses_courseGet($ciniki) {
             array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
                 'fields'=>array('id', 'name', 'code', 'status', 'primary_image_id', 
                     'level', 'type', 'category', 'medium', 'ages',
-                    'flags', 'short_description', 'long_description', 'paid_content',
+                    'flags', 'short_description', 'long_description', 'materials_list', 'paid_content',
                     )),
             ));
         if( $rc['stat'] != 'ok' ) {

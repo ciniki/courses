@@ -41,6 +41,7 @@
 #
 # short_description:    The short description of the event (optional).
 # long_description:     The longer text description of the event (optional).
+# materials_list:       The list of materieals needed for the course.
 #
 # paid_content:         The paid content for the course.
 #
@@ -64,9 +65,10 @@ CREATE TABLE ciniki_courses (
     flags tinyint unsigned not null,
     short_description varchar(2000) not null,
     long_description varchar(20000) not null,
+    materials_list text not null,
     paid_content text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

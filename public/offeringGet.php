@@ -91,6 +91,7 @@ function ciniki_courses_offeringGet($ciniki) {
             'primary_image_id' => 0,
             'synopsis' => '',
             'content' => '',
+            'materials_list' => '',
             'paid_content' => '',
             );
         if( isset($args['course_id']) ) {
@@ -148,6 +149,7 @@ function ciniki_courses_offeringGet($ciniki) {
             . "ciniki_course_offerings.primary_image_id, "
             . "ciniki_course_offerings.synopsis, "
             . "ciniki_course_offerings.content, "
+            . "ciniki_course_offerings.materials_list, "
             . "ciniki_course_offerings.paid_content, "
             . "IF((ciniki_course_offerings.webflags&0x01)=1,'Hidden', 'Visible') AS web_visible, "
             . "ciniki_courses.name AS course_name, "
@@ -174,7 +176,7 @@ function ciniki_courses_offeringGet($ciniki) {
             array('container'=>'offerings', 'fname'=>'id',
                 'fields'=>array('id', 'name', 'code', 'permalink', 'status', 'status_text', 
                     'reg_flags', 'num_seats', 'start_date', 'end_date', 'condensed_date', 'webflags', 'web_visible', 
-                    'primary_image_id', 'synopsis', 'content', 'paid_content',
+                    'primary_image_id', 'synopsis', 'content', 'materials_list', 'paid_content',
                     'course_id', 'course_status', 'course_name', 'course_code', 'course_flags',
                     'level', 'type', 'category', 'flags', 'short_description', 'long_description',
                     ),

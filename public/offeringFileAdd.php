@@ -55,6 +55,7 @@ function ciniki_courses_offeringFileAdd(&$ciniki) {
         . "FROM ciniki_course_offering_files "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+        . "AND offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'item');
     if( $rc['stat'] != 'ok' ) {

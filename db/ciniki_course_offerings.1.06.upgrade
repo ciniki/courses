@@ -1,0 +1,5 @@
+#
+# Add the fields for a code on the course offerings
+#
+ALTER TABLE ciniki_course_offerings ADD COLUMN materials_list text not null AFTER content;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.06';
