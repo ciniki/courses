@@ -31,6 +31,7 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
+        'customer_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customer'), 
         'first'=>array('required'=>'no', 'blank'=>'no', 'name'=>'First Name'), 
         'last'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Last Name'), 
         'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
@@ -45,9 +46,6 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     }   
     $args = $rc['args'];
 
-    $name = $args['first'] . '-' . $args['last'];
-    $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($name)));
-
     //  
     // Make sure this module is activated, and
     // check permission to run this function for this tenant
@@ -59,19 +57,39 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     }   
     $modules = $rc['modules'];
 
-    //
-    // Check the permalink doesn't already exist
-    //
-    $strsql = "SELECT id, first, last, permalink FROM ciniki_course_instructors "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'instructor');
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.19', 'msg'=>'You already have an instructor with this name, please choose another name'));
+    if( isset($args['customer_id']) && $args['customer_id'] > 0 ) {
+        //
+        // Check the customer to make sure they don't already exist as an instructor
+        //
+        $strsql = "SELECT id, customer_id FROM ciniki_course_instructors "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'instructor');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( $rc['num_rows'] > 0 ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.223', 'msg'=>'This customer is already setup as an instructor.'));
+        }
+    } else {
+        $name = $args['first'] . '-' . $args['last'];
+        $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($name)));
+
+        //
+        // Check the permalink doesn't already exist
+        //
+        $strsql = "SELECT id, first, last, permalink FROM ciniki_course_instructors "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'instructor');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( $rc['num_rows'] > 0 ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.19', 'msg'=>'You already have an instructor with this name, please choose another name'));
+        }
     }
 
     //

@@ -26,8 +26,8 @@ function ciniki_courses_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.254', 'msg'=>'Incomplete form'));
     }
 
-    $course = array(
-        );
+    $instructor = array();
+    $course = array();
 
     //
     // Extract the items
@@ -94,8 +94,14 @@ function ciniki_courses_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
                     if( $field['field_ref'] == 'ciniki.courses.course.primary_image_id' && $data > 0 ) {
                         $course['primary_image_id'] = $data; 
                     }
+                    elseif( $field['field_ref'] == 'ciniki.courses.instructor.primary_image_id' && $data > 0 ) {
+                        $instructor['primary_image_id'] = $data; 
+                    }
                     elseif( preg_match("/^ciniki.courses.course.(.*)$/", $field['field_ref'], $m) && $data != '' ) {    
                         $course[$m[1]] = $data; 
+                    }
+                    elseif( preg_match("/^ciniki.courses.instructor.(.*)$/", $field['field_ref'], $m) && $data != '' ) {    
+                        $instructor[$m[1]] = $data; 
                     }
                 }
             }

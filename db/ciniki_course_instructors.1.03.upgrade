@@ -1,0 +1,5 @@
+#
+# Add the instructor link to ciniki.customers module
+#
+ALTER TABLE ciniki_course_instructors ADD COLUMN customer_id int not null AFTER tnid;
+ALTER TABLE ciniki_course_instructors COMMENT='v1.03';

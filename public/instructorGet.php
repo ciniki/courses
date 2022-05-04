@@ -54,33 +54,17 @@ function ciniki_courses_instructorGet($ciniki) {
             }
             $form_instructor = isset($rc['instructor']) ? $rc['instructor'] : array();
         }
-        $course = array(
-            'id' => 0,
-            'name' => isset($form_course['name']) ? $form_course['name'] : '',
-            'code' => '',
-            'status' => 10,
-            'primary_image_id' => isset($form_course['primary_image_id']) ? $form_course['primary_image_id'] : 0,
-            'level' => '',
-            'type' => '',
-            'category' => '',
-            'medium' => '',
-            'ages' => '',
-            'flags' => 0,
-            'short_description' => isset($form_course['short_description']) ? $form_course['short_description'] : '',
-            'long_description' => isset($form_course['long_description']) ? $form_course['long_description'] : '',
-            'files' => array(),
-            'images' => array(),
-            );
         $instructor = array(
             'id' => 0,
+            'customer_id' => 0,
             'first' => '',
             'last' => '',
             'primary_image_id' => 0,
             'status' => 10,
             'webflags' => 0,
             'url' => '',
-            'short_bio' => '',
-            'full_bio' => '',
+            'short_bio' => isset($form_instructor['short_bio']) ? $form_instructor['short_bio'] : '',
+            'full_bio' => isset($form_instructor['full_bio']) ? $form_instructor['full_bio'] : '',
             'offerings' => array(),
             );
     }
@@ -90,6 +74,7 @@ function ciniki_courses_instructorGet($ciniki) {
     //
     else {
         $strsql = "SELECT ciniki_course_instructors.id, "
+            . "ciniki_course_instructors.customer_id, "
             . "CONCAT_WS(' ', ciniki_course_instructors.first, ciniki_course_instructors.last) AS name, "
             . "ciniki_course_instructors.first, "
             . "ciniki_course_instructors.last, "
@@ -108,7 +93,7 @@ function ciniki_courses_instructorGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'instructors', 'fname'=>'id', 'name'=>'instructor',
-                'fields'=>array('id', 'first', 'last', 'status', 'name', 'permalink', 'primary_image_id', 'webflags', 'web_visible', 'short_bio', 'full_bio', 'url')),
+                'fields'=>array('id', 'customer_id', 'first', 'last', 'status', 'name', 'permalink', 'primary_image_id', 'webflags', 'web_visible', 'short_bio', 'full_bio', 'url')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -117,6 +102,15 @@ function ciniki_courses_instructorGet($ciniki) {
             return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.20', 'msg'=>'Unable to find instructor'));
         }
         $instructor = $rc['instructors'][0]['instructor'];
+
+        if( $instructor['customer_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], array(
+                'customer_id' => $instructor['customer_id'],
+                'membership' => 'yes',
+                ));
+            $instructor['customer_details'] = isset($rc['details']) ? $rc['details'] : array();
+        }
 
         if( isset($args['images']) && $args['images'] == 'yes' ) {
             $strsql = "SELECT "

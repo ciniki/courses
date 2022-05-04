@@ -22,6 +22,7 @@ function ciniki_courses_instructorUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'), 
+        'customer_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customer'), 
         'first'=>array('required'=>'no', 'blank'=>'no', 'name'=>'First Name'), 
         'last'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Last Name'), 
         'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
@@ -46,6 +47,24 @@ function ciniki_courses_instructorUpdate(&$ciniki) {
         return $rc;
     }
 
+    if( isset($args['customer_id']) && $args['customer_id'] > 0 ) {
+        //
+        // Check the customer to make sure they don't already exist as an instructor
+        //
+        $strsql = "SELECT id, customer_id FROM ciniki_course_instructors "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['instructor_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'instructor');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( $rc['num_rows'] > 0 ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.223', 'msg'=>'This customer is already setup as an instructor.'));
+        }
+        
+    }
     if( (isset($args['first']) || isset($args['last'])) && (!isset($args['permalink']) || $args['permalink'] == '') ) {
         if( !isset($args['first']) || !isset($args['last']) ) { 
             //

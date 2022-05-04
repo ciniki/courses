@@ -80,6 +80,7 @@ function ciniki_courses_objects($ciniki) {
         'o_container'=>'instructors',
         'table'=>'ciniki_course_instructors',
         'fields'=>array(
+            'customer_id'=>array('name'=>'Customer', 'ref'=>'ciniki.customers.customer', 'default'=>0),
             'first'=>array('name'=>'First'),
             'last'=>array('name'=>'First', 'default'=>''),
             'status'=>array('name'=>'Status', 'default'=>'10'),

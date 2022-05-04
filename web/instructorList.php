@@ -11,28 +11,40 @@
 //
 function ciniki_courses_web_instructorList($ciniki, $settings, $tnid, $offering_id, $format='') {
 
-    $strsql = "SELECT ciniki_course_instructors.id, "
-        . "CONCAT_WS(' ', ciniki_course_instructors.first, ciniki_course_instructors.last) AS name, "
+    $strsql = "SELECT instructors.id, "
+        . "CONCAT_WS(' ', IFNULL(customers.first, instructors.first), IFNULL(customers.last, instructors.last)) AS name, "
         . "'' AS title, "
-        . "ciniki_course_instructors.primary_image_id, "
-        . "ciniki_course_instructors.permalink, "
-        . "ciniki_course_instructors.short_bio, "
-//        . "IF(ciniki_course_instructors.full_bio='', 'no', 'yes') AS is_details, "
-//        . "IF(ciniki_course_instructors.full_bio='', 'no', 'yes') 
+        . "instructors.primary_image_id, "
+        . "instructors.permalink, "
+        . "instructors.short_bio, "
+//        . "IF(instructors.full_bio='', 'no', 'yes') AS is_details, "
+//        . "IF(instructors.full_bio='', 'no', 'yes') 
         . "'yes' AS is_details, "
-        . "ciniki_course_instructors.url ";
+        . "instructors.url ";
     if( $offering_id > 0 ) {
-        $strsql .= "FROM ciniki_course_offering_instructors, ciniki_course_instructors "
-            . "WHERE ciniki_course_offering_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND ciniki_course_offering_instructors.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
-            . "AND ciniki_course_offering_instructors.instructor_id = ciniki_course_instructors.id "
-            . "AND ciniki_course_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        $strsql .= "FROM ciniki_course_offering_instructors AS oinstructors "
+            . "INNER JOIN ciniki_course_instructors AS instructors ON ("
+                . "oinstructors.instructor_id = instructors.id "
+                . "AND instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_customers AS customers ON ("
+                . "instructors.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE oinstructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND oinstructors.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
+            . "";
     } else {
-        $strsql .= "FROM ciniki_course_instructors "
-            . "WHERE ciniki_course_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        $strsql .= "FROM ciniki_course_instructors AS instructors "
+            . "LEFT JOIN ciniki_customers AS customers ON ("
+                . "instructors.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
     }
-    $strsql .= "AND (ciniki_course_instructors.webflags&0x01) = 0 "
-        . "ORDER BY ciniki_course_instructors.last "
+    $strsql .= "AND (instructors.webflags&0x01) = 0 "
+        . "AND instructors.status < 90 "
+        . "ORDER BY customers.last, instructors.last "
         . "";
     if( $format == 'cilist' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
