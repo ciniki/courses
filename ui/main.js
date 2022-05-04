@@ -399,6 +399,7 @@ function ciniki_courses_main() {
             return 'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.price.open(\'M.ciniki_courses_main.offering.open();\',\'' + d.id + '\',M.ciniki_courses_main.offering.offering_id);");';
         }
         if( s == 'instructors' ) {
+            return 'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.offering.open();\',\'' + d.instructor_id + '\');");';
         }
         if( s == 'registrations' ) {
             return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'registration_id\':\'' + d.id + '\',\'source\':\'offering\'});';
