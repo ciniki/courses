@@ -399,7 +399,7 @@ function ciniki_courses_main() {
             return 'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.price.open(\'M.ciniki_courses_main.offering.open();\',\'' + d.id + '\',M.ciniki_courses_main.offering.offering_id);");';
         }
         if( s == 'instructors' ) {
-            return 'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.offering.open();\',\'' + d.instructor_id + '\');");';
+            return 'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.offering.open();\',\'' + d.instructor_id + '\',0);");';
         }
         if( s == 'registrations' ) {
             return 'M.startApp(\'ciniki.courses.sapos\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'registration_id\':\'' + d.id + '\',\'source\':\'offering\'});';
@@ -1247,6 +1247,7 @@ function ciniki_courses_main() {
     this.course = new M.panel('Program', 'ciniki_courses_main', 'course', 'mc', 'large mediumaside', 'sectioned', 'ciniki.courses.main.course');
     this.course.data = null;
     this.course.course_id = 0;
+    this.course.form_submission_id = 0;
     this.course.nplist = [];
     this.course.sections = {
         '_primary_image_id':{'label':'Image', 'type':'imageform', 'aside':'yes', 'fields':{
@@ -1731,7 +1732,7 @@ function ciniki_courses_main() {
             'sortTypes':['text', 'text', 'number', 'date'],
             'cellClasses':['', '', 'aligncenter', 'alignright'],
             'addTxt':'Add Instructor',
-            'addFn':'M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.instructors.open();\',0);',
+            'addFn':'M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.instructors.open();\',0,0);',
             },
     };
     this.instructors.sectionData = function(s) {
@@ -1761,7 +1762,7 @@ function ciniki_courses_main() {
             return 'M.ciniki_courses_main.instructors.setFilter(\'' + s + '\',\'' + d.value + '\');'
         } 
         if( s == 'instructors' ) {
-            return 'M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.instructors.open();\',\'' + d.id + '\');';
+            return 'M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.instructors.open();\',\'' + d.id + '\',0);';
         }
     };
     this.instructors.setFilter = function(s, v) {
@@ -1796,6 +1797,8 @@ function ciniki_courses_main() {
     this.instructor.offering_id = 0;
     this.instructor.offering_instructor_id = 0;
     this.instructor.instructor_id = 0;
+    this.instructor.form_submission_id = 0;
+    this.instructor.customer_id = 0;
     this.instructor.sections = {
         '_image':{'label':'', 'type':'imageform', 'aside':'yes', 'fields':{
             'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
@@ -1897,9 +1900,10 @@ function ciniki_courses_main() {
         this.refreshSection('_tabs');
         this.showHideSections(['_short_bio', '_full_bio', 'offerings']);
     }
-    this.instructor.open = function(cb, iid) {
+    this.instructor.open = function(cb, iid, form_sub_id) {
         if( iid != null ) { this.instructor_id = iid; }
-        M.api.getJSONCb('ciniki.courses.instructorGet', {'tnid':M.curTenantID, 'instructor_id':this.instructor_id}, function (rsp) {
+        if( form_sub_id != null ) { this.form_submission_id = form_sub_id; }
+        M.api.getJSONCb('ciniki.courses.instructorGet', {'tnid':M.curTenantID, 'instructor_id':this.instructor_id, 'form_submission_id':this.form_submission_id}, function (rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -1907,14 +1911,30 @@ function ciniki_courses_main() {
             var p = M.ciniki_courses_main.instructor;
             p.data = rsp.instructor;
             if( rsp.instructor.customer_id > 0 ) {
+                p.customer_id = rsp.instructor.customer_id;
                 p.sections.customer_details.addTxt = 'Edit Customer';
                 p.sections.customer_details.changeTxt = 'Change Customer';
             } else {
+                p.customer_id = 0;
                 p.sections.customer_details.addTxt = 'Add Customer';
                 p.sections.customer_details.changeTxt = '';
             }
             p.refresh();
             p.show(cb);
+            if( rsp.form_instructor != null ) {
+                if( rsp.form_instructor.primary_image_id != null && rsp.form_instructor.primary_image_id > 0 ) {
+                    p.setFieldValue('primary_image_id', rsp.form_instructor.primary_image_id);
+                }
+                if( rsp.form_instructor.short_bio != null && rsp.form_instructor.short_bio != '' ) {
+                    p.setFieldValue('short_bio', rsp.form_instructor.short_bio);
+                }
+                if( rsp.form_instructor.full_bio != null && rsp.form_instructor.full_bio != '' ) {
+                    p.setFieldValue('full_bio', rsp.form_instructor.full_bio);
+                }
+                if( rsp.form_instructor.url != null && rsp.form_instructor.url != '' ) {
+                    p.setFieldValue('url', rsp.form_instructor.url);
+                }
+            }
         });
     }
     this.instructor.save = function(cb) {
@@ -1934,12 +1954,13 @@ function ciniki_courses_main() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONFormData('ciniki.courses.instructorAdd', {'tnid':M.curTenantID}, c,
+            M.api.postJSONFormData('ciniki.courses.instructorAdd', {'tnid':M.curTenantID, 'customer_id':this.customer_id}, c,
                 function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     } 
+                    M.ciniki_courses_main.instructor.instructor_id = rsp.id;
                     eval(cb);
                 });
         }
@@ -2193,7 +2214,10 @@ function ciniki_courses_main() {
         this.instructors.cb = cb;
         this.students.cb = cb;
 
-        if( args.form_submission_id && args.form_submission_id != null ) {
+        if( args.instructor_id != null && args.form_submission_id != null && args.form_submission_id > 0 
+            ) {
+            this.instructor.open(cb,args.instructor_id,args.form_submission_id);
+        } else if( args.form_submission_id != null && args.form_submission_id > 0 ) {
             this.course.open(cb,0,null,args.form_submission_id);
         } else if( this[this.menutabs.selected] == null ) {
             this.courses.open(cb);

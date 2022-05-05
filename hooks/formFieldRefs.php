@@ -30,7 +30,7 @@ function ciniki_courses_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
         // Instructor
         'ciniki.courses.instructor.primary_image_id' => array('module'=>$module, 'type'=>'image', 'name'=>'Instructor Image'),
         'ciniki.courses.instructor.short_bio' => array('module'=>$module, 'type'=>'textarea', 'name'=>'Instructor Synopsis'),
-        'ciniki.courses.instructor.long_bio' => array('module'=>$module, 'type'=>'textarea', 'name'=>'Instructor Bio'),
+        'ciniki.courses.instructor.full_bio' => array('module'=>$module, 'type'=>'textarea', 'name'=>'Instructor Bio'),
         'ciniki.courses.instructor.url' => array('module'=>$module, 'type'=>'url', 'name'=>'Instructor Website'),
         );
 

@@ -45,24 +45,28 @@ function ciniki_courses_instructorGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timeFormat');
     $time_format = ciniki_users_timeFormat($ciniki, 'php');
 
-    if( !isset($args['instructor_id']) || $args['instructor_id'] == 0 ) {
-        if( isset($args['form_submission_id']) && $args['form_submission_id'] != null ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'formSubmissionParse');
-            $rc = ciniki_courses_formSubmissionParse($ciniki, $args['tnid'], $args['form_submission_id']);
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.222', 'msg'=>'Unable to load form submission', 'err'=>$rc['err']));
-            }
-            $form_instructor = isset($rc['instructor']) ? $rc['instructor'] : array();
+    //
+    // Load form submission instructor information is specified
+    //
+    if( isset($args['form_submission_id']) && $args['form_submission_id'] > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'formSubmissionParse');
+        $rc = ciniki_courses_formSubmissionParse($ciniki, $args['tnid'], $args['form_submission_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.222', 'msg'=>'Unable to load form submission', 'err'=>$rc['err']));
         }
+        $form_instructor = isset($rc['instructor']) ? $rc['instructor'] : array();
+    }
+
+    if( !isset($args['instructor_id']) || $args['instructor_id'] == 0 ) {
         $instructor = array(
             'id' => 0,
-            'customer_id' => 0,
+            'customer_id' => isset($form_instructor['customer_id']) ? $form_instructor['customer_id'] : 0,
             'first' => '',
             'last' => '',
-            'primary_image_id' => 0,
+            'primary_image_id' => isset($form_instructor['primary_image_id']) ? $form_instructor['primary_image_id'] : 0,
             'status' => 10,
             'webflags' => 0,
-            'url' => '',
+            'url' => isset($form_instructor['url']) ? $form_instructor['url'] : '',
             'short_bio' => isset($form_instructor['short_bio']) ? $form_instructor['short_bio'] : '',
             'full_bio' => isset($form_instructor['full_bio']) ? $form_instructor['full_bio'] : '',
             'offerings' => array(),
@@ -102,15 +106,6 @@ function ciniki_courses_instructorGet($ciniki) {
             return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.20', 'msg'=>'Unable to find instructor'));
         }
         $instructor = $rc['instructors'][0]['instructor'];
-
-        if( $instructor['customer_id'] > 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
-            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], array(
-                'customer_id' => $instructor['customer_id'],
-                'membership' => 'yes',
-                ));
-            $instructor['customer_details'] = isset($rc['details']) ? $rc['details'] : array();
-        }
 
         if( isset($args['images']) && $args['images'] == 'yes' ) {
             $strsql = "SELECT "
@@ -197,7 +192,25 @@ function ciniki_courses_instructorGet($ciniki) {
         }
         $instructor['offerings'] = isset($rc['offerings']) ? $rc['offerings'] : array();
     }
-    
-    return array('stat'=>'ok', 'instructor'=>$instructor);
+   
+    //
+    // Get customer details
+    //
+    if( $instructor['customer_id'] > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+        $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], array(
+            'customer_id' => $instructor['customer_id'],
+            'membership' => 'yes',
+            ));
+        $instructor['customer_details'] = isset($rc['details']) ? $rc['details'] : array();
+    }
+
+    $rsp = array('stat'=>'ok', 'instructor'=>$instructor);
+
+    if( isset($form_instructor) ) {
+        $rsp['form_instructor'] = $form_instructor;
+    }
+
+    return $rsp;
 }
 ?>

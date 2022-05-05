@@ -32,8 +32,8 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'customer_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customer'), 
-        'first'=>array('required'=>'no', 'blank'=>'no', 'name'=>'First Name'), 
-        'last'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Last Name'), 
+        'first'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Name'), 
+        'last'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Last Name'), 
         'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
         'primary_image_id'=>array('required'=>'no', 'default'=>'0', 'name'=>'Level'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'name'=>'Webflags'), 
@@ -72,6 +72,22 @@ function ciniki_courses_instructorAdd(&$ciniki) {
         if( $rc['num_rows'] > 0 ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.223', 'msg'=>'This customer is already setup as an instructor.'));
         }
+        //
+        // Get the customer details
+        //
+        $strsql = "SELECT permalink "
+            . "FROM ciniki_customers "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'customer');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.225', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+        }
+        if( isset($rc['customer']) ) {
+            $args['permalink'] = $rc['customer']['permalink'];
+        }
+            
     } else {
         $name = $args['first'] . '-' . $args['last'];
         $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 \-]/', '', strtolower($name)));

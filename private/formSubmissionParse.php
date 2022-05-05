@@ -28,6 +28,9 @@ function ciniki_courses_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
 
     $instructor = array();
     $course = array();
+    if( isset($form['submission']['customer_id']) ) {
+        $instructor['customer_id'] = $form['submission']['customer_id'];
+    }
 
     //
     // Extract the items
@@ -108,6 +111,6 @@ function ciniki_courses_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
         }
     }
 
-    return array('stat'=>'ok', 'course'=>$course);
+    return array('stat'=>'ok', 'course'=>$course, 'instructor'=>$instructor);
 }
 ?>
