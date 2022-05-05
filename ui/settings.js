@@ -42,6 +42,10 @@ function ciniki_courses_settings() {
                 'default-header-email':{'label':'Email', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 'default-header-website':{'label':'Website', 'type':'toggle', 'default':'yes', 'toggles':this.toggleOptions},
                 }}, */
+            'attendance':{'label':'Attendance Reports', 'fields':{
+                'templates-attendance-phones':{'label':'Show Phone Numbers', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'templates-attendance-emails':{'label':'Show Emails', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
+                }},
             '_buttons':{'label':'', 'buttons':{
                 'save':{'label':'Save', 'fn':'M.ciniki_courses_settings.documentsSave();'},
                 }},

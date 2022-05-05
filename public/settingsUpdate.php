@@ -70,6 +70,8 @@ function ciniki_courses_settingsUpdate(&$ciniki) {
         'course-registration-details',
         'course-registration-more-details',
         'default-header-image',
+        'templates-attendance-phones',
+        'templates-attendance-emails',
         );
     //
     // Check each valid setting and see if a new value was passed in the arguments for it.

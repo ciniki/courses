@@ -13,6 +13,7 @@
 //
 function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offering_id, $tenant_details, $courses_settings) {
 
+error_log(print_r($courses_settings,true));
     //
     // Load the class
     //
@@ -249,7 +250,10 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
                 $student_information = $customer['first'] . ' ' . $customer['last'] . "\n";
-                if( isset($customer['phones']) ) {
+                if( isset($customer['phones']) 
+                    && isset($courses_settings['templates-attendance-phones']) 
+                    && $courses_settings['templates-attendance-phones'] == 'yes'
+                    ) {
                     $phones = "";
                     foreach($customer['phones'] as $phone) {
                         if( count($customer['phones']) > 1 ) {
@@ -269,7 +273,10 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
                         $student_information .= "Phone: \n";
                     }
                 }
-                if( isset($customer['emails']) ) {
+                if( isset($customer['emails']) 
+                    && isset($courses_settings['templates-attendance-emails']) 
+                    && $courses_settings['templates-attendance-emails'] == 'yes'
+                    ) {
                     $emails = '';
                     $comma = '';
                     foreach($customer['emails'] as $e => $email) {
@@ -298,7 +305,10 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
             $tenant_information = $reg['customer_name'] . "\n";
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
-                if( isset($customer['phones']) ) {
+                if( isset($customer['phones']) 
+                    && isset($courses_settings['templates-attendance-phones']) 
+                    && $courses_settings['templates-attendance-phones'] == 'yes'
+                    ) {
                     $phones = "";
                     foreach($customer['phones'] as $phone) {
                         if( count($customer['phones']) > 1 ) {
@@ -318,7 +328,10 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
                         $tenant_information .= "Phone: \n";
                     }
                 }
-                if( isset($customer['emails']) ) {
+                if( isset($customer['emails']) 
+                    && isset($courses_settings['templates-attendance-emails']) 
+                    && $courses_settings['templates-attendance-emails'] == 'yes'
+                    ) {
                     $emails = '';
                     $comma = '';
                     foreach($customer['emails'] as $e => $email) {
