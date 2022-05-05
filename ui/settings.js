@@ -17,7 +17,7 @@ function ciniki_courses_settings() {
             'mc', 'narrow', 'sectioned', 'ciniki.courses.settings.menu');
         this.menu.sections = {  
             '_offerings':{'label':'', 'list':{
-                'documents':{'label':'Document Headers', 'visible':'yes', 'fn':'M.ciniki_courses_settings.documentsShow(\'M.ciniki_courses_settings.showMenu();\');'},
+                'documents':{'label':'Documents', 'visible':'yes', 'fn':'M.ciniki_courses_settings.documentsShow(\'M.ciniki_courses_settings.showMenu();\');'},
                 }},
         };
         this.menu.addClose('Back');
