@@ -13,7 +13,6 @@
 //
 function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offering_id, $tenant_details, $courses_settings) {
 
-error_log(print_r($courses_settings,true));
     //
     // Load the class
     //
