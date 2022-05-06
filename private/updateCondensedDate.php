@@ -216,7 +216,7 @@ function ciniki_courses_updateCondensedDate(&$ciniki, $tnid, $offering_id) {
         } elseif( $samedays == 'yes' && $sametime == 'yes' ) {
             if( count($day_names) == 2 ) {
                 $condensed_date = $day_names[0] . ' & ' . $day_names[1] . ' ' . $first_date['month'] . ' ' . $first_date['day'] 
-                    . ' - ' . $last_date['month'] . ' ' . $last_date['day'];
+                    . ' - ' . $last_date['month'] . ' ' . $last_date['day'] . ' ' . $prev_time;
             } else {
                 $condensed_date = '';
                 foreach($day_names as $name) {
