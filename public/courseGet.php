@@ -43,7 +43,10 @@ function ciniki_courses_courseGet($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     if( $args['course_id'] == 0 ) {
-        if( isset($args['form_submission_id']) && $args['form_submission_id'] != null ) {
+        if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms')
+            && isset($args['form_submission_id']) 
+            && $args['form_submission_id'] > 0 
+            ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'formSubmissionParse');
             $rc = ciniki_courses_formSubmissionParse($ciniki, $args['tnid'], $args['form_submission_id']);
             if( $rc['stat'] != 'ok' ) {
