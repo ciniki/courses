@@ -3,6 +3,8 @@
 # -----------
 # This table stores the email to be sent to customers who purchase the course on a schedule.
 #
+# Notifications can be triggers on various events.
+#
 # Fields
 # ------
 # id:                       The ID assigned to the record.
@@ -14,16 +16,21 @@
 # ntrigger:                 The trigger for the notification to be sent.
 #
 #                               20 - Payment Received
-#                               40 - After Payment Received **future**
+#                               40 - After Payment Received **future** (x days after payment)
 #                               60 - Offering Start
-#                               90 - Offering End
+#                               80 - Offering End
+#                               90 - Each Class Start
+#                               94 - First Class Start
+#                               95 - Last Class Start
+#                               96 - Other Classes (not first or last)
+#                               
 #
 # ntype:                    The type of notification.
 #
 #                               10 - Email
 #                               20 - SMS
 #                               
-# offset_days:              The number of days after the trigger to queue the notification
+# offset_days:              The number of days before(negative) or after(positivte) the trigger to queue the notification.
 #
 # status:                   The current status of the of the notification.
 #
@@ -34,6 +41,9 @@
 # time_of_day:              The time of day to send the email. Ignored for trigger 20.
 # subject:                  The subject of the email.
 # content:                  The content of the email.
+#
+# form_label:               The label to display with the form link: eg "Start Survey Now".
+# form_id:                  The form to include in the notification.
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -53,6 +63,8 @@ create table ciniki_course_offering_notifications (
     time_of_day time not null,
     subject varchar(250) not null,
     content text not null,
+    form_label varchar(150) not null,
+    form_id int not null,
 
     date_added datetime not null,
     last_updated datetime not null,

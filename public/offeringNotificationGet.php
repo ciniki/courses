@@ -67,6 +67,8 @@ function ciniki_courses_offeringNotificationGet($ciniki) {
             'time_of_day'=>'',
             'subject'=>'',
             'content'=>'',
+            'form_label'=>'',
+            'form_id'=>0,
         );
     }
 
@@ -83,7 +85,9 @@ function ciniki_courses_offeringNotificationGet($ciniki) {
             . "ciniki_course_offering_notifications.status, "
             . "TIME_FORMAT(ciniki_course_offering_notifications.time_of_day, '%l:%i %p') AS time_of_day, "
             . "ciniki_course_offering_notifications.subject, "
-            . "ciniki_course_offering_notifications.content "
+            . "ciniki_course_offering_notifications.content, "
+            . "ciniki_course_offering_notifications.form_label, "
+            . "ciniki_course_offering_notifications.form_id "
             . "FROM ciniki_course_offering_notifications "
             . "WHERE ciniki_course_offering_notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_offering_notifications.id = '" . ciniki_core_dbQuote($ciniki, $args['notification_id']) . "' "
@@ -91,7 +95,8 @@ function ciniki_courses_offeringNotificationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'notifications', 'fname'=>'id', 
-                'fields'=>array('offering_id', 'name', 'ntrigger', 'ntype', 'offset_days', 'status', 'time_of_day', 'subject', 'content'),
+                'fields'=>array('offering_id', 'name', 'ntrigger', 'ntype', 'offset_days', 'status', 'time_of_day', 
+                    'subject', 'content', 'form_label', 'form_id'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

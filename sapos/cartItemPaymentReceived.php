@@ -90,6 +90,15 @@ function ciniki_courses_sapos_cartItemPaymentReceived(&$ciniki, $tnid, $customer
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.172', 'msg'=>'Unable to send notification', 'err'=>$rc['err']));
         }
 
+        //
+        // Update notification queue
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+        $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $tnid, $offering['id']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.246', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
+        }
+
         return array('stat'=>'ok', 'object'=>'ciniki.courses.offering_registration', 'object_id'=>$reg_id);
     }
 

@@ -177,6 +177,34 @@ function ciniki_courses_offeringDelete(&$ciniki) {
     }
 
     //
+    // Remove any notification queues attached to the offering
+    //
+    $strsql = "SELECT nqueue.id, nqueue.uuid "
+        . "FROM ciniki_course_offering_notifications AS notifications "
+        . "INNER JOIN ciniki_course_offering_nqueue AS nqueue ON ("
+            . "notifications.id = nqueue.notification_id "
+            . "AND nqueue.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND notifications.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'notification');
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+        return $rc;
+    }
+    if( isset($rc['rows']) ) {
+        $notifications = $rc['rows'];
+        foreach($notifications as $rid => $row) {
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering_nqueue', $row['id'], $row['uuid'], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+                return $rc;
+            }
+        }
+    }
+
+    //
     // Remove any notifications attached to the offering
     //
     $strsql = "SELECT id, uuid FROM ciniki_course_offering_notifications "

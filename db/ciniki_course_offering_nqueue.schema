@@ -12,6 +12,7 @@
 # scheduled_dt:             The UTC date and time to send the notification.
 # notification_id:          The ID of the notification to send.
 # registration_id:          The ID of the registration to send the notification to.
+# class_id:                 The ID of class for the notification, if applicable, otherwize zero.
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -21,15 +22,16 @@ create table ciniki_course_offering_nqueue (
     uuid char(36) not null,
     tnid int not null,
 
-    scheduled_dt datetime not null, 
     notification_id int not null,
     registration_id int not null,
+    class_id int not null,
+    scheduled_dt datetime not null, 
 
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
-    unique index (notification_id, registration_id),
+    unique index (notification_id, registration_id, class_id),
     index (scheduled_dt),
     index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

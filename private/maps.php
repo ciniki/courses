@@ -46,7 +46,11 @@ function ciniki_courses_maps($ciniki) {
             '20' => 'Payment Received',
             '40' => 'After Payment',
             '60' => 'Offering Start',
-            '90' => 'Offering End',
+            '80' => 'Offering End',
+            '90' => 'Each Class',
+            '94' => 'First Class',
+            '95' => 'Last Class',
+            '96' => 'Other Classes',
             ),
         'ntype' => array(
             '10' => 'Email',

@@ -68,6 +68,15 @@ function ciniki_courses_offeringClassDelete(&$ciniki) {
         return $rc;
     }
 
+    //
+    // Update the notification queue
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+    $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $args['tnid'], $class['offering_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.257', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
+    }
+
     return array('stat'=>'ok');
 }
 ?>

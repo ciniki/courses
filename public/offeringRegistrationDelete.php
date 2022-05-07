@@ -38,7 +38,7 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
     //
     // Get the existing registration information
     //
-    $strsql = "SELECT id, invoice_id, uuid "
+    $strsql = "SELECT id, invoice_id, offering_id, uuid "
         . "FROM ciniki_course_offering_registrations "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
@@ -104,6 +104,15 @@ function ciniki_courses_offeringRegistrationDelete(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
         return $rc;
+    }
+
+    //
+    // Update the notification queue
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+    $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $args['tnid'], $registration['offering_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.259', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
     }
 
     //

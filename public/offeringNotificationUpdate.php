@@ -26,6 +26,8 @@ function ciniki_courses_offeringNotificationUpdate(&$ciniki) {
         'time_of_day'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Time of Day'),
         'subject'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subject'),
         'content'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Content'),
+        'form_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Form Label'),
+        'form_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Form'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -41,6 +43,29 @@ function ciniki_courses_offeringNotificationUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+
+    //
+    // Get the current notification
+    //
+    $strsql = "SELECT notifications.id, "
+        . "notifications.offering_id, "
+        . "notifications.name, "
+        . "notifications.ntrigger, "
+        . "notifications.ntype, "
+        . "notifications.offset_days, "
+        . "notifications.status "
+        . "FROM ciniki_course_offering_notifications AS notifications "
+        . "WHERE notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND notifications.id = '" . ciniki_core_dbQuote($ciniki, $args['notification_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'notification');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.239', 'msg'=>'Unable to load notification', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['notification']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.240', 'msg'=>'Unable to find requested notification'));
+    }
+    $notification = $rc['notification'];
 
     //
     // Start transaction
@@ -62,6 +87,16 @@ function ciniki_courses_offeringNotificationUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
         return $rc;
+    }
+
+    //
+    // Update the notification queue
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+    $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $args['tnid'], $notification['offering_id']);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.248', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
     }
 
     //

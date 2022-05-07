@@ -301,9 +301,11 @@ function ciniki_courses_main() {
             'addTxt':'Add Notification',
             'addFn':'M.ciniki_courses_main.notification.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);',
             },
-        'nqueue':{'label':'Notification Queue', 'type':'simplegrid', 'num_cols':4,
+        'nqueue':{'label':'Notification Queue', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'notifications' ? 'yes' : 'hidden';},
-            'headerValues':['Customer', 'Date', 'Time', 'Subject'],
+            'headerValues':['Date', 'Customer', 'Subject'],
+            'sortable':'yes',
+            'sortTypes':['date', 'text', 'text'],
             'cellClasses':['multiline', '', '', ''],
             'noData':'No notifications queued',
             },
@@ -384,13 +386,12 @@ function ciniki_courses_main() {
         } 
         if( s == 'nqueue' ) {
             switch(j) {
-                case 0: if( d.student_id > 0 ) {
+                case 0: return M.multiline(d.date_text, d.time_text);
+                case 1: if( d.student_id > 0 && d.student_id != d.customer_id ) {
                     return M.multiline(d.student_name, d.customer_name);
                     }
                     return d.customer_name;
-                case 1: return d.date_text;
-                case 2: return d.time_text;
-                case 3: return d.subject;
+                case 2: return d.subject;
             }
         } 
     }
@@ -416,6 +417,7 @@ function ciniki_courses_main() {
         if( s == 'notifications' ) {
             return 'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.notification.open(\'M.ciniki_courses_main.offering.open();\',\'' + d.id + '\',M.ciniki_courses_main.offering.offering_id);");';
         }
+        return '';
     }
     this.offering.addReg = function(p) {
         M.startApp('ciniki.courses.sapos',null,'M.ciniki_courses_main.offering.open();','mc',{
@@ -2057,9 +2059,12 @@ function ciniki_courses_main() {
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'ntrigger':{'label':'Trigger', 'required':'yes', 'type':'select', 'options':{
                 '20':'Payment Received',
-                //'40':'After Payment Received', **future**
-//                '60':'Session Start', **future**
-//                '90':'Session End', **future**
+                '60':'Session Start',
+                '80':'Session End',
+                '90':'Each Class',
+                '94':'First Class',
+                '95':'Last Class',
+                '96':'Other Classes (not first or last)',
                 },
                 'onchange':'M.ciniki_courses_main.notification.updateForm',
                 },
@@ -2068,6 +2073,9 @@ function ciniki_courses_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'0':'Inactive', '10':'Require Approval', '20':'Auto Send'}},
             'time_of_day':{'label':'Time of Day', 'visible':'yes', 'type':'text', 'size':'small'},
             }},
+//        '_form':{'label':'Attach Form', 'fields':{
+//            'form_id':{'label':'Form', 'hidelabel':'yes', 'type':'select', 'options':{}},
+//            }},
         '_subject':{'label':'Subject', 'fields':{
             'subject':{'label':'Subject', 'hidelabel':'yes', 'type':'text'},
             }},
@@ -2169,6 +2177,7 @@ function ciniki_courses_main() {
                 'html':'The following substitutions are available in the subject and content:<br/><br/>'
                     + '{_firstname_} = Customer or Student first name<br/>'
                     + '{_lastname_} = Customer or Student last name<br/>'
+//                    + '{_formlink_} = Link to Form below<br/>'
                     },
             };
     }

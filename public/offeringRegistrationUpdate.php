@@ -142,6 +142,16 @@ function ciniki_courses_offeringRegistrationUpdate(&$ciniki) {
     ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
 
     //
+    // Update the notification queue
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+    $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $args['tnid'], $offering['id']);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.261', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
+    }
+
+    //
     // Update the invoice item
     //
     if( isset($args['item_id']) && $args['item_id'] > 0 ) {

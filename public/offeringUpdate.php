@@ -112,6 +112,15 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
     }
 
     //
+    // Update the notification queue
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+    $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $args['tnid'], $args['offering_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.258', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
+    }
+
+    //
     // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //

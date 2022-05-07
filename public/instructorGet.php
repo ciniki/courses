@@ -52,7 +52,7 @@ function ciniki_courses_instructorGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'formSubmissionParse');
         $rc = ciniki_courses_formSubmissionParse($ciniki, $args['tnid'], $args['form_submission_id']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.222', 'msg'=>'Unable to load form submission', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.232', 'msg'=>'Unable to load form submission', 'err'=>$rc['err']));
         }
         $form_instructor = isset($rc['instructor']) ? $rc['instructor'] : array();
     }

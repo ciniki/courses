@@ -252,6 +252,8 @@ function ciniki_courses_objects($ciniki) {
             'time_of_day'=>array('name'=>'Time of Day', 'default'=>''),
             'subject'=>array('name'=>'Subject', 'default'=>''),
             'content'=>array('name'=>'Content'),
+            'form_label'=>array('name'=>'Form Label', 'default'=>''),
+            'form_id'=>array('name'=>'Form', 'ref'=>'ciniki.forms.form', 'default'=>0),
             ),
         'history_table'=>'ciniki_course_history',
         );
@@ -262,9 +264,10 @@ function ciniki_courses_objects($ciniki) {
         'o_container'=>'queue',
         'table'=>'ciniki_course_offering_nqueue',
         'fields'=>array(
-            'scheduled_dt'=>array('name'=>'Scheduled Date/Time'),
             'notification_id'=>array('name'=>'Notification', 'ref'=>'ciniki.courses.offering_notification'),
             'registration_id'=>array('name'=>'Registration', 'ref'=>'ciniki.courses.offering_registration'),
+            'class_id'=>array('name'=>'Class', 'ref'=>'ciniki.courses.offering_class'),
+            'scheduled_dt'=>array('name'=>'Scheduled Date/Time'),
             ),
         'history_table'=>'ciniki_course_history',
         );

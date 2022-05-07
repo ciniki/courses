@@ -93,6 +93,15 @@ function ciniki_courses_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.163', 'msg'=>'Unable to update', 'err'=>$rc['err']));
         }
 
+        //
+        // Update notification queue
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+        $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $tnid, $offering['id']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.251', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
+        }
+
         return array('stat'=>'ok', 'object'=>'ciniki.courses.offering_registration', 'object_id'=>$reg_id);
     }
 
@@ -173,6 +182,15 @@ function ciniki_courses_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.164', 'msg'=>'Unable to update', 'err'=>$rc['err']));
         }
 
+        //
+        // Update notification queue
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+        $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $tnid, $offering['id']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.252', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
+        }
+
         return array('stat'=>'ok', 'object'=>'ciniki.courses.offering_registration', 'object_id'=>$reg_id);
     }
 
@@ -216,6 +234,15 @@ function ciniki_courses_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
             $rc = ciniki_courses_offeringSoldOutUpdate($ciniki, $tnid, $registration['id']);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.165', 'msg'=>'Unable to update', 'err'=>$rc['err']));
+            }
+
+            //
+            // Update notification queue
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+            $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $tnid, $registration['offering_id']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.253', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
             }
 
             return array('stat'=>'ok');

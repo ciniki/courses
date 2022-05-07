@@ -2,9 +2,10 @@
 //
 // Description
 // -----------
-// This function will send a notification for a offering to a customer
-// 
-// **NOTE**: This function is designed to send payment received notifications ONLY!!!!
+// This function will send a notification for a offering to a customer.
+//
+// When sending a payment received notification, pass the argument ntrigger,
+// or to send a nqueue notification from cron, pass notification_id.
 //
 // Arguments
 // ---------
@@ -25,8 +26,6 @@ function ciniki_courses_offeringNotificationSend(&$ciniki, $tnid, $args) {
     if( !isset($args['offering_id']) || $args['offering_id'] == '' || $args['offering_id'] < 1 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.174', 'msg'=>'No offering specified'));
     }
-    if( !isset($args['ntrigger']) || $args['ntrigger'] == '' || $args['ntrigger'] < 1 ) { return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.187', 'msg'=>'No trigger specified'));
-    }
 
     //
     // Check for any notifications for the offering and trigger
@@ -38,8 +37,23 @@ function ciniki_courses_offeringNotificationSend(&$ciniki, $tnid, $args) {
         . "notifications.content "
         . "FROM ciniki_course_offering_notifications AS notifications "
         . "WHERE notifications.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-        . "AND notifications.ntrigger = '" . ciniki_core_dbQuote($ciniki, $args['ntrigger']) . "' "
-        . "AND notifications.ntype = 10 "
+        . "";
+    //
+    // Check if payment requested ntrigger is set
+    //
+    if( isset($args['ntrigger']) && $args['ntrigger'] != '' && $args['ntrigger'] > 0 ) {
+        $strsql .= "AND notifications.ntrigger = '" . ciniki_core_dbQuote($ciniki, $args['ntrigger']) . "' ";
+    } 
+    //
+    // Check if notification_id is specifed, from cron nqueue processing
+    //
+    elseif( isset($args['notification_id']) && $args['notification_id'] > 0 ) {
+        $strsql .= "AND notifications.id = '" . ciniki_core_dbQuote($ciniki, $args['notification_id']) . "' ";
+    }
+    else {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.187', 'msg'=>'No trigger or notification specified'));
+    }
+    $strsql .= "AND notifications.ntype = 10 "
         . "AND notifications.status > 0 "
         . "AND notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
@@ -119,6 +133,8 @@ function ciniki_courses_offeringNotificationSend(&$ciniki, $tnid, $args) {
                 'customer_id' => $args['customer_id'],
                 'customer_name' => $customer_name,
                 'customer_email' => $email,
+                'object' => 'ciniki.courses.offering',
+                'object_id' => $args['offering_id'],
                 'status' => ($notification['status'] == 20 ? 10 : 7),
                 'subject' => $notification['subject'],
                 'html_content' => $notification['content'],

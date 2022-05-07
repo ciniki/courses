@@ -119,6 +119,15 @@ function ciniki_courses_courseUpdate(&$ciniki) {
     if( isset($rc['rows']) ) {
         foreach($rc['rows'] as $row) {
             //
+            // Update notification queue for each offering
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+            $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $args['tnid'], $row['id']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.260', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
+            }
+
+            //
             // Update the web index if enabled
             //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');

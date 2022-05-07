@@ -61,7 +61,7 @@ function ciniki_courses_instructorUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.223', 'msg'=>'This customer is already setup as an instructor.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.231', 'msg'=>'This customer is already setup as an instructor.'));
         }
         
     }

@@ -53,11 +53,23 @@ function ciniki_courses_offeringClassAdd(&$ciniki) {
         return $rc;
     }
     $class_id = $rc['id'];
-
+    
+    //
+    // Update the condensed date for the offering
+    //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'updateCondensedDate');
     $rc = ciniki_courses_updateCondensedDate($ciniki, $args['tnid'], $args['offering_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Update the notification queue
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'private', 'offeringNQueueUpdate');
+    $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $args['tnid'], $args['offering_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.256', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
     }
 
     return array('stat'=>'ok', 'id'=>$class_id);
