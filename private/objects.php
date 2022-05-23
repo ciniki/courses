@@ -133,6 +133,7 @@ function ciniki_courses_objects($ciniki) {
             'content'=>array('name'=>'Content', 'default'=>''),
             'materials_list'=>array('name'=>'Materials List', 'default'=>''),
             'paid_content'=>array('name'=>'Paid Content', 'default'=>''),
+            'form_id'=>array('name'=>'Required Form', 'ref'=>'ciniki.forms.form', 'default'=>0),
             ),
         'history_table'=>'ciniki_course_history',
         );

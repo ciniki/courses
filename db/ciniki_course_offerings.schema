@@ -47,6 +47,8 @@
 # materials_list:   The materials list for the course.
 # paid_content:     The content available once paid.
 #
+# form_id:          The ID of the registration form that must be filled out upon checkout.
+#
 # date_added:       The UTC date and time the record was added.
 # last_updated:     The UTC date and time the record was last changed;
 #
@@ -70,6 +72,7 @@ CREATE TABLE ciniki_course_offerings (
     content text not null,
     materials_list text not null,
     paid_content text not null,
+    form_id int not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),

@@ -93,6 +93,7 @@ function ciniki_courses_offeringGet($ciniki) {
             'content' => '',
             'materials_list' => '',
             'paid_content' => '',
+            'form_id' => 0,
             );
         if( isset($args['course_id']) ) {
             $strsql = "SELECT flags "
@@ -113,7 +114,8 @@ function ciniki_courses_offeringGet($ciniki) {
             $strsql = "SELECT offerings.id, "
                 . "offerings.name, "
                 . "offerings.reg_flags, "
-                . "offerings.num_seats "
+                . "offerings.num_seats, "
+                . "offerings.form_id "
                 . "FROM ciniki_course_offerings AS offerings "
                 . "WHERE offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['copy_offering_id']) . "' "
                 . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -126,6 +128,7 @@ function ciniki_courses_offeringGet($ciniki) {
                 $offering['name'] = $rc['offering']['name'];
                 $offering['reg_flags'] = $rc['offering']['reg_flags'];
                 $offering['num_seats'] = $rc['offering']['num_seats'];
+                $offering['form_id'] = $rc['offering']['form_id'];
             }
         }
     } 
@@ -151,6 +154,7 @@ function ciniki_courses_offeringGet($ciniki) {
             . "ciniki_course_offerings.content, "
             . "ciniki_course_offerings.materials_list, "
             . "ciniki_course_offerings.paid_content, "
+            . "ciniki_course_offerings.form_id, "
             . "IF((ciniki_course_offerings.webflags&0x01)=1,'Hidden', 'Visible') AS web_visible, "
             . "ciniki_courses.name AS course_name, "
             . "ciniki_courses.code AS course_code, "
@@ -176,7 +180,7 @@ function ciniki_courses_offeringGet($ciniki) {
             array('container'=>'offerings', 'fname'=>'id',
                 'fields'=>array('id', 'name', 'code', 'permalink', 'status', 'status_text', 
                     'reg_flags', 'num_seats', 'start_date', 'end_date', 'condensed_date', 'webflags', 'web_visible', 
-                    'primary_image_id', 'synopsis', 'content', 'materials_list', 'paid_content',
+                    'primary_image_id', 'synopsis', 'content', 'materials_list', 'paid_content', 'form_id',
                     'course_id', 'course_status', 'course_name', 'course_code', 'course_flags',
                     'level', 'type', 'category', 'flags', 'short_description', 'long_description',
                     ),
@@ -340,15 +344,24 @@ function ciniki_courses_offeringGet($ciniki) {
             . "ciniki_course_offering_registrations.student_id, "
             . "IFNULL(c1.display_name, '') AS customer_name, "
             . "IFNULL(c2.display_name, '') AS student_name, "
-            . "IFNULL(c2.display_name, IFNULL(c1.display_name, '')) AS sort_name, "
+            . "IFNULL(c1.display_name, '') AS sort_name, "
+// Change sorting to be based on parent name, then groups children May 23, 2022
+//            . "IFNULL(c2.display_name, IFNULL(c1.display_name, '')) AS sort_name, "
             . "IFNULL(TIMESTAMPDIFF(YEAR, c2.birthdate, CURDATE()), '') AS yearsold, "
             . "ciniki_course_offering_registrations.num_seats, "
             . "ciniki_course_offering_registrations.invoice_id, "
             . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status, "
             . "IFNULL(ciniki_sapos_invoices.payment_status, 0) AS invoice_status_text, "
             . "IFNULL(ciniki_sapos_invoice_items.total_amount, 0) AS registration_amount, "
-            . "IFNULL(prices.name, '') AS price_name "
-            . "FROM ciniki_course_offering_registrations "
+            . "IFNULL(prices.name, '') AS price_name ";
+        if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') ) {
+            $strsql .= ", IFNULL(submissions.id, 0) AS submission_id, "
+                . "IFNULL(submissions.status, 0) AS submission_status ";
+        } else {
+            $strsql .= ", '0' AS submission_id, "
+                . ", '0' AS submission_status ";
+        }
+        $strsql .= "FROM ciniki_course_offering_registrations "
             . "LEFT JOIN ciniki_customers AS c1 ON ("
                 . "ciniki_course_offering_registrations.customer_id = c1.id "
                 . "AND c1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -370,8 +383,15 @@ function ciniki_courses_offeringGet($ciniki) {
             . "LEFT JOIN ciniki_course_offering_prices AS prices ON ("
                 . "ciniki_sapos_invoice_items.price_id = prices.id "
                 . "AND prices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "WHERE ciniki_course_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") ";
+        if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') ) {
+            $strsql .= "LEFT JOIN ciniki_form_submissions AS submissions ON ("
+                . "ciniki_course_offering_registrations.student_id = submissions.customer_id "
+                . "AND submissions.form_id = '" . ciniki_core_dbQuote($ciniki, $offering['form_id']) . "' "
+                . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") ";
+        }
+        $strsql .= "WHERE ciniki_course_offering_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_offering_registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
             . "ORDER BY sort_name "
             . "";
@@ -379,7 +399,8 @@ function ciniki_courses_offeringGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'customer_id', 'customer_name', 'student_name', 'yearsold', 'num_seats', 
-                    'invoice_id', 'invoice_status', 'invoice_status_text', 'registration_amount', 'price_name'),
+                    'invoice_id', 'invoice_status', 'invoice_status_text', 'registration_amount', 'price_name', 
+                    'submission_id', 'submission_status'),
                 'naprices'=>array('registration_amount'),
                 'maps'=>array('invoice_status_text'=>$status_maps)),
             ));
@@ -510,6 +531,8 @@ function ciniki_courses_offeringGet($ciniki) {
         }
     }
 
+    $rsp = array('stat'=>'ok', 'offering'=>$offering);
+
     //
     // Return the list of courses
     //
@@ -530,9 +553,20 @@ function ciniki_courses_offeringGet($ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.146', 'msg'=>'Unable to load courses', 'err'=>$rc['err']));
     }
-    $courses = isset($rc['courses']) ? $rc['courses'] : array();
+    $rsp['courses'] = isset($rc['courses']) ? $rc['courses'] : array();
 
-    
-    return array('stat'=>'ok', 'offering'=>$offering, 'courses'=>$courses);
+    //
+    // Return the list of forms available
+    //
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'hooks', 'formList');
+        $rc = ciniki_forms_hooks_formList($ciniki, $args['tnid'], array());
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.262', 'msg'=>'Unable to get list of forms', 'err'=>$rc['err']));
+        }
+        $rsp['forms'] = isset($rc['forms']) ? $rc['forms'] : array();
+    }
+
+    return $rsp;
 }
 ?>

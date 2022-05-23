@@ -82,7 +82,8 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
         . "ciniki_courses.category, "
         . "ciniki_courses.short_description, "
         . "ciniki_courses.long_description, "
-        . "ciniki_course_offerings.condensed_date "
+        . "ciniki_course_offerings.condensed_date, "
+        . "ciniki_course_offerings.form_id "
         . "FROM ciniki_course_offerings, ciniki_courses "
         . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_course_offerings.id = '" . ciniki_core_dbQuote($ciniki, $registration['offering_id']) . "' "
@@ -98,6 +99,7 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
     }
     $registration['course_name'] = ($rc['course']['code'] !=''?$rc['course']['code'] . ' - ':'') . $rc['course']['name'];
     $registration['course_dates'] = $rc['course']['condensed_date'];
+    $registration['form_id'] = $rc['course']['form_id'];
 
     //
     // If include customer information
@@ -122,6 +124,47 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
             return $rc;
         }
         $registration['student_details'] = $rc['details'];
+    }
+
+    //
+    // Check if form status required
+    //
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') && $registration['form_id'] > 0 ) {
+        $registration['submission_id'] = 0;
+        $registration['submission_status'] = '';
+        $registration['submission_date'] = '';
+        //
+        // Check if form detail required
+        //
+        $strsql = "SELECT id, status, "
+            . "DATE_FORMAT(dt_last_submitted, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS dt_last_submitted "
+            . "FROM ciniki_form_submissions AS submissions "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $registration['student_id']) . "' "
+            . "AND form_id = '" . ciniki_core_dbQuote($ciniki, $registration['form_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'submission');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.266', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        }
+        if( isset($rc['submission']) ) {
+            $registration['submission_id'] = $rc['submission']['id'];
+            $registration['submission_status'] = $rc['submission']['status'];
+            $registration['submission_date'] = $rc['submission']['dt_last_submitted'];
+        }
+        if( $registration['submission_status'] == 90 ) {
+            $registration['student_details'][] = array('detail' => array(
+                'label' => 'Student Information',
+                'value' => 'Submitted ' . $registration['submission_date'],
+                'submission_id' => $registration['submission_id'],
+                ));
+        } else {
+            $registration['student_details'][] = array('detail' => array(
+                'label' => 'Student Information',
+                'value' => 'Required',
+                'submission_id' => $registration['submission_id'],
+                ));
+        }
     }
 
 /*  //

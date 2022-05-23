@@ -26,6 +26,7 @@ function ciniki_courses_sapos_itemLookup($ciniki, $tnid, $args) {
         $strsql = "SELECT ciniki_course_offerings.id, "
             . "ciniki_course_offerings.code AS offering_code, "
             . "ciniki_course_offerings.condensed_date, "
+            . "ciniki_course_offerings.form_id, "
             . "ciniki_course_offering_prices.name AS price_name, "
             . "ciniki_course_offering_prices.unit_amount, "
             . "ciniki_course_offering_prices.unit_discount_amount, "
@@ -68,6 +69,7 @@ function ciniki_courses_sapos_itemLookup($ciniki, $tnid, $args) {
             'unit_discount_percentage'=>$offering['unit_discount_percentage'],
             'shipped_quantity'=>0,
             'taxtype_id'=>$offering['taxtype_id'], 
+            'form_id'=>$offering['form_id'], 
             'registrations_available'=>0,
             );
         // Flags: No Quantity, Registration Item

@@ -134,6 +134,9 @@ function ciniki_courses_sapos() {
                 return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_courses_sapos.registrationEdit();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});'; 
             }
             if( s == 'student_details' ) {
+                if( d.detail.submission_id > 0 ) {
+                    return 'M.startApp(\'ciniki.forms.main\',null,\'M.ciniki_courses_sapos.registrationEdit();\',\'mc\',{\'submission_id\':\'' + d.detail.submission_id + '\'});';
+                }
                 return '';
             }
             if( s == 'alternate_courses' ) {

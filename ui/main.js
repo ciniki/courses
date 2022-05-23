@@ -184,8 +184,12 @@ function ciniki_courses_main() {
                 '2':{'name':'Online Registrations'},
                 '4':{'name':'Sold Out'},
                 }},
-            'num_seats':{'label':'Number of Seats', 'type':'text', 'size':'small'},
+            'num_seats':{'label':'# Seats', 'type':'text', 'size':'small'},
             'seats_sold':{'label':'Seats Sold', 'type':'text', 'editable':'no'},
+            'form_id':{'label':'Form', 'type':'select', 'options':{}, 
+                'visible':function() { return M.modOn('ciniki.forms') ? 'yes' : 'no'; },
+                'complex_options':{'value':'id', 'name':'name'},
+                },
             }},
         '_actions':{'label':'', 'aside':'yes', 'size':'half', 'buttons':{
             'registrationspdf':{'label':'Class List (PDF)', 'fn':'M.ciniki_courses_main.offering.registrationsPDF();'},
@@ -236,11 +240,11 @@ function ciniki_courses_main() {
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3, 
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden';},
             'noData':'No Registrations',
-            'headerValues':['Name', 'Student', 'Age', 'Paid', 'Price', 'Amount'],
-            'headerClasses':['', '', '', 'alignright', 'alignright', 'alignright'],
-            'cellClasses':['', '', '', 'alignright', 'alignright', 'alignright'],
+            'headerValues':['Name', 'Student', 'Age', 'Paid', 'Price', 'Amount', 'Form'],
+            'headerClasses':['', '', '', 'alignright', 'alignright', 'alignright', 'alignright'],
+            'cellClasses':['', '', '', 'alignright', 'alignright', 'alignright', 'alignright'],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'number', 'text', 'text', 'number'],
+            'sortTypes':['text', 'text', 'number', 'text', 'text', 'number', 'text'],
             },
         'messages':{'label':'Emails', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'emails' ? 'yes' : 'hidden';},
@@ -350,6 +354,13 @@ function ciniki_courses_main() {
             }
         }
         if( s == 'registrations' ) {
+            if( j == 6 ) {
+                if( M.ciniki_courses_main.offering.data.form_id > 0 ) {
+                    return d.submission_status == 90 ? 'Yes' : (d.submission_id > 0 ? 'N/C' : '');
+                } else {
+                    return 'N/A';
+                }
+            }
             switch(j) {
                 case 0: return d.customer_name;
                 case 1: return d.student_name;
@@ -357,6 +368,7 @@ function ciniki_courses_main() {
                 case 3: return d.invoice_status_text;
                 case 4: return d.price_name;
                 case 5: return d.registration_amount;
+                case 6: return d.submission_status == 90 ? 'Yes' : 'No';
             }
         } 
         if( s == 'messages' ) {
@@ -394,6 +406,11 @@ function ciniki_courses_main() {
                 case 2: return d.subject;
             }
         } 
+    }
+    this.offering.cellFn = function(s, i, j, d) {
+        if( s == 'registrations' && j == 6 && d.submission_id > 0 ) {
+            return 'event.stopPropagation();M.startApp(\'ciniki.forms.main\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'submission_id\':\'' + d.submission_id + '\'});';
+        }
     }
     this.offering.rowFn = function(s, i, d) {
         if( s == 'prices' ) {
@@ -502,6 +519,19 @@ function ciniki_courses_main() {
                 p.sections.general.fields.end_date.editable = 'yes';
             }
             p.sections.general.fields.course_id.options = rsp.courses;
+            p.sections._reg.fields.form_id.options = [{'id':0, 'name':'None'}];
+            if( M.modOn('ciniki.forms') && rsp.forms != null ) {
+                p.sections._reg.fields.form_id.options = rsp.forms;
+                p.sections._reg.fields.form_id.options.unshift({'id':0, 'name':'None'});
+            }
+            if( M.modOn('ciniki.sapos') ) {
+                p.sections.registrations.num_cols = 6;
+                if( M.modOn('ciniki.forms') && rsp.offering.form_id > 0 ) {
+                    p.sections.registrations.num_cols = 7;
+                }
+            } else {
+                p.sections.registrations.num_cols = 3;
+            }
             p.refresh();
             p.show(cb);
         });
@@ -615,6 +645,10 @@ function ciniki_courses_main() {
         '_reg':{'label':'Registration Options', 'fields':{
             'reg_flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Track Registrations'},'2':{'name':'Online Registrations'}}},
             'num_seats':{'label':'Number of Seats', 'type':'text', 'size':'small'},
+            'form_id':{'label':'Form', 'type':'select', 'options':{}, 
+                'visible':function() { return M.modOn('ciniki.forms') ? 'yes' : 'no'; },
+                'complex_options':{'value':'id', 'name':'name'},
+                },
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_courses_main.offeringadd.save();'},
@@ -639,6 +673,11 @@ function ciniki_courses_main() {
 //                p.data.course_id = cid;
 //            }
             p.sections.general.fields.course_id.options = rsp.courses;
+            p.sections._reg.fields.form_id.options = [{'id':0, 'name':'None'}];
+            if( M.modOn('ciniki.forms') && rsp.forms != null ) {
+                p.sections._reg.fields.form_id.options = rsp.forms;
+                p.sections._reg.fields.form_id.options.unshift({'id':0, 'name':'None'});
+            }
             p.refresh();
             p.show(cb);
         });
@@ -2449,6 +2488,9 @@ function ciniki_courses_main() {
         //
         if( M.modOn('ciniki.sapos') ) {
             this.offering.sections.registrations.num_cols = 6;
+            if( M.modOn('ciniki.forms') ) {
+                this.offering.sections.registrations.num_cols = 7;
+            }
         } else {
             this.offering.sections.registrations.num_cols = 3;
         }

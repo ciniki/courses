@@ -28,6 +28,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
             . "CONCAT_WS(' - ', ciniki_courses.name, ciniki_course_offerings.name) AS description, "
             . "ciniki_course_offerings.reg_flags, "
             . "ciniki_course_offerings.num_seats, "
+            . "ciniki_course_offerings.form_id, "
             . "ciniki_course_offering_prices.id AS price_id, "
             . "ciniki_course_offering_prices.name AS price_name, "
             . "ciniki_course_offering_prices.available_to, "
@@ -51,7 +52,8 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'offerings', 'fname'=>'offering_id',
-                'fields'=>array('offering_id', 'price_id', 'price_name', 'code', 'course_code', 'offering_id', 'description', 'reg_flags', 'num_seats', 
+                'fields'=>array('offering_id', 'price_id', 'price_name', 'code', 'course_code', 
+                    'offering_id', 'description', 'reg_flags', 'num_seats', 'form_id',
                     'available_to', 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id',
                     )),
             ));

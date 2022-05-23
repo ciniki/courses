@@ -20,9 +20,15 @@ function ciniki_courses_wng_accountRequestProcess(&$ciniki, $tnid, &$request, $i
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.196', 'msg'=>'Must be logged in'));
     }
 
-    if( $item['ref'] == 'ciniki.courses.offering' ) {
+    if( $item['ref'] == 'ciniki.courses.registrations' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'wng', 'accountRegistrationsProcess');
+        return ciniki_courses_wng_accountRegistrationsProcess($ciniki, $tnid, $request, $item);
+    } elseif( $item['ref'] == 'ciniki.courses.offering' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'wng', 'accountOfferingProcess');
         return ciniki_courses_wng_accountOfferingProcess($ciniki, $tnid, $request, $item);
+    } elseif( $item['ref'] == 'ciniki.courses.registration_form' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'wng', 'accountRegistrationFormProcess');
+        return ciniki_courses_wng_accountRegistrationFormProcess($ciniki, $tnid, $request, $item);
     }
     
 

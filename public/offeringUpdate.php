@@ -37,6 +37,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
         'materials_list'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Materials List'), 
         'paid_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Paid Content'),
+        'form_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Required Form'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

@@ -18,6 +18,33 @@ function ciniki_courses_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
     $base_url = isset($args['base_url']) ? $args['base_url'] : '';
 
     //
+    // Check if the customer is or has been registered for any courses
+    //
+    $strsql = "SELECT COUNT(*) AS registrations "
+        . "FROM ciniki_course_offering_registrations "
+        . "WHERE ("
+            . "customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "OR student_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . ") "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.courses', 'num');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.263', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+    }
+    if( isset($rc['num']) && $rc['num'] > 0 ) {
+        $items[] = array(
+            'title' => 'Program Registrations', 
+            'priority' => 550, 
+            'selected' => 'no',
+            'ref' => 'ciniki.courses.registrations',
+            'url' => $base_url . '/programs',
+            );
+    }
+/*
+*** This might be useful if people prefer dropdown of only registered courses ***
+    //
     // Get the list of open/timeless course offerings the customer has paid for and there is paid content
     //
     $strsql = "SELECT courses.id AS course_id, "
@@ -51,8 +78,10 @@ function ciniki_courses_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
-        array('container'=>'offerings', 'fname'=>'offering_id', 'fields'=>array('course_id', 'course_name', 'course_permalink',
-            'offering_id', 'offering_name', 'offering_permalink')),
+        array('container'=>'offerings', 'fname'=>'offering_id', 
+            'fields'=>array('course_id', 'course_name', 'course_permalink',
+                'offering_id', 'offering_name', 'offering_permalink'),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.194', 'msg'=>'Unable to load programs', 'err'=>$rc['err']));
@@ -67,12 +96,13 @@ function ciniki_courses_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
     if( count($offerings) > 0 ) {
         $items[] = array(
             'title' => 'Programs', 
-            'priority' => 850, 
+            'priority' => 950, 
             'selected' => 'no',
             'items' => $offerings,
             );
     }
 
+*/
     return array('stat'=>'ok', 'items'=>$items);
 }
 ?>

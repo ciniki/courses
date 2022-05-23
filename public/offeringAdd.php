@@ -49,6 +49,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
         'materials_list'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Materials List'), 
         'paid_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Paid Content'),
+        'form_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Required Form'),
         ));
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -108,7 +109,8 @@ function ciniki_courses_offeringAdd(&$ciniki) {
             . "offerings.primary_image_id, "
             . "offerings.synopsis, "
             . "offerings.content, "
-            . "offerings.paid_content "
+            . "offerings.paid_content, "
+            . "offerings.form_id "
             . "FROM ciniki_course_offerings AS offerings "
             . "WHERE offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['copy_offering_id']) . "' "
             . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -130,6 +132,9 @@ function ciniki_courses_offeringAdd(&$ciniki) {
             }
             if( !isset($args['paid_content']) ) {
                 $args['paid_content'] = $rc['offering']['paid_content'];
+            }
+            if( !isset($args['form_id']) ) {
+                $args['form_id'] = $rc['offering']['form_id'];
             }
             //
             // Load offering prices

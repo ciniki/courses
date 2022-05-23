@@ -14,19 +14,19 @@ function ciniki_courses_wng_accountOfferingProcess(&$ciniki, $tnid, &$request, $
 
     $blocks = array();
 
-    if( !isset($item['ref']) ) {
+/*    if( !isset($item['ref']) ) {
         return array('stat'=>'ok', 'blocks'=>array(array(
             'type' => 'msg', 
             'level' => 'error',
             'content' => "Request error, please contact us for help.."
             )));
     }
-
+*/
     if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
         return array('stat'=>'ok', 'blocks'=>array(array(
             'type' => 'msg', 
             'level' => 'error',
-            'content' => "You must be logged in to vote."
+            'content' => "You must be logged in to view this program."
             )));
     }
 
@@ -49,7 +49,7 @@ function ciniki_courses_wng_accountOfferingProcess(&$ciniki, $tnid, &$request, $
         . "courses.name AS course_name, "
         . "courses.permalink AS course_permalink, "
         . "courses.primary_image_id AS course_image_id, "
-//        . "courses.paid_content AS course_paid_content, "
+        . "courses.paid_content AS course_paid_content, "
         . "offerings.id AS offering_id, "
         . "offerings.name AS offering_name, "
         . "offerings.permalink AS offering_permalink, "
@@ -163,6 +163,98 @@ function ciniki_courses_wng_accountOfferingProcess(&$ciniki, $tnid, &$request, $
         }
 
         //
+        // Check for a file download request
+        //
+        if( isset($request['args']['download']) ) {
+            $file_permalink = $request['args']['download'];
+            if( isset($offering['files'][$file_permalink]) ) {
+                $file = $offering['files'][$file_permalink];
+            }
+            elseif( isset($offering['paid_content_files'][$file_permalink]) ) {
+                $file = $offering['paid_content_files'][$file_permalink];
+            } 
+            else {
+                $blocks[] = array(
+                    'type' => 'msg', 
+                    'class' => 'error',
+                    'content' => 'Unable to find requested file',
+                    );
+            }
+            if( isset($file) ) {
+                //
+                // Get the tenant storage directory
+                //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+                $rc = ciniki_tenants_hooks_storageDir($ciniki, $tnid, array());
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $storage_filename = $rc['storage_dir'] . '/ciniki.courses/files/' . $file['uuid'][0] . '/' . $file['uuid'];
+
+                //
+                // Get the storage filename
+                //
+                if( !file_exists($storage_filename) ) {
+                    $blocks[] = array(
+                        'type' => 'msg', 
+                        'class' => 'error',
+                        'content' => 'Unable to find requested file',
+                        );
+                } else {
+                    $binary_content = file_get_contents($storage_filename);    
+                    header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+                    header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+                    header('Cache-Control: no-cache, must-revalidate');
+                    header('Pragma: no-cache');
+                    if( $file['extension'] == 'pdf' ) {
+                        header('Content-Type: application/pdf');
+                    }
+                    header('Content-Length: ' . strlen($binary_content));
+                    header('Cache-Control: max-age=0');
+
+                    print $binary_content;
+                    exit;
+                }
+            }
+        } 
+    }
+
+    //
+    // Load and process course images
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0200) ) {
+        //
+        // Load course images
+        //
+        $strsql = "SELECT images.id, "
+            . "images.name, "
+            . "images.permalink, "
+            . "images.flags, "
+            . "images.image_id, "
+            . "images.description "
+            . "FROM ciniki_course_images AS images "
+            . "WHERE images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND images.course_id = '" . ciniki_core_dbQuote($ciniki, $offering['course_id']) . "' "
+            . "AND (images.flags&0x01) = 0x01 "    // Visible
+            . "ORDER BY images.name "
+            . "";
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
+            array('container'=>'images', 'fname'=>'id', 
+                'fields'=>array('id', 'title'=>'name', 'permalink', 'flags', 'image_id', 'description')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['images']) ) {
+            foreach($rc['images'] as $image) {
+                if( ($image['flags']&0x10) == 0x10 ) {
+                    $offering['paid_content_images'][$image['permalink']] = $image;
+                } else {
+                    $offering['images'][$image['permalink']] = $image;
+                }
+            }
+        }
+        //
         // Load offering images
         //
         $strsql = "SELECT images.id, "
@@ -179,7 +271,7 @@ function ciniki_courses_wng_accountOfferingProcess(&$ciniki, $tnid, &$request, $
             . "";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'images', 'fname'=>'id', 
-                'fields'=>array('id', 'name', 'permalink', 'flags', 'image_id', 'description')),
+                'fields'=>array('id', 'title'=>'name', 'permalink', 'flags', 'image_id', 'description')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -193,64 +285,54 @@ function ciniki_courses_wng_accountOfferingProcess(&$ciniki, $tnid, &$request, $
                 }
             }
         }
-    }
 
-    //
-    // Check for a file download request
-    //
-    if( isset($request['args']['download']) ) {
-        $file_permalink = $request['args']['download'];
-        if( isset($offering['files'][$file_permalink]) ) {
-            $file = $offering['files'][$file_permalink];
-        }
-        elseif( isset($offering['paid_content_files'][$file_permalink]) ) {
-            $file = $offering['paid_content_files'][$file_permalink];
-        } 
-        else {
-            $blocks[] = array(
-                'type' => 'msg', 
-                'class' => 'error',
-                'content' => 'Unable to find requested file',
-                );
-        }
-        if( isset($file) ) {
-            //
-            // Get the tenant storage directory
-            //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
-            $rc = ciniki_tenants_hooks_storageDir($ciniki, $tnid, array());
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $storage_filename = $rc['storage_dir'] . '/ciniki.courses/files/' . $file['uuid'][0] . '/' . $file['uuid'];
+        if( isset($request['args']['image']) ) {
+            $image_permalink = $request['args']['image'];
 
             //
-            // Get the storage filename
+            // Process next/prev
             //
-            if( !file_exists($storage_filename) ) {
-                $blocks[] = array(
-                    'type' => 'msg', 
-                    'class' => 'error',
-                    'content' => 'Unable to find requested file',
-                    );
-            } else {
-                $binary_content = file_get_contents($storage_filename);    
-                header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-                header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
-                header('Cache-Control: no-cache, must-revalidate');
-                header('Pragma: no-cache');
-                if( $file['extension'] == 'pdf' ) {
-                    header('Content-Type: application/pdf');
+            $prev_url = null;
+            $next_url = null;
+            $first_image = null;
+            $last_image = null;
+            foreach($offering['paid_content_images'] as $image) {
+                if( $image['permalink'] == $image_permalink ) {
+                    $selected_image = $image;
                 }
-                header('Content-Length: ' . strlen($binary_content));
-                header('Cache-Control: max-age=0');
-
-                print $binary_content;
-                exit;
+                if( $first_image == null ) {
+                    $first_image = $image;
+                }
+                if( $last_image != null && isset($selected_image) && $image['permalink'] == $selected_image['permalink'] ) {  
+                    $prev_url = $np_base_url . '?image=' . $last_image['permalink'];
+                }
+                if( $last_image != null && isset($selected_image) && $last_image['permalink'] == $selected_image['permalink'] ) {
+                    $next_url = $np_base_url . '?image=' . $image['permalink'];
+                }
+                $last_image = $image;
             }
-        }
-    } 
+            if( $next_url == null && $last_image != null && count($offering['paid_content_images']) > 1 ) {
+                $next_url = $np_base_url . '?image=' . $first_image['permalink'];
+            }
+            if( $prev_url == null && $last_image != null && count($offering['paid_content_images']) > 1 ) {
+                $prev_url = $np_base_url . '?image=' . $last_image['permalink'];
+            }
 
+            if( isset($selected_image) ) {
+                $blocks[] = array(
+                    'type' => 'image',
+                    'class' => 'limit-width',
+                    'image-id' => $selected_image['image_id'],
+                    'title' => $selected_image['title'],
+                    'prev' => $prev_url,
+                    'next' => $next_url,
+                    'content' => $selected_image['description'],
+                    );
+            }
+            return array('stat'=>'ok', 'clear'=>'yes', 'stop'=>'yes', 'blocks'=>$blocks);
+        }
+    }
+      
   
     //
     // Create the blocks for the page

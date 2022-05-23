@@ -1,0 +1,5 @@
+#
+# Add the fields for a form to be required upon registration
+#
+ALTER TABLE ciniki_course_offerings ADD COLUMN form_id int not null AFTER paid_content;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.07';
