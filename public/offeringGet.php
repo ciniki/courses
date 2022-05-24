@@ -359,7 +359,7 @@ function ciniki_courses_offeringGet($ciniki) {
                 . "IFNULL(submissions.status, 0) AS submission_status ";
         } else {
             $strsql .= ", '0' AS submission_id, "
-                . ", '0' AS submission_status ";
+                . " '0' AS submission_status ";
         }
         $strsql .= "FROM ciniki_course_offering_registrations "
             . "LEFT JOIN ciniki_customers AS c1 ON ("
