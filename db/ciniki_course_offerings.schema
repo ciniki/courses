@@ -78,4 +78,4 @@ CREATE TABLE ciniki_course_offerings (
     primary key (id),
     index (course_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.06';
+) ENGINE='InnoDB', COMMENT='v1.07';
