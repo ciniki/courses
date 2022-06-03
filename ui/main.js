@@ -310,7 +310,7 @@ function ciniki_courses_main() {
             'headerValues':['Date', 'Customer', 'Subject'],
             'sortable':'yes',
             'sortTypes':['date', 'text', 'text'],
-            'cellClasses':['multiline', '', '', ''],
+            'cellClasses':['multiline', 'multiline', '', ''],
             'noData':'No notifications queued',
             },
         '_buttons':{'label':'', 'buttons':{

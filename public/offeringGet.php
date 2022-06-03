@@ -490,7 +490,7 @@ function ciniki_courses_offeringGet($ciniki) {
                 . "registrations.customer_id, "
                 . "customers.display_name AS customer_name, "
                 . "registrations.student_id, "
-                . "customers.display_name AS student_name, "
+                . "students.display_name AS student_name, "
                 . "notifications.subject "
                 . "FROM ciniki_course_offering_registrations AS registrations "
                 . "INNER JOIN ciniki_course_offering_nqueue AS queue ON ("

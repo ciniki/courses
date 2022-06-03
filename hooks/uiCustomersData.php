@@ -26,19 +26,28 @@ function ciniki_courses_hooks_uiCustomersData($ciniki, $tnid, $args) {
     // Get the list of registrations for the with latest first
     //
     $sections['ciniki.courses.registrations'] = array(
-        'label' => 'Course Registrations',
+        'label' => 'Program Registrations',
         'type' => 'simplegrid', 
         'num_cols' => 2,
         'headerValues' => array('Name', 'Course'),
         'cellClasses' => array('', 'multiline', ''),
         'noData' => 'No registrations',
-//            'editApp' => array('app'=>'ciniki.courses.sapos', 'args'=>array('registration_id'=>'d.id;', 'source'=>'\'\'')),
+        'editApp' => array('app'=>'ciniki.courses.sapos', 'args'=>array('registration_id'=>'d.id;', 'source'=>'\'\'')),
         'cellValues' => array(
             '0' => "d.student_name",
             '1' => "'<span class=\"maintext\">' + d.offering_code + ' - ' + d.course_name + ' - ' + d.offering_name + '</span><span class=\"subtext\">' + d.condensed_date + '</span>'",
             ),
+// No event.stopPropagation for cellApps
+//        'cellApps' => array(
+//            '2' => array('app' => 'ciniki.forms.main', 'args'=>array('submission_id'=>'d.submission_id;')),
+//            ),
         'data' => array(),
         );
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') ) {
+        $sections['ciniki.courses.registrations']['num_cols'] = 3;
+        $sections['ciniki.courses.registrations']['headerValues'][2] = "Form";
+        $sections['ciniki.courses.registrations']['cellValues']['2'] = "d.submission_status";
+    }
     $strsql = "SELECT regs.id, "
         . "regs.customer_id, "
         . "regs.student_id, "
@@ -48,8 +57,15 @@ function ciniki_courses_hooks_uiCustomersData($ciniki, $tnid, $args) {
         . "courses.code AS course_code, "
         . "offerings.name AS offering_name, "
         . "offerings.code AS offering_code, "
-        . "offerings.condensed_date "
-        . "FROM ciniki_course_offering_registrations AS regs "
+        . "offerings.condensed_date ";
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') ) {
+        $strsql .= ", IFNULL(submissions.id, 0) AS submission_id, "
+            . "IFNULL(IF(submissions.status=90, 'Yes', ''), '') AS submission_status ";
+    } else {
+        $strsql .= ", '0' AS submission_id, "
+            . "'' AS submission_status ";
+    }
+    $strsql .= "FROM ciniki_course_offering_registrations AS regs "
         . "INNER JOIN ciniki_course_offerings AS offerings ON ( "
             . "regs.offering_id = offerings.id "
             . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -65,8 +81,15 @@ function ciniki_courses_hooks_uiCustomersData($ciniki, $tnid, $args) {
         . "LEFT JOIN ciniki_customers AS students ON ("
             . "regs.student_id = students.id "
             . "AND students.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "WHERE regs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") ";
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') ) {
+        $strsql .= "LEFT JOIN ciniki_form_submissions AS submissions ON ("
+            . "regs.student_id = submissions.customer_id "
+            . "AND offerings.form_id = submissions.form_id "
+            . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") ";
+    }
+    $strsql .= "WHERE regs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     if( isset($args['customer_id']) ) {
         $strsql .= "AND ("
@@ -87,7 +110,7 @@ function ciniki_courses_hooks_uiCustomersData($ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'customer_id', 'student_id', 'display_name', 'student_name', 
-                'course_name', 'offering_code', 'offering_name', 'condensed_date'),
+                'course_name', 'offering_code', 'offering_name', 'condensed_date', 'submission_id', 'submission_status'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -96,7 +119,7 @@ function ciniki_courses_hooks_uiCustomersData($ciniki, $tnid, $args) {
     $sections['ciniki.courses.registrations']['data'] = isset($rc['registrations']) ? $rc['registrations'] : array();
     $rsp['tabs'][] = array(
         'id' => 'ciniki.courses.registrations',
-        'label' => 'Courses',
+        'label' => 'Programs',
         'sections' => $sections,
         );
     $sections = array();
