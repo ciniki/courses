@@ -124,7 +124,6 @@ function ciniki_courses_offeringRegistrations($ciniki) {
         }
     }
 
-
     return array('stat'=>'exit');
 }
 ?>

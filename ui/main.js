@@ -196,6 +196,12 @@ function ciniki_courses_main() {
             'attendancepdf':{'label':'Attendance (PDF)', 'fn':'M.ciniki_courses_main.offering.attendancePDF();'},
             'registrationsexcel':{'label':'Class List (Excel)', 'fn':'M.ciniki_courses_main.offering.registrationsExcel();'},
             'email':{'label':'Email Class', 'fn':'M.ciniki_courses_main.offering.emailShow();'},
+            'formspdf':{'label':'Forms (PDF)', 'fn':'M.ciniki_courses_main.offering.formsPDF();',
+                'visible':function() { M.ciniki_courses_main.offering.data.form_id > 0 ? 'yes' : 'no';},
+                },
+            'formsexcel':{'label':'Forms (Excel)', 'fn':'M.ciniki_courses_main.offering.formsExcel();',
+                'visible':function() { M.ciniki_courses_main.offering.data.form_id > 0 ? 'yes' : 'no';},
+                },
             }},
         'prices':{'label':'Prices', 'type':'simplegrid', 'num_cols':3, 'aside':'yes',
             'cellClasses':['multiline', 'alignright', 'alignright'],
@@ -486,6 +492,14 @@ function ciniki_courses_main() {
     }
     this.offering.registrationsExcel = function(oid) {
         M.api.openFile('ciniki.courses.offeringRegistrations', 
+            {'tnid':M.curTenantID, 'output':'excel', 'offering_id':this.offering_id});
+    }
+    this.offering.formsPDF = function() {
+        M.api.openFile('ciniki.courses.offeringRegistrationForms', 
+            {'tnid':M.curTenantID, 'output':'pdf', 'offering_id':this.offering_id});
+    }
+    this.offering.formsExcel = function() {
+        M.api.openFile('ciniki.courses.offeringRegistrationForms', 
             {'tnid':M.curTenantID, 'output':'excel', 'offering_id':this.offering_id});
     }
     this.offering.open = function(cb, oid, cid, list, copy_id) {
