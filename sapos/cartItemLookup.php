@@ -35,7 +35,8 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
             . "ciniki_course_offering_prices.unit_amount, "
             . "ciniki_course_offering_prices.unit_discount_amount, "
             . "ciniki_course_offering_prices.unit_discount_percentage, "
-            . "ciniki_course_offering_prices.taxtype_id "
+            . "ciniki_course_offering_prices.taxtype_id, "
+            . "ciniki_course_offering_prices.webflags "
             . "FROM ciniki_course_offering_prices "
             . "INNER JOIN ciniki_course_offerings ON ("
                 . "ciniki_course_offering_prices.offering_id = ciniki_course_offerings.id "
@@ -54,7 +55,7 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
             array('container'=>'offerings', 'fname'=>'offering_id',
                 'fields'=>array('offering_id', 'price_id', 'price_name', 'code', 'course_code', 
                     'offering_id', 'description', 'reg_flags', 'num_seats', 'form_id',
-                    'available_to', 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id',
+                    'available_to', 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'taxtype_id', 'webflags',
                     )),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -83,6 +84,9 @@ function ciniki_courses_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
         }
 
         $item['flags'] = 0x28;
+        if( ($item['webflags']&0x40) == 0x40 ) {
+            $item['flags'] |= 0x40; // Shipped item eg: course kit pickup
+        }
     
         //
         // Check the number of seats remaining

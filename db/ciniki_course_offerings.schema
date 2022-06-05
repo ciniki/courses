@@ -29,6 +29,8 @@
 #
 # start_date:       The first date for this offering.
 # end_date:         The last date for this offering.
+# dt_end_reg:       The UTC date and time registrations close for this offering.
+#                   If blank, then the start date is used.
 #
 # condensed_date:   The single string describing the dates for the course.
 #
@@ -46,6 +48,8 @@
 # content:          The main content for the offering.
 # materials_list:   The materials list for the course.
 # paid_content:     The content available once paid.
+# dt_end_paid:      The UTC date and time the paid content is no longer available.
+#                   If blank or 0000-00-00 then it is available until offering end_date.
 #
 # form_id:          The ID of the registration form that must be filled out upon checkout.
 #
@@ -64,6 +68,7 @@ CREATE TABLE ciniki_course_offerings (
     webflags tinyint unsigned not null,
     start_date date not null,
     end_date date not null,
+    dt_end_reg datetime not null,
     condensed_date varchar(150) not null,
     num_seats int not null,
     reg_flags tinyint unsigned not null,
@@ -72,10 +77,11 @@ CREATE TABLE ciniki_course_offerings (
     content text not null,
     materials_list text not null,
     paid_content text not null,
+    dt_end_paid datetime not null,
     form_id int not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     index (course_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.07';
+) ENGINE='InnoDB', COMMENT='v1.08';

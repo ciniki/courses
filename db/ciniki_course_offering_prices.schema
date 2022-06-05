@@ -34,9 +34,16 @@
 #
 # taxtype_id:               The ciniki.taxes to be applied for this price.
 #
-# webflags:                 Flags for displaying the file on the website.
+# webflags:                 Options for the price (should be changed from webflags to flags)
 #
-#                           0x01 - Hidden, Do now show the price on the website.
+#                               0x01 - Hidden, Do now show the price on the website.
+#                               0x02 - 
+#                               0x04 - 
+#                               0x08 - 
+#                               0x10 - 
+#                               0x20 - Show members price on website
+#                               0x40 - Shipped item, will appear in checkout as pickup item.
+#                               0x80 - 
 #
 # date_added:               The UTC date and time the file was added.
 # last_updated:             The UTC date and time the file was last updated.

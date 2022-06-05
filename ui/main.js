@@ -2497,6 +2497,9 @@ function ciniki_courses_main() {
             this.price.sections.price.fields.available_to.flags['6'] = {'name':'Members'};
             this.price.sections.price.fields.webflags.flags['6'] = {'name':'Show Members Price'};
         }
+        if( M.modFlagOn('ciniki.sapos', 0x10) ) {
+            this.price.sections.price.fields.webflags.flags['7'] = {'name':'Shipped Item'};
+        }
         //
         // Setup registrations list on offering
         //

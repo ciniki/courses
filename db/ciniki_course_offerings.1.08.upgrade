@@ -1,0 +1,6 @@
+#
+# Add date fields for registration end and paid content end.
+#
+ALTER TABLE ciniki_course_offerings ADD COLUMN dt_end_reg datetime not null AFTER end_date;
+ALTER TABLE ciniki_course_offerings ADD COLUMN dt_end_paid datetime not null AFTER paid_content;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.08';

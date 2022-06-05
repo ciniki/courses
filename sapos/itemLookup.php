@@ -32,6 +32,7 @@ function ciniki_courses_sapos_itemLookup($ciniki, $tnid, $args) {
             . "ciniki_course_offering_prices.unit_discount_amount, "
             . "ciniki_course_offering_prices.unit_discount_percentage, "
             . "ciniki_course_offering_prices.taxtype_id, "
+            . "ciniki_course_offering_prices.webflags, "
             . "ciniki_courses.code, "
             . "ciniki_courses.name "
             . "FROM ciniki_course_offering_prices "
@@ -74,6 +75,9 @@ function ciniki_courses_sapos_itemLookup($ciniki, $tnid, $args) {
             );
         // Flags: No Quantity, Registration Item
         $item['flags'] = 0x28;
+        if( ($offering['webflags']&0x40) == 0x40 ) {
+            $item['flags'] |= 0x40; // Shipped item eg: course kit pickup
+        }
 
         return array('stat'=>'ok', 'item'=>$item);
     }
