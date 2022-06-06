@@ -144,7 +144,7 @@ function ciniki_courses_main() {
                         return true;
                         },
                     'addDropImageRefresh':'',
-                    'deleteImage':function(iid) {
+                    'deleteImage':function(fid) {
                         M.ciniki_courses_main.offering.setFieldValue('primary_image_id', 0);
                         return true;
                         },
