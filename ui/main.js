@@ -184,6 +184,7 @@ function ciniki_courses_main() {
                 '2':{'name':'Online Registrations'},
                 '4':{'name':'Sold Out'},
                 }},
+            'dt_end_reg':{'label':'Reg End', 'type':'datetime'},
             'num_seats':{'label':'# Seats', 'type':'text', 'size':'small'},
             'seats_sold':{'label':'Seats Sold', 'type':'text', 'editable':'no'},
             'form_id':{'label':'Form', 'type':'select', 'options':{}, 
@@ -289,6 +290,14 @@ function ciniki_courses_main() {
             'fields':{
                 'paid_content':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'xlarge'},
             }},
+        '_paid_dt':{'label':'', 
+            // visible when not timeless
+            'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'paid' && (M.ciniki_courses_main.offering.data.course_flags&0x10) == 0 ? 'yes' : 'hidden'; },
+            'fields':{
+                'dt_end_paid':{'label':'Available Until', 'type':'datetime',
+                    'visible':function() { return (M.ciniki_courses_main.offering.data.course_flags&0x40) == 0x40 ? 'yes' : 'no';},
+                    },
+            }},
         'files':{'label':'Session Files', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'files' ? 'yes' : 'hidden'; },
             'headerValues':['File', 'Visible', 'Paid'],
@@ -336,7 +345,7 @@ function ciniki_courses_main() {
     this.offering.switchTab = function(t) {
         this.sections._tabs.selected = t;
         this.refreshSection('_tabs');
-        this.showHideSections(['classes', 'messages', 'registrations', '_synopsis', '_content', '_materials', '_paid', 'files', 'images', '_images', 'notifications', 'nqueue']);
+        this.showHideSections(['classes', 'messages', 'registrations', '_synopsis', '_content', '_materials', '_paid', '_paid_dt', 'files', 'images', '_images', 'notifications', 'nqueue']);
     }
     this.offering.cellValue = function(s, i, j, d) {
         if( s == 'prices' ) {

@@ -29,6 +29,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'webflags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Web Flags'), 
         'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start Date'), 
         'end_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'End Date'), 
+        'dt_end_reg'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registration Close Date and Time'),
         'num_seats'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Number of Seats'),
         'reg_flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration Flags'),
         'condensed_date'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Dates'),
@@ -37,6 +38,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
         'materials_list'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Materials List'), 
         'paid_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Paid Content'),
+        'dt_end_paid'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Paid Content End Date'),
         'form_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Required Form'),
         )); 
     if( $rc['stat'] != 'ok' ) { 

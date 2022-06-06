@@ -58,6 +58,8 @@ function ciniki_courses_offeringGet($ciniki) {
     $intl_currency = $rc['settings']['intl-default-currency'];
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+    $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timeFormat');
@@ -85,6 +87,7 @@ function ciniki_courses_offeringGet($ciniki) {
             'webflags' => 0,
             'start_date' => '',
             'end_date' => '',
+            'dt_end_reg' => '',
             'condensed_date' => '',
             'num_seats' => '',
             'reg_flags' => 0,
@@ -93,6 +96,7 @@ function ciniki_courses_offeringGet($ciniki) {
             'content' => '',
             'materials_list' => '',
             'paid_content' => '',
+            'dt_end_paid' => '',
             'form_id' => 0,
             );
         if( isset($args['course_id']) ) {
@@ -148,12 +152,14 @@ function ciniki_courses_offeringGet($ciniki) {
             . "ciniki_course_offerings.num_seats, "
             . "ciniki_course_offerings.start_date, "
             . "ciniki_course_offerings.end_date, "
+            . "ciniki_course_offerings.dt_end_reg, "
             . "ciniki_course_offerings.condensed_date, "
             . "ciniki_course_offerings.primary_image_id, "
             . "ciniki_course_offerings.synopsis, "
             . "ciniki_course_offerings.content, "
             . "ciniki_course_offerings.materials_list, "
             . "ciniki_course_offerings.paid_content, "
+            . "ciniki_course_offerings.dt_end_paid, "
             . "ciniki_course_offerings.form_id, "
             . "IF((ciniki_course_offerings.webflags&0x01)=1,'Hidden', 'Visible') AS web_visible, "
             . "ciniki_courses.name AS course_name, "
@@ -179,13 +185,17 @@ function ciniki_courses_offeringGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'offerings', 'fname'=>'id',
                 'fields'=>array('id', 'name', 'code', 'permalink', 'status', 'status_text', 
-                    'reg_flags', 'num_seats', 'start_date', 'end_date', 'condensed_date', 'webflags', 'web_visible', 
-                    'primary_image_id', 'synopsis', 'content', 'materials_list', 'paid_content', 'form_id',
+                    'reg_flags', 'num_seats', 'start_date', 'end_date', 'dt_end_reg', 'condensed_date', 'webflags', 'web_visible', 
+                    'primary_image_id', 'synopsis', 'content', 'materials_list', 'paid_content', 'dt_end_paid', 'form_id',
                     'course_id', 'course_status', 'course_name', 'course_code', 'course_flags',
                     'level', 'type', 'category', 'flags', 'short_description', 'long_description',
                     ),
                 'dtformat'=>array('start_date'=>$date_format,
                     'end_date'=>$date_format,
+                    ),
+                'utctotz'=>array(
+                    'dt_end_reg'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'dt_end_paid'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     ),
                 'maps'=>array('status_text'=>array('10'=>'Active', '60'=>'Deleted')),
                 ),
