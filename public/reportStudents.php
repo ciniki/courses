@@ -63,6 +63,8 @@ function ciniki_courses_reportStudents($ciniki) {
         . "courses.code AS course_code, "
         . "customers.id AS customer_id, "
         . "customers.display_name, "
+        . "DATE_FORMAT(offerings.start_date, '%b %d, %Y') AS start_date, "
+        . "DATE_FORMAT(offerings.end_date, '%b %d, %Y') AS end_date, "
         . "IFNULL(prices.name, '') AS price_name, "
         . "emails.email AS emails "
         . "FROM ciniki_course_offering_classes AS classes "
@@ -108,7 +110,8 @@ function ciniki_courses_reportStudents($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'customers', 'fname'=>'id', 
-            'fields'=>array('id', 'customer_id', 'display_name', 'offering_name', 'offering_code', 'course_code', 'course_name', 'condensed_date', 'price_name', 'emails'),
+            'fields'=>array('id', 'customer_id', 'display_name', 'offering_name', 'offering_code', 'course_code', 'course_name', 
+                'condensed_date', 'price_name', 'start_date', 'end_date', 'emails'),
             'lists'=>array('emails'),
             ),
         ));
