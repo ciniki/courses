@@ -2226,6 +2226,8 @@ function ciniki_courses_main() {
         if( args.instructor_id != null && args.form_submission_id != null && args.form_submission_id > 0 
             ) {
             this.instructor.open(cb,args.instructor_id,args.form_submission_id);
+        } else if( args.offering_id != null && args.offering_id > 0 ) {
+            this.offering.open(cb,args.offering_id,null,null);
         } else if( args.form_submission_id != null && args.form_submission_id > 0 ) {
             this.course.open(cb,0,null,args.form_submission_id);
         } else if( this[this.menutabs.selected] == null ) {
