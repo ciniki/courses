@@ -2109,7 +2109,7 @@ function ciniki_courses_main() {
         if( nid != null ) { this.notification_id = nid; }
         if( oid != null ) { this.offering_id = oid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.courses.offeringNotificationGet', {'tnid':M.curTenantID, 'notification_id':this.notification_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.courses.offeringNotificationGet', {'tnid':M.curTenantID, 'notification_id':this.notification_id, 'offering_id':this.offering_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;

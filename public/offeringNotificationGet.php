@@ -22,6 +22,7 @@ function ciniki_courses_offeringNotificationGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'notification_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering Notification'),
+        'offering_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Offering'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -70,6 +71,30 @@ function ciniki_courses_offeringNotificationGet($ciniki) {
             'form_label'=>'',
             'form_id'=>0,
         );
+        if( isset($args['offering_id']) ) {
+            $strsql = "SELECT offerings.id, "
+                . "offerings.course_id, "
+                . "offerings.name, "
+                . "offerings.code, "
+                . "offerings.condensed_date, "
+                . "courses.name AS course_name, "
+                . "courses.code AS course_code "
+                . "FROM ciniki_course_offerings AS offerings "
+                . "INNER JOIN ciniki_courses AS courses ON ("
+                    . "offerings.course_id = courses.id "
+                    . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'item');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.269', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            }
+            if( isset($rc['item']) ) {
+                $notification['subject'] = 'Re: ' . $rc['item']['course_name'] . ' - ' . $rc['item']['name'] . ' (' . $rc['item']['condensed_date'] . ')';
+            }
+        }
     }
 
     //

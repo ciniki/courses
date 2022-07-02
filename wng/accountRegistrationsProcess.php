@@ -167,7 +167,7 @@ function ciniki_courses_wng_accountRegistrationsProcess(&$ciniki, $tnid, &$reque
             'columns' => array(
                 array('label' => 'Program', 'field' => 'name', 'class' => 'alignleft'),
                 array('label' => 'Dates', 'field' => 'condensed_date', 'class' => 'alignleft'),
-                array('label' => '', 'field' => 'buttons', 'class' => 'alignright'),
+                array('label' => '', 'field' => 'buttons', 'class' => 'alignright buttons'),
                 ),
             'rows' => $current_registrations,
             );
@@ -181,7 +181,7 @@ function ciniki_courses_wng_accountRegistrationsProcess(&$ciniki, $tnid, &$reque
             'columns' => array(
                 array('label' => 'Program', 'field' => 'name', 'class' => 'alignleft'),
                 array('label' => 'Dates', 'field' => 'condensed_date', 'class' => 'alignleft'),
-                array('label' => '', 'field' => 'buttons', 'class' => 'alignright'),
+                array('label' => '', 'field' => 'buttons', 'class' => 'alignright buttons'),
                 ),
             'rows' => $past_registrations,
             );
