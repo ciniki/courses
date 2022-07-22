@@ -18,6 +18,7 @@
 # status:           The current status of the course offering.
 #
 #                       10 - Active
+#                       60 - Cancelled
 #                       90 - Archived
 #               
 # webflags:         The webflags for each offering.

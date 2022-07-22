@@ -27,6 +27,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
     // Load the offering details
     //
     $strsql = "SELECT ciniki_course_offerings.id, "
+        . "ciniki_course_offerings.status, "
         . "ciniki_course_offerings.webflags, "
         . "ciniki_course_offerings.code AS offering_code, "
         . "ciniki_course_offerings.condensed_date, "
@@ -60,14 +61,14 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
         . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_course_offerings.permalink = '" . ciniki_core_dbQuote($ciniki, $offering_permalink) . "' "
         . "AND ciniki_courses.permalink = '" . ciniki_core_dbQuote($ciniki, $course_permalink) . "' "
-        . "AND ciniki_course_offerings.status = 10 "    // Active offering
+        . "AND ciniki_course_offerings.status <= 60 "    // Active offering
         . "AND (ciniki_course_offerings.webflags&0x01) = 0 "    // Visible
         . "ORDER BY ciniki_course_offering_classes.class_date "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 
-            'fields'=>array('id', 'webflags', 'course_id', 'name', 'code', 'offering_code', 'level', 'permalink', 
+            'fields'=>array('id', 'webflags', 'status', 'course_id', 'name', 'code', 'offering_code', 'level', 'permalink', 
                 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags',
                 'level', 'type', 'category', 'synopsis', 'long_description', 'condensed_date')),
         array('container'=>'classes', 'fname'=>'class_id', 
@@ -158,7 +159,7 @@ function ciniki_courses_web_courseOfferingDetails($ciniki, $settings, $tnid, $co
     //
     // Check for prices
     //
-    if( ($ciniki['tenant']['modules']['ciniki.courses']['flags']&0x04) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.courses']['flags']&0x04) > 0 && $offering['status'] == 10 ) {
         $offering['seats_sold'] = 0;
         $strsql = "SELECT 'num_seats', SUM(num_seats) AS num_seats "
             . "FROM ciniki_course_offering_registrations "

@@ -23,6 +23,7 @@ function ciniki_courses_maps($ciniki) {
     $maps['offering'] = array(
         'status' => array(
             10 => 'Active',
+            60 => 'Cancelled',
             90 => 'Archived',
             ),
         );

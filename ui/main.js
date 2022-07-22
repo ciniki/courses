@@ -166,7 +166,7 @@ function ciniki_courses_main() {
                 'visible':function() { return M.modFlagSet('ciniki.courses', 0x20);},
                 },
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
-            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'10':'Active', '90':'Archived'}},
+            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'10':'Active', '60':'Cancelled', '90':'Archived'}},
             'webflags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Hidden'}}},
             'start_date':{'label':'Start Date', 'type':'date', 'editable':'no',
                 'onchangeFn':'M.ciniki_courses_main.offering.refreshSessions',

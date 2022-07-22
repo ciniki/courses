@@ -25,7 +25,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'course_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Course'), 
         'name'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Name'), 
         'code'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Code'), 
-        'status'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('10', '90'), 'name'=>'Status'), 
+        'status'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('10', '60', '90'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Web Flags'), 
         'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start Date'), 
         'end_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'End Date'), 

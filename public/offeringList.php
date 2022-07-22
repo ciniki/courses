@@ -161,7 +161,7 @@ function ciniki_courses_offeringList($ciniki) {
         //
         // To be considered active, the course and offering need to both have active status
         //
-        $strsql = "SELECT IF((courses.status<90 AND offerings.status =10), 10, 90) AS value, "
+        $strsql = "SELECT IF((courses.status<90 AND offerings.status =10), 10, offerings.status) AS value, "
             . "COUNT(*) AS num_offerings "
             . "FROM ciniki_course_offerings AS offerings "
             . "INNER JOIN ciniki_courses AS courses ON ("

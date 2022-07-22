@@ -30,7 +30,7 @@ function ciniki_courses_web_courseList($ciniki, $settings, $tnid, $type, $when) 
                 . "AND instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND offerings.status = 10 "
+            . "AND offerings.status <= 60 "
             . "AND (offerings.webflags&0x01) = 0 "    // Visible online
             . "ORDER BY offerings.id, instructors.first, instructors.last "
             . "";
@@ -153,7 +153,7 @@ function ciniki_courses_web_courseList($ciniki, $settings, $tnid, $type, $when) 
         . "LEFT JOIN ciniki_course_offering_classes ON (ciniki_course_offerings.id = ciniki_course_offering_classes.offering_id "
             . "AND ciniki_course_offering_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "') "
         . "WHERE ciniki_course_offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_course_offerings.status = 10 "
+        . "AND ciniki_course_offerings.status <= 60 "
         . "AND (ciniki_course_offerings.webflags&0x01) = 0 "    // Visible online
         . "GROUP BY ciniki_course_offerings.id "
         . "";

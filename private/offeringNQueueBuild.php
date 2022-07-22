@@ -33,6 +33,7 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
     $strsql = "SELECT offerings.id, "
         . "offerings.start_date, "
         . "offerings.end_date, "
+        . "offerings.status, "
         . "courses.flags AS course_flags "
         . "FROM ciniki_course_offerings AS offerings "
         . "INNER JOIN ciniki_courses AS courses ON ("
@@ -50,6 +51,13 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.228', 'msg'=>'Unable to find requested offering'));
     }
     $offering = $rc['offering'];
+
+    //
+    // Check if cancelled course
+    //
+    if( $offering['status'] == 60 ) {
+        return array('stat'=>'ok', 'nqueue'=>array());
+    }
 
     //
     // Setup dates to skip notifications if timeless
@@ -121,8 +129,7 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.249', 'msg'=>'Unable to load reg', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['rows']) ? $rc['rows'] : array();
-    
-
+   
     // 
     // Build the queue
     //
