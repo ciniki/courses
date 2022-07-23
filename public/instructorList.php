@@ -79,7 +79,7 @@ function ciniki_courses_instructorList($ciniki) {
         $strsql .= "AND instructors.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' ";
     }
     $strsql .= "GROUP BY instructors.id "
-        . "ORDER BY instructors.last, instructors.first "
+        . "ORDER BY name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
