@@ -183,7 +183,7 @@ function ciniki_courses_wng_accountFormProcess(&$ciniki, $tnid, &$request, $item
             'label' => 'New Submission',
             ), 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.71', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.272', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
         }
         $form['submission_id'] = $rc['id'];
         $form['submission_uuid'] = $rc['uuid'];

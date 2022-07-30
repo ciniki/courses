@@ -138,7 +138,7 @@ function ciniki_courses_reportCourses($ciniki) {
         array('container'=>'instructors', 'fname'=>'instructor_id', 'fields'=>array('id', 'display_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.268', 'msg'=>'Unable to load offerings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.273', 'msg'=>'Unable to load offerings', 'err'=>$rc['err']));
     }
     $instructors = isset($rc['offerings']) ? $rc['offerings'] : array();
 
