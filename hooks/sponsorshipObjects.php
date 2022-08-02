@@ -17,7 +17,7 @@ function ciniki_courses_hooks_sponsorshipObjects(&$ciniki, $tnid, $args) {
     $objects = array();
     
     //
-    // Get the list of events that are upcoming for adding a sponsorship package to
+    // Get the list of offerings that are upcoming for adding a sponsorship package to
     //
     $strsql = "SELECT offerings.id, "
         . "CONCAT_WS(' - ', courses.name, offerings.name, offerings.condensed_date) AS name, "
@@ -31,7 +31,7 @@ function ciniki_courses_hooks_sponsorshipObjects(&$ciniki, $tnid, $args) {
         . "WHERE offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (offerings.start_date > NOW() "
         . "";
-    if( isset($args['object']) && $args['object'] == 'ciniki.events.event' && isset($args['object_id']) ) {
+    if( isset($args['object']) && $args['object'] == 'ciniki.courses.offering' && isset($args['object_id']) ) {
         $strsql .= "OR offerings.id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' ";
     }
     $strsql .= ") ";
@@ -49,7 +49,7 @@ function ciniki_courses_hooks_sponsorshipObjects(&$ciniki, $tnid, $args) {
     //
     foreach($offerings as $oid => $offering) {
         $objects["ciniki.courses.offering.{$offering['id']}"] = array(
-            'id' => 'ciniki.events.event.' . $offering['id'],
+            'id' => 'ciniki.courses.offering.' . $offering['id'],
             'object' => 'ciniki.courses.offering',
             'object_id' => $offering['id'],
             'full_name' => 'Program - ' . $offering['name'],
