@@ -263,6 +263,7 @@ function ciniki_courses_offeringGet($ciniki) {
         // Get the list of instructors for a course, if requested
         //
         $strsql = "SELECT ciniki_course_offering_instructors.id, "
+            . "ciniki_course_instructors.customer_id, "
             . "ciniki_course_instructors.id AS instructor_id, "
             . "IFNULL(customers.display_name, CONCAT_WS(' ', ciniki_course_instructors.first, ciniki_course_instructors.last)) AS name "
             . "FROM ciniki_course_offering_instructors "
@@ -280,7 +281,7 @@ function ciniki_courses_offeringGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'instructors', 'fname'=>'id',
-                'fields'=>array('id', 'instructor_id', 'name')),
+                'fields'=>array('id', 'instructor_id', 'customer_id', 'name')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;

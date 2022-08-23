@@ -489,6 +489,16 @@ function ciniki_courses_main() {
                 'name':this.data.registrations[i].customer_name,
                 };
         }
+        if( this.data.instructors != null ) {
+            for(var i in this.data.instructors) {
+                if( this.data.instructors[i].customer_id != null && this.data.instructors[i].customer_id > 0 ) {
+                    customers.push({
+                        'id':this.data.instructors[i].customer_id,
+                        'name':this.data.instructors[i].name,
+                        });
+                }
+            }
+        }
         M.startApp('ciniki.mail.omessage',
             null,
             'M.ciniki_courses_main.offering.open();',
