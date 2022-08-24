@@ -45,6 +45,8 @@ function ciniki_courses_offeringGet($ciniki) {
         return $rc;
     }   
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+
     //
     // Load the tenant intl settings
     //
@@ -279,7 +281,8 @@ function ciniki_courses_offeringGet($ciniki) {
             . "AND ciniki_course_offering_instructors.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
             . "ORDER BY ciniki_course_instructors.last "
             . "";
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'instructors', 'fname'=>'id',
                 'fields'=>array('id', 'instructor_id', 'customer_id', 'name')),
             ));
@@ -410,10 +413,10 @@ function ciniki_courses_offeringGet($ciniki) {
             . "AND ciniki_course_offering_registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
             . "ORDER BY sort_name "
             . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'customer_id', 'customer_name', 'student_name', 'yearsold', 'num_seats', 
+                'fields'=>array('id', 'customer_id', 'customer_name', 'student_id', 'student_name', 'yearsold', 'num_seats', 
                     'invoice_id', 'invoice_status', 'invoice_status_text', 'registration_amount', 'price_name', 
                     'submission_id', 'submission_status'),
                 'naprices'=>array('registration_amount'),
@@ -495,54 +498,93 @@ function ciniki_courses_offeringGet($ciniki) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.170', 'msg'=>'Unable to load offering_notifications', 'err'=>$rc['err']));
             }
             $offering['notifications'] = isset($rc['notifications']) ? $rc['notifications'] : array();
+            
+            $notification_ids = array();
+            foreach($offering['notifications'] as $n) {
+                $notification_ids[] = $n['id'];
+            }
 
             //
             // Load any queued messages
             //
-            $strsql = "SELECT queue.id, "
-                . "queue.scheduled_dt AS date_text, "
-                . "queue.scheduled_dt AS time_text, "
-                . "registrations.customer_id, "
-                . "customers.display_name AS customer_name, "
-                . "registrations.student_id, "
-                . "students.display_name AS student_name, "
-                . "notifications.subject "
-                . "FROM ciniki_course_offering_registrations AS registrations "
-                . "INNER JOIN ciniki_course_offering_nqueue AS queue ON ("
-                    . "registrations.id = queue.registration_id "
-                    . "AND queue.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "INNER JOIN ciniki_course_offering_notifications AS notifications ON ("
-                    . "queue.notification_id = notifications.id "
-                    . "AND notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_customers AS customers ON ("
-                    . "registrations.customer_id = customers.id "
-                    . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_customers AS students ON ("
-                    . "registrations.student_id = students.id "
-                    . "AND students.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "WHERE registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
-                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "ORDER BY customer_name, student_name, queue.scheduled_dt "
-                . "";
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
-                array('container'=>'nqueue', 'fname'=>'id', 
-                    'fields'=>array('id', 'date_text', 'time_text', 'customer_id', 'customer_name',
-                        'student_id', 'student_name', 'subject'),
-                    'utctotz'=>array(
-                        'date_text'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
-                        'time_text'=>array('timezone'=>$intl_timezone, 'format'=>$php_time_format),
+            if( count($notification_ids) > 0 ) {
+                $strsql = "SELECT nqueue.id, "
+                    . "nqueue.scheduled_dt AS date_text, "
+                    . "nqueue.scheduled_dt AS time_text, "
+                    . "nqueue.registration_id, "
+                    . "nqueue.instructor_id, "
+                    . "notifications.subject "
+                    . "FROM ciniki_course_offering_nqueue AS nqueue "
+                    . "INNER JOIN ciniki_course_offering_notifications AS notifications ON ("
+                        . "nqueue.notification_id = notifications.id "
+                        . "AND notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE nqueue.notification_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $notification_ids) . ") "
+                    . "AND nqueue.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY nqueue.scheduled_dt "
+                    . "";
+                    error_log(print_r($strsql,true));
+    /*
+                $strsql = "SELECT queue.id, "
+                    . "queue.scheduled_dt AS date_text, "
+                    . "queue.scheduled_dt AS time_text, "
+                    . "registrations.customer_id, "
+                    . "customers.display_name AS customer_name, "
+                    . "registrations.student_id, "
+                    . "students.display_name AS student_name, "
+                    . "notifications.subject "
+                    . "FROM ciniki_course_offering_registrations AS registrations "
+                    . "INNER JOIN ciniki_course_offering_nqueue AS queue ON ("
+                        . "registrations.id = queue.registration_id "
+                        . "AND queue.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_course_offering_notifications AS notifications ON ("
+                        . "queue.notification_id = notifications.id "
+                        . "AND notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_customers AS customers ON ("
+                        . "registrations.customer_id = customers.id "
+                        . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_customers AS students ON ("
+                        . "registrations.student_id = students.id "
+                        . "AND students.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.offering_id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY customer_name, student_name, queue.scheduled_dt "
+                    . ""; */
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+                    array('container'=>'nqueue', 'fname'=>'id', 
+                        'fields'=>array('id', 'date_text', 'time_text', 'registration_id', 'instructor_id', 'subject'),
+                        'utctotz'=>array(
+                            'date_text'=>array('timezone'=>$intl_timezone, 'format'=>$date_format),
+                            'time_text'=>array('timezone'=>$intl_timezone, 'format'=>$php_time_format),
+                            ),
                         ),
-                    ),
-                ));
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.171', 'msg'=>'Unable to open notification queue', 'err'=>$rc['err']));
-            }   
-            $offering['nqueue'] = isset($rc['nqueue']) ? $rc['nqueue'] : array();
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.171', 'msg'=>'Unable to open notification queue', 'err'=>$rc['err']));
+                }   
+                $offering['nqueue'] = isset($rc['nqueue']) ? $rc['nqueue'] : array();
+
+                foreach($offering['nqueue'] as $qid => $item) {
+                    if( $item['registration_id'] > 0 && isset($offering['registrations'][$item['registration_id']]) ) {
+                        $reg = $offering['registrations'][$item['registration_id']];
+                        if( $reg['student_id'] > 0 ) {
+                            $offering['nqueue'][$qid]['customer_name'] = $reg['student_name'];
+                        } else {
+                            $offering['nqueue'][$qid]['customer_name'] = $reg['customer_name'];
+                        }
+                    }
+                    elseif( $item['instructor_id'] > 0 && isset($offering['instructors'][$item['instructor_id']]) ) {
+                        $offering['nqueue'][$qid]['customer_name'] = $offering['instructors'][$item['instructor_id']]['name'];
+                    }
+                }
+            } else {
+                $offering['nqueue'] = array();
+            }
         }
     }
 

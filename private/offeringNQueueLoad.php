@@ -22,6 +22,7 @@ function ciniki_courses_offeringNQueueLoad(&$ciniki, $tnid, $offering_id) {
         . "nqueue.uuid, "
         . "nqueue.notification_id, "
         . "nqueue.registration_id, "
+        . "nqueue.instructor_id, "
         . "nqueue.class_id, "
         . "nqueue.scheduled_dt "
         . "FROM ciniki_course_offering_notifications AS notifications "
@@ -38,7 +39,7 @@ function ciniki_courses_offeringNQueueLoad(&$ciniki, $tnid, $offering_id) {
     } 
     if( isset($rc['rows']) ) {
         foreach($rc['rows'] as $row) {
-            $nqueue["{$row['notification_id']}-{$row['registration_id']}-{$row['class_id']}"] = $row;
+            $nqueue["{$row['notification_id']}-{$row['registration_id']}-{$row['instructor_id']}-{$row['class_id']}"] = $row;
         }
     }
 

@@ -101,6 +101,7 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
         . "notifications.name, "
         . "notifications.ntrigger, "
         . "notifications.ntype, "
+        . "notifications.flags, "
         . "notifications.offset_days, "
         . "notifications.status, "
         . "notifications.status AS status_text, "
@@ -129,14 +130,58 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.249', 'msg'=>'Unable to load reg', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['rows']) ? $rc['rows'] : array();
+
+    //
+    // Load the instructors
+    //
+    $strsql = "SELECT instructors.id "
+        . "FROM ciniki_course_offering_instructors AS instructors "
+        . "INNER JOIN ciniki_course_instructors AS i ON ("
+            . "instructors.instructor_id = i.id "
+            . "AND i.customer_id > 0 "
+            . "AND i.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND instructors.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering_id) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'reg');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.249', 'msg'=>'Unable to load reg', 'err'=>$rc['err']));
+    }
+    $instructors = isset($rc['rows']) ? $rc['rows'] : array();
+
+    //
+    // Build the list of customers of registration and instructors
+    //
    
     // 
     // Build the queue
     //
     $nqueue = array();
     foreach($notifications as $notification) {
-        
+       
+        //
+        // Build the list of customers to send notifications for each notification so instructors can be excluded or included
+        //
+        $customers = array();
         foreach($registrations as $registration) {
+            $customers[] = array(
+                'id' => $registration['id'] . '-0',
+                'registration_id' => $registration['id'],
+                'instructor_id' => 0,
+                );
+        }
+        if( ($notification['flags']&0x01) == 0x01 ) {
+            foreach($instructors as $instructor) {
+                $customers[] = array(
+                    'id' => '0-' . $instructor['id'],
+                    'registration_id' => 0,
+                    'instructor_id' => $instructor['id'],
+                    );
+            }
+        }
+
+        foreach($customers as $cust) {
             //
             // Session Start Trigger
             //
@@ -149,9 +194,10 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
                 }
                 $dt->setTimezone($utc_timezone);
                 if( $dt > $dt_now ) {
-                    $nqueue["{$notification['id']}-{$registration['id']}-0"] = array(
+                    $nqueue["{$notification['id']}-{$cust['id']}-0"] = array(
                         'notification_id' => $notification['id'],
-                        'registration_id' => $registration['id'],
+                        'registration_id' => $cust['registration_id'],
+                        'instructor_id' => $cust['instructor_id'],
                         'class_id' => 0,
                         'scheduled_dt' => $dt->format('Y-m-d H:i:s'),
                         );
@@ -169,9 +215,10 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
                 }
                 $dt->setTimezone($utc_timezone);
                 if( $dt > $dt_now ) {
-                    $nqueue["{$notification['id']}-{$registration['id']}-0"] = array(
+                    $nqueue["{$notification['id']}-{$cust['id']}-0"] = array(
                         'notification_id' => $notification['id'],
-                        'registration_id' => $registration['id'],
+                        'registration_id' => $cust['registration_id'],
+                        'instructor_id' => $cust['instructor_id'],
                         'class_id' => 0,
                         'scheduled_dt' => $dt->format('Y-m-d H:i:s'),
                         );
@@ -190,9 +237,10 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
                     }
                     $dt->setTimezone($utc_timezone);
                     if( $dt > $dt_now ) {
-                        $nqueue["{$notification['id']}-{$registration['id']}-{$class['id']}"] = array(
+                        $nqueue["{$notification['id']}-{$cust['id']}-{$class['id']}"] = array(
                             'notification_id' => $notification['id'],
-                            'registration_id' => $registration['id'],
+                            'registration_id' => $cust['registration_id'],
+                            'instructor_id' => $cust['instructor_id'],
                             'class_id' => $class['id'],
                             'scheduled_dt' => $dt->format('Y-m-d H:i:s'),
                             );
@@ -211,9 +259,10 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
                 }
                 $dt->setTimezone($utc_timezone);
                 if( $dt > $dt_now ) {
-                    $nqueue["{$notification['id']}-{$registration['id']}-{$first_class['id']}"] = array(
+                    $nqueue["{$notification['id']}-{$cust['id']}-{$first_class['id']}"] = array(
                         'notification_id' => $notification['id'],
-                        'registration_id' => $registration['id'],
+                        'registration_id' => $cust['registration_id'],
+                        'instructor_id' => $cust['instructor_id'],
                         'class_id' => $first_class['id'],
                         'scheduled_dt' => $dt->format('Y-m-d H:i:s'),
                         );
@@ -231,9 +280,10 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
                 }
                 $dt->setTimezone($utc_timezone);
                 if( $dt > $dt_now ) {
-                    $nqueue["{$notification['id']}-{$registration['id']}-{$last_class['id']}"] = array(
+                    $nqueue["{$notification['id']}-{$cust['id']}-{$last_class['id']}"] = array(
                         'notification_id' => $notification['id'],
-                        'registration_id' => $registration['id'],
+                        'registration_id' => $cust['registration_id'],
+                        'instructor_id' => $cust['instructor_id'],
                         'class_id' => $last_class['id'],
                         'scheduled_dt' => $dt->format('Y-m-d H:i:s'),
                         );
@@ -258,9 +308,10 @@ function ciniki_courses_offeringNQueueBuild(&$ciniki, $tnid, $offering_id) {
                     }
                     $dt->setTimezone($utc_timezone);
                     if( $dt > $dt_now ) {
-                        $nqueue["{$notification['id']}-{$registration['id']}-{$class['id']}"] = array(
+                        $nqueue["{$notification['id']}-{$cust['id']}-{$class['id']}"] = array(
                             'notification_id' => $notification['id'],
-                            'registration_id' => $registration['id'],
+                            'registration_id' => $cust['registration_id'],
+                            'instructor_id' => $cust['instructor_id'],
                             'class_id' => $class['id'],
                             'scheduled_dt' => $dt->format('Y-m-d H:i:s'),
                             );

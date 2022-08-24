@@ -250,6 +250,7 @@ function ciniki_courses_objects($ciniki) {
             'name'=>array('name'=>'Name'),
             'ntrigger'=>array('name'=>'Trigger'),
             'ntype'=>array('name'=>'Notification Type', 'default'=>10),
+            'flags'=>array('name'=>'Options ', 'default'=>0),
             'offset_days'=>array('name'=>'Offset Days', 'default'=>0),
             'status'=>array('name'=>'Status', 'default'=>0),
             'time_of_day'=>array('name'=>'Time of Day', 'default'=>''),
@@ -269,6 +270,7 @@ function ciniki_courses_objects($ciniki) {
         'fields'=>array(
             'notification_id'=>array('name'=>'Notification', 'ref'=>'ciniki.courses.offering_notification'),
             'registration_id'=>array('name'=>'Registration', 'ref'=>'ciniki.courses.offering_registration'),
+            'instructor_id'=>array('name'=>'Instructor', 'ref'=>'ciniki.courses.offering_instructor'),
             'class_id'=>array('name'=>'Class', 'ref'=>'ciniki.courses.offering_class'),
             'scheduled_dt'=>array('name'=>'Scheduled Date/Time'),
             ),

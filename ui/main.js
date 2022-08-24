@@ -2083,6 +2083,7 @@ function ciniki_courses_main() {
             'offset_days':{'label':'Offset Days', 'type':'text', 'visible':'yes', 'size':'small'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'0':'Inactive', '10':'Require Approval', '20':'Auto Send'}},
             'time_of_day':{'label':'Time of Day', 'visible':'yes', 'type':'text', 'size':'small'},
+            'flags1':{'label':'Include Instructor', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'off', 'visible':'no'},
             }},
 //        '_form':{'label':'Attach Form', 'fields':{
 //            'form_id':{'label':'Form', 'hidelabel':'yes', 'type':'select', 'options':{}},
@@ -2106,12 +2107,15 @@ function ciniki_courses_main() {
     }
     this.notification.updateForm = function() {
         if( this.formValue('ntrigger') == '20' ) {
+            this.sections.general.fields.flags1.visible = 'no';
             this.sections.general.fields.offset_days.visible = 'no';
             this.sections.general.fields.time_of_day.visible = 'no';
         } else {
+            this.sections.general.fields.flags1.visible = 'yes';
             this.sections.general.fields.offset_days.visible = 'yes';
             this.sections.general.fields.time_of_day.visible = 'yes';
         }
+        this.showHideFormField('general', 'flags1');
         this.showHideFormField('general', 'offset_days');
         this.showHideFormField('general', 'time_of_day');
     }

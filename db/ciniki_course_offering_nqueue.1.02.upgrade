@@ -1,0 +1,7 @@
+#
+# Add field for instructors into nqueue
+#
+ALTER TABLE ciniki_course_offering_nqueue ADD COLUMN instructor_id int not null AFTER registration_id;
+ALTER TABLE ciniki_course_offering_nqueue COMMENT='v1.02';
+DROP INDEX notification_id ON ciniki_course_offering_nqueue;
+CREATE INDEX notification_id ON ciniki_course_offering_nqueue (notification_id, registration_id, instructor_id, class_id);

@@ -21,6 +21,7 @@ function ciniki_courses_offeringNotificationUpdate(&$ciniki) {
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'ntrigger'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Trigger'),
         'ntype'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notification Type'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'offset_days'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Offset Days'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'time_of_day'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Time of Day'),
@@ -52,6 +53,7 @@ function ciniki_courses_offeringNotificationUpdate(&$ciniki) {
         . "notifications.name, "
         . "notifications.ntrigger, "
         . "notifications.ntype, "
+        . "notifications.flags, "
         . "notifications.offset_days, "
         . "notifications.status "
         . "FROM ciniki_course_offering_notifications AS notifications "

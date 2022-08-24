@@ -29,6 +29,13 @@
 #
 #                               10 - Email
 #                               20 - SMS
+#
+# flags:                    The options for the notification.
+#
+#                               0x01 - Include Instructors
+#                               0x02 - 
+#                               0x04 - 
+#                               0x08 -
 #                               
 # offset_days:              The number of days before(negative) or after(positivte) the trigger to queue the notification.
 #
@@ -57,6 +64,7 @@ create table ciniki_course_offering_notifications (
     name varchar(250) not null,
     ntrigger tinyint unsigned not null,
     ntype tinyint unsigned not null,
+    flags tinyint unsigned not null,
     offset_days smallint not null,
     status tinyint unsigned not null,
 
@@ -72,4 +80,4 @@ create table ciniki_course_offering_notifications (
     unique index (uuid),
     unique index (tnid, offering_id, ntrigger, ntype, offset_days),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

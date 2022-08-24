@@ -1,0 +1,5 @@
+#
+# Add field for store notification options
+#
+ALTER TABLE ciniki_course_offering_notifications ADD COLUMN flags tinyint unsigned not null AFTER ntype;
+ALTER TABLE ciniki_course_offering_notifications COMMENT='v1.02';

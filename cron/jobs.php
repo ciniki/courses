@@ -28,7 +28,7 @@ function ciniki_courses_cron_jobs(&$ciniki) {
     $dt_start->sub(new DateInterval('PT1H'));
 
     //
-    // Check for any notifications that should have been sent in the last hour
+    // Check for any notifications that should have been sent in the last hour to registrations
     //
     $strsql = "SELECT nqueue.id, "
         . "nqueue.uuid, "
@@ -40,9 +40,11 @@ function ciniki_courses_cron_jobs(&$ciniki) {
         . "FROM ciniki_course_offering_nqueue AS nqueue "
         . "INNER JOIN ciniki_course_offering_registrations AS registrations ON ("
             . "nqueue.registration_id = registrations.id "
+            . "AND nqueue.tnid = registrations.tnid "
             . ") "
         . "WHERE nqueue.scheduled_dt >= '" . ciniki_core_dbQuote($ciniki, $dt_start->format('Y-m-d H:i:s')) . "' "
         . "AND nqueue.scheduled_dt <= '" . ciniki_core_dbQuote($ciniki, $dt_now->format('Y-m-d H:i:s')) . "' "
+        . "AND nqueue.registration_id > 0 "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -54,6 +56,55 @@ function ciniki_courses_cron_jobs(&$ciniki) {
         $rc = ciniki_courses_offeringNotificationSend($ciniki, $item['tnid'], $item);
         if( $rc['stat'] != 'ok' ) {
             ciniki_cron_logMsg($ciniki, $item['tnid'], array('code'=>'ciniki.courses.243', 
+                'msg'=>'Unable to send notification queue item: ' . $item['id'],
+                'cron_id'=>0, 'severity'=>50, 'err'=>$rc['err'],
+                ));
+        }
+
+        //
+        // Remove nqueue item
+        //
+        $rc = ciniki_core_objectDelete($ciniki, $item['tnid'], 'ciniki.courses.offering_nqueue', $item['id'], $item['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_cron_logMsg($ciniki, $item['tnid'], array('code'=>'ciniki.courses.244', 
+                'msg'=>'Unable to remove notification queue item: ' . $item['id'],
+                'cron_id'=>0, 'severity'=>50, 'err'=>$rc['err'],
+                ));
+        }
+    }
+
+    //
+    // Check for any notifications that should have been sent in the last hour to instructors
+    //
+    $strsql = "SELECT nqueue.id, "
+        . "nqueue.uuid, "
+        . "nqueue.tnid, "
+        . "nqueue.notification_id, "
+        . "oinstructors.offering_id, "
+        . "instructors.customer_id "
+        . "FROM ciniki_course_offering_nqueue AS nqueue "
+        . "INNER JOIN ciniki_course_offering_instructors AS oinstructors ON ("
+            . "nqueue.instructor_id = oinstructors.id "
+            . "AND nqueue.tnid = oinstructors.tnid "
+            . ") "
+        . "INNER JOIN ciniki_course_instructors AS instructors ON ("
+            . "oinstructors.instructor_id = instructors.id "
+            . "AND oinstructors.tnid = instructors.tnid "
+            . ") "
+        . "WHERE nqueue.scheduled_dt >= '" . ciniki_core_dbQuote($ciniki, $dt_start->format('Y-m-d H:i:s')) . "' "
+        . "AND nqueue.scheduled_dt <= '" . ciniki_core_dbQuote($ciniki, $dt_now->format('Y-m-d H:i:s')) . "' "
+        . "AND nqueue.instructor_id > 0 "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.242', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+    }
+    $nqueue = isset($rc['rows']) ? $rc['rows'] : array();
+    
+    foreach($nqueue as $item) {
+        $rc = ciniki_courses_offeringNotificationSend($ciniki, $item['tnid'], $item);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_cron_logMsg($ciniki, $item['tnid'], array('code'=>'ciniki.courses.274', 
                 'msg'=>'Unable to send notification queue item: ' . $item['id'],
                 'cron_id'=>0, 'severity'=>50, 'err'=>$rc['err'],
                 ));
