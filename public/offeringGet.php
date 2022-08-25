@@ -523,7 +523,6 @@ function ciniki_courses_offeringGet($ciniki) {
                     . "AND nqueue.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "ORDER BY nqueue.scheduled_dt "
                     . "";
-                    error_log(print_r($strsql,true));
     /*
                 $strsql = "SELECT queue.id, "
                     . "queue.scheduled_dt AS date_text, "
