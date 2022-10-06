@@ -19,6 +19,13 @@ function ciniki_courses_sapos_itemLookup($ciniki, $tnid, $args) {
     }
 
     //
+    // Check a customer has been specified
+    //
+    if( !isset($args['customer_id']) || $args['customer_id'] == 0 ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.courses.275', 'msg'=>'You must add a customer first'));
+    }
+
+    //
     // An offering was added to an invoice item, get the details and see if we need to 
     // create a registration for this offering
     //
