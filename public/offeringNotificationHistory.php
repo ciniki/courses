@@ -42,6 +42,6 @@ function ciniki_courses_offeringNotificationHistory($ciniki) {
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.courses', 'ciniki_courses_history', $args['tnid'], 'ciniki_course_offering_notifications', $args['notification_id'], $args['field']);
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.courses', 'ciniki_course_history', $args['tnid'], 'ciniki_course_offering_notifications', $args['notification_id'], $args['field']);
 }
 ?>

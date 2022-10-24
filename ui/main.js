@@ -188,7 +188,7 @@ function ciniki_courses_main() {
             'dt_end_reg':{'label':'Reg End', 'type':'datetime'},
             'num_seats':{'label':'# Seats', 'type':'text', 'size':'small'},
             'seats_sold':{'label':'Seats Sold', 'type':'text', 'editable':'no'},
-            'form_id':{'label':'Form', 'type':'select', 'options':{}, 
+            'form_id':{'label':'Signup Form', 'type':'select', 'options':{}, 
                 'visible':function() { return M.modOn('ciniki.forms') ? 'yes' : 'no'; },
                 'complex_options':{'value':'id', 'name':'name'},
                 },
