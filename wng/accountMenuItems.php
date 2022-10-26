@@ -37,7 +37,7 @@ function ciniki_courses_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
         $items[] = array(
             'title' => 'Program Registrations', 
             'priority' => 550, 
-            'selected' => 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'programs' ? 'yes' : 'no',
             'ref' => 'ciniki.courses.registrations',
             'url' => $base_url . '/programs',
             );
