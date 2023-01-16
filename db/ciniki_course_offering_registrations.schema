@@ -12,7 +12,7 @@
 # each of the customer attending.  This setup allows for simple to complex registration
 # scenarios.
 #
-# There is no status field, as customers are either registered or no.  There is a status
+# There is no status field, as customers are either registered or not.  There is a status
 # on the invoice for if they've paid or not.
 #
 # Fields
