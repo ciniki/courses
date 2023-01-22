@@ -32,7 +32,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'copy_offering_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Copy Offering'), 
         'name'=>array('required'=>'yes', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Name'), 
-        'code'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Code'), 
+        'code'=>array('required'=>'no', 'blank'=>'yes', 'trimblanks'=>'yes', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60', '90'), 'name'=>'Status'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Web Flags'), 
         'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start Date'),
