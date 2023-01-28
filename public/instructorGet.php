@@ -89,7 +89,10 @@ function ciniki_courses_instructorGet($ciniki) {
             . "IF((ciniki_course_instructors.webflags&0x01)=1, 'Hidden', 'Visible') AS web_visible, "
             . "ciniki_course_instructors.short_bio, "
             . "ciniki_course_instructors.full_bio, "
-            . "ciniki_course_instructors.url "
+            . "ciniki_course_instructors.url, "
+            . "ciniki_course_instructors.rating, "
+            . "ciniki_course_instructors.hourly_rate, "
+            . "ciniki_course_instructors.notes "
             . "FROM ciniki_course_instructors "
             . "WHERE ciniki_course_instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_course_instructors.id = '" . ciniki_core_dbQuote($ciniki, $args['instructor_id']) . "' "
@@ -97,7 +100,7 @@ function ciniki_courses_instructorGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'instructors', 'fname'=>'id', 'name'=>'instructor',
-                'fields'=>array('id', 'customer_id', 'first', 'last', 'status', 'name', 'permalink', 'primary_image_id', 'webflags', 'web_visible', 'short_bio', 'full_bio', 'url')),
+                'fields'=>array('id', 'customer_id', 'first', 'last', 'status', 'name', 'permalink', 'primary_image_id', 'webflags', 'web_visible', 'short_bio', 'full_bio', 'url', 'rating', 'hourly_rate', 'notes')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -106,6 +109,7 @@ function ciniki_courses_instructorGet($ciniki) {
             return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.courses.20', 'msg'=>'Unable to find instructor'));
         }
         $instructor = $rc['instructors'][0]['instructor'];
+        $instructor['hourly_rate'] = ($instructor['hourly_rate'] != 0 ? '$' . number_format($instructor['hourly_rate'], 2) : '');
 
         if( isset($args['images']) && $args['images'] == 'yes' ) {
             $strsql = "SELECT "
@@ -191,6 +195,35 @@ function ciniki_courses_instructorGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.156', 'msg'=>'Unable to load offerings', 'err'=>$rc['err']));
         }
         $instructor['offerings'] = isset($rc['offerings']) ? $rc['offerings'] : array();
+
+        //
+        // Get the tags
+        //
+        $strsql = "SELECT tag_type, tag_name AS names "
+            . "FROM ciniki_course_instructor_tags "
+            . "WHERE instructor_id = '" . ciniki_core_dbQuote($ciniki, $args['instructor_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY tag_type, tag_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.lapt', array(
+            array('container'=>'tags', 'fname'=>'tag_type', 
+                'fields'=>array('tag_type', 'names'), 'dlists'=>array('names'=>'::')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['tags']) ) {
+            foreach($rc['tags'] as $tags) {
+                if( $tags['tag_type'] == 10 ) {
+                    $instructor['levels'] = $tags['names'];
+                } elseif( $tags['tag_type'] == 20 ) {
+                    $instructor['mediums'] = $tags['names'];
+                } elseif( $tags['tag_type'] == 30 ) {
+                    $instructor['types'] = $tags['names'];
+                }
+            }
+        }
     }
    
     //
@@ -209,6 +242,37 @@ function ciniki_courses_instructorGet($ciniki) {
 
     if( isset($form_instructor) ) {
         $rsp['form_instructor'] = $form_instructor;
+    }
+
+    //
+    // Get the list of instructor tags
+    //
+    $strsql = "SELECT DISTINCT tag_type, tag_name AS names "
+        . "FROM ciniki_course_instructor_tags "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY tag_type, tag_name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+        array('container'=>'tags', 'fname'=>'tag_type', 'fields'=>array('type'=>'tag_type', 'names'), 
+            'dlists'=>array('names'=>'::')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $rsp['levels'] = array();
+    $rsp['mediums'] = array();
+    $rsp['types'] = array();
+    if( isset($rc['tags']) ) {
+        foreach($rc['tags'] as $tid => $type) {
+            if( $type['type'] == 10 ) {
+                $rsp['levels'] = explode('::', $type['names']);
+            } elseif( $type['type'] == 20 ) {
+                $rsp['mediums'] = explode('::', $type['names']);
+            } elseif( $type['type'] == 30 ) {
+                $rsp['types'] = explode('::', $type['names']);
+            }
+        }
     }
 
     return $rsp;

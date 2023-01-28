@@ -40,6 +40,12 @@ function ciniki_courses_instructorAdd(&$ciniki) {
         'short_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Short Bio'), 
         'full_bio'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Full Bio'), 
         'url'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'URL'), 
+        'rating'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Rating'), 
+        'hourly_rate'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'number', 'name'=>'Hourly Rate'), 
+        'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
+        'levels'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Levels'), 
+        'mediums'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Mediums'), 
+        'types'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Types'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -109,9 +115,92 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     }
 
     //
+    // Start transaction
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+    $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.courses');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $instructor_id = $rc['id'];
+
+    //
     // Add the instructor
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    return ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.instructor', $args, 0x07);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.courses.instructor', $args, 0x07);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.277', 'msg'=>'Unable to add instructor', 'err'=>$rc['err']));
+    }
+
+    //
+    // Update the levels
+    //
+    if( isset($args['levels']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.courses', 'instructor_tag', $args['tnid'],
+            'ciniki_course_instructor_tags', 'ciniki_course_history',
+            'instructor_id', $instructor_id, 10, $args['levels']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+            return $rc;
+        }
+    }
+
+    //
+    // Update the mediums
+    //
+    if( isset($args['mediums']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.courses', 'instructor_tag', $args['tnid'],
+            'ciniki_course_instructor_tags', 'ciniki_course_history',
+            'instructor_id', $instructor_id, 20, $args['mediums']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+            return $rc;
+        }
+    }
+
+    //
+    // Update the types
+    //
+    if( isset($args['types']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.courses', 'instructor_tag', $args['tnid'],
+            'ciniki_course_instructor_tags', 'ciniki_course_history',
+            'instructor_id', $instructor_id, 30, $args['types']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+            return $rc;
+        }
+    }
+
+    //
+    // Commit the transaction
+    //
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.courses');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+
+    //
+    // Update the last_change date in the tenant modules
+    // Ignore the result, as we don't want to stop user updates if this fails.
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'courses');
+
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.courses.instructor', 'object_id'=>$instructor_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'wng', 'indexObject', array('object'=>'ciniki.courses.instructor', 'object_id'=>$instructor_id));
+
+    return array('stat'=>'ok', 'id'=>$instructor_id);
 }
 ?>

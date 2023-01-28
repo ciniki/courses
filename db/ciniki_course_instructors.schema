@@ -27,6 +27,10 @@
 #
 # url:              The URL to the instructors website.
 #
+# rating:           The current rating assigned to the instructor.
+# hourly_rate:      The hourly rate for instructors, used to calculate costs.
+# notes:            The internal notes for an instructor.
+#
 # date_added:       The UTC date and time the record was added.
 # last_updated:     The UTC date and time the record was last changed;
 #
@@ -43,9 +47,12 @@ CREATE TABLE ciniki_course_instructors (
     short_bio varchar(6000) not null,
     full_bio text not null,
     url varchar(255) not null,
+    rating varchar(50) not null,
+    hourly_rate decimal(19,4) not null,
+    notes text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (tnid, customer_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

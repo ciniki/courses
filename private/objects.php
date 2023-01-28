@@ -90,6 +90,9 @@ function ciniki_courses_objects($ciniki) {
             'short_bio'=>array('name'=>'Synopsis', 'default'=>''),
             'full_bio'=>array('name'=>'Full Bio', 'default'=>''),
             'url'=>array('name'=>'Website', 'default'=>''),
+            'rating'=>array('name'=>'Rating', 'default'=>''),
+            'hourly_rate'=>array('name'=>'Hourly Rate', 'default'=>'0'),
+            'notes'=>array('name'=>'Notes', 'default'=>''),
             ),
         'history_table'=>'ciniki_course_history',
         );
@@ -109,6 +112,20 @@ function ciniki_courses_objects($ciniki) {
             'url'=>array('name'=>'Website', 'default'=>''),
             ),
         'history_table'=>'ciniki_course_history',
+        );
+    $objects['instructor_tag'] = array(
+        'name' => 'Instructor Tag',
+        'sync' => 'yes',
+        'o_name' => 'instructortag',
+        'o_container' => 'instructortags',
+        'table' => 'ciniki_course_instructor_tags',
+        'fields' => array(
+            'instructor_id' => array('name'=>'Instructor', 'ref'=>'ciniki.courses.instructor'),
+            'tag_type' => array('name'=>'Type'),
+            'tag_name' => array('name'=>'Name'),
+            'permalink' => array('name'=>'Permalink'),
+            ),
+        'history_table' => 'ciniki_course_history',
         );
     $objects['offering'] = array(
         'name'=>'Course Offering',

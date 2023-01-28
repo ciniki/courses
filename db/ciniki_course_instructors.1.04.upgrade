@@ -1,0 +1,7 @@
+#
+# Add additional fields for instructors
+#
+ALTER TABLE ciniki_course_instructors ADD COLUMN rating varchar(50) not null AFTER url;
+ALTER TABLE ciniki_course_instructors ADD COLUMN hourly_rate decimal(19,4) not null AFTER rating;
+ALTER TABLE ciniki_course_instructors ADD COLUMN notes text not null AFTER hourly_rate;
+ALTER TABLE ciniki_course_instructors COMMENT='v1.04';

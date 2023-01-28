@@ -585,6 +585,22 @@ function ciniki_courses_offeringGet($ciniki) {
                 $offering['nqueue'] = array();
             }
         }
+
+        //
+        // Get any expenses for offering
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0400) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'objectExpenses');
+            $rc = ciniki_sapos_hooks_objectExpenses($ciniki, $args['tnid'], array(
+                'object' => 'ciniki.courses.offering',
+                'object_id' => $offering['id'],
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.278', 'msg'=>'', 'err'=>$rc['err']));
+            }
+            $offering['expenses'] = isset($rc['expenses']) ? $rc['expenses'] : array();
+            $offering['expenses_total'] = isset($rc['total']) ? '$' . number_format($rc['total'], 2) : '$0';
+        }
     }
 
     $rsp = array('stat'=>'ok', 'offering'=>$offering);

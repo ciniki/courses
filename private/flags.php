@@ -25,7 +25,7 @@ function ciniki_courses_flags($ciniki, $modules) {
 //      0x0100
         array('flag'=>array('bit'=>'9', 'name'=>'Albums')), // Deprecated, Apr 2022
         array('flag'=>array('bit'=>'10', 'name'=>'Course Images')),
-//        array('flag'=>array('bit'=>'11', 'name'=>'')),
+        array('flag'=>array('bit'=>'11', 'name'=>'Rates & Expenses')),
 //        array('flag'=>array('bit'=>'12', 'name'=>'')),
 //      0x1000
         array('flag'=>array('bit'=>'13', 'name'=>'Course Mediums')),

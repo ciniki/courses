@@ -1,0 +1,5 @@
+#
+# Add field to track expenses for a course
+#
+ALTER TABLE ciniki_course_offerings ADD COLUMN expenses_amount decimal(19,4) not null AFTER form_id;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.09';
