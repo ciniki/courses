@@ -395,7 +395,7 @@ function ciniki_courses_main() {
                 case 2: return d.yearsold;
                 case 3: return d.invoice_status_text;
                 case 4: return d.price_name;
-                case 5: return d.registration_amount;
+                case 5: return M.formatDollar(d.registration_amount);
                 case 6: return d.submission_status == 90 ? 'Yes' : 'No';
             }
         } 
