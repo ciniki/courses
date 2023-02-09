@@ -589,7 +589,7 @@ function ciniki_courses_offeringGet($ciniki) {
         //
         // Get any sponsorships for offering
         //
-        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0400) ) {
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.sponsors', 0x10) ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'hooks', 'objectSponsorships');
             $rc = ciniki_sponsors_hooks_objectSponsorships($ciniki, $args['tnid'], array(
                 'object' => 'ciniki.courses.offering',
