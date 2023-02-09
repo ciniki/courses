@@ -587,6 +587,37 @@ function ciniki_courses_offeringGet($ciniki) {
         }
 
         //
+        // Get any sponsorships for offering
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0400) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'hooks', 'objectSponsorships');
+            $rc = ciniki_sponsors_hooks_objectSponsorships($ciniki, $args['tnid'], array(
+                'object' => 'ciniki.courses.offering',
+                'object_id' => $offering['id'],
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.280', 'msg'=>'', 'err'=>$rc['err']));
+            }
+            $offering['sponsorships'] = isset($rc['sponsorships']) ? $rc['sponsorships'] : array();
+            $offering['sponsorships_total'] = isset($rc['total']) ? '$' . number_format($rc['total'], 2) : '$0';
+        }
+
+        //
+        // Get any sponsorship Packages
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.sponsors', 0x10) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'hooks', 'objectPackages');
+            $rc = ciniki_sponsors_hooks_objectPackages($ciniki, $args['tnid'], array(
+                'object' => 'ciniki.courses.offering',
+                'object_id' => $offering['id'],
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.279', 'msg'=>'', 'err'=>$rc['err']));
+            }
+            $offering['sponsorshippackages'] = isset($rc['packages']) ? $rc['packages'] : array();
+        }
+
+        //
         // Get any expenses for offering
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0400) ) {
