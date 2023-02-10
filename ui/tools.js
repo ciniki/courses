@@ -8,16 +8,82 @@ function ciniki_courses_tools() {
     this.menu = new M.panel('Program Tools', 'ciniki_courses_tools', 'menu', 'mc', 'narrow', 'sectioned', 'ciniki.courses.tools.menu');
     this.menu.data = {};
     this.menu.sections = {
+        'tools':{'label':'Tools', 'list':{
+            'levels':{'label':'Update Levels', 'fn':'M.ciniki_courses_tools.fieldupdate.open(\'M.ciniki_courses_tools.menu.show();\',\'level\',\'Levels\');'},
+            'types':{'label':'Update Types', 'fn':'M.ciniki_courses_tools.fieldupdate.open(\'M.ciniki_courses_tools.menu.show();\',\'type\',\'Types\');'},
+            'categories':{'label':'Update Categories', 'fn':'M.ciniki_courses_tools.fieldupdate.open(\'M.ciniki_courses_tools.menu.show();\',\'category\',\'Categories\');'},
+            'mediums':{'label':'Update Mediums', 'fn':'M.ciniki_courses_tools.fieldupdate.open(\'M.ciniki_courses_tools.menu.show();\',\'medium\',\'Mediums\');'},
+            'ages':{'label':'Update Ages', 'fn':'M.ciniki_courses_tools.fieldupdate.open(\'M.ciniki_courses_tools.menu.show();\',\'ages\',\'Ages\');'},
+            }},
         'reports':{'label':'Reports', 'list':{
 //            'studentsummary':{'label':'Attendee Summary', 'fn':'M.ciniki_courses_tools.students.open(\'M.ciniki_courses_tools.menu.show();\');'},
             'students':{'label':'Student Registrations', 'fn':'M.ciniki_courses_tools.students.open(\'M.ciniki_courses_tools.menu.show();\');'},
-            'Sessions':{'label':'Program Sessions Summary', 'fn':'M.ciniki_courses_tools.sessions.open(\'M.ciniki_courses_tools.menu.show();\');'},
+            'sessions':{'label':'Program Sessions Summary', 'fn':'M.ciniki_courses_tools.sessions.open(\'M.ciniki_courses_tools.menu.show();\');'},
             }},
         };
     this.menu.open = function(cb) {
         this.show(cb);
     }
     this.menu.addClose('Back');
+
+    //
+    // The update field panel
+    //
+    this.fieldupdate = new M.panel('Update',
+        'ciniki_courses_tools', 'fieldupdate',
+        'mc', 'medium', 'sectioned', 'ciniki.courses.tools.fieldupdate');
+    this.fieldupdate.field = '';
+    this.fieldupdate.data = {};
+    this.fieldupdate.fieldname = '';
+    this.fieldupdate.sections = {
+        'items':{'label':'Fields', 'fields':{}},
+        'buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_courses_tools.fieldupdate.save();'},
+            }},
+        };
+    this.fieldupdate.fieldValue = function(s, i, d) {
+        return this.data[i].value;
+    }
+    this.fieldupdate.open = function(cb, field, label) {
+        if( label != null ) {
+            this.sections.items.label = 'Update ' + label;
+        }
+        if( field != null ) {
+            this.field = field;
+        }
+        M.api.getJSONCb('ciniki.courses.fieldValuesGet', {'tnid':M.curTenantID, 'field':this.field}, function(rsp) {
+            if( rsp['stat'] != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            } 
+            var p = M.ciniki_courses_tools.fieldupdate;
+            p.data = {};
+            p.sections.items.fields = {};
+            if( rsp.values != null ) {
+                for(i in rsp.values) {
+                    p.sections.items.fields[rsp.values[i].value] = {
+                        'label':rsp.values[i].value, 'type':'text',
+                        };
+                    p.data[rsp.values[i].value] = rsp.values[i];
+                }
+            }
+            p.refresh();
+            p.show(cb);
+            });
+    }
+    this.fieldupdate.save = function() {
+        var c = this.serializeForm('yes');
+        M.api.postJSONCb('ciniki.courses.fieldValuesUpdate', {'tnid':M.curTenantID, 'field':this.field}, c,
+            function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                } 
+                M.ciniki_courses_tools.fieldupdate.close();
+            });
+    };
+    this.fieldupdate.addButton('save', 'Save', 'M.ciniki_courses_tools.fieldupdate.save();');
+    this.fieldupdate.addClose('Cancel');
 
     //
     // The panel to display the student report
