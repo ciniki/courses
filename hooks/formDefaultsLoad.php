@@ -59,9 +59,9 @@ function ciniki_courses_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
                             //
                             // Check if field ref is for instructor and if the reference exists
                             //
-                            if( isset($field['field_ref']) && $field['field_ref'] != '' 
-                                && preg_match("/^ciniki\.courses\.instructor\.([^\.]+)/", $field['field_ref'], $m)
-                                && isset($refs[$field['field_ref']])
+                            if( isset($field['prefill_ref']) && $field['prefill_ref'] != '' 
+                                && preg_match("/^ciniki\.courses\.instructor\.([^\.]+)/", $field['prefill_ref'], $m)
+                                && isset($refs[$field['prefill_ref']])
                                 ) {
                                 if( isset($instructor[$m[1]]) ) {
                                     $form['sections'][$sid]['fields'][$fid]['default'] = $instructor[$m[1]];
