@@ -125,7 +125,6 @@ function ciniki_courses_instructorAdd(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $instructor_id = $rc['id'];
 
     //
     // Add the instructor
@@ -136,6 +135,7 @@ function ciniki_courses_instructorAdd(&$ciniki) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.277', 'msg'=>'Unable to add instructor', 'err'=>$rc['err']));
     }
+    $instructor_id = $rc['id'];
 
     //
     // Update the levels
