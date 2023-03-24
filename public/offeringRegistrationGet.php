@@ -188,7 +188,10 @@ function ciniki_courses_offeringRegistrationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceObjectItem');
         $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $args['tnid'], $rsp['registration']['invoice_id'], 
             'ciniki.courses.offering_registration', $rsp['registration']['id']);
-        if( $rc['stat'] != 'ok' ) {
+        // Skip if the invoice does not exist
+        // This happens when item is removed from invoice but registration still exists 
+        // and invoice_id does not get reset on registration.
+        if( $rc['stat'] != 'ok' && $rc['err']['code'] != 'ciniki.sapos.12' ) {
             return $rc;
         }
         if( isset($rc['invoice']) ) {
