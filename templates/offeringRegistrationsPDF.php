@@ -237,7 +237,9 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
             }
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
-                $student_information = $customer['first'] . ' ' . $customer['last'] . "\n";
+                $student_information = $customer['first'] . ' ' . $customer['last'] 
+                    . (isset($reg['new_student']) && $reg['new_student'] == 'yes' ? ' (New Student)' : '')
+                    . "\n";
                 if( isset($customer['phones']) ) {
                     $phones = "";
                     foreach($customer['phones'] as $phone) {

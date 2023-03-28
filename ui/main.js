@@ -411,7 +411,7 @@ function ciniki_courses_main() {
             }
             switch(j) {
                 case 0: return d.customer_name;
-                case 1: return d.student_name;
+                case 1: return d.student_name + (d.new_student != null ? ' (New)' : '');
                 case 2: return d.yearsold;
                 case 3: return d.invoice_status_text;
                 case 4: return d.price_name;

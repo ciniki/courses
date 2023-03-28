@@ -248,7 +248,9 @@ function ciniki_courses_templates_offeringAttendancePDF(&$ciniki, $tnid, $offeri
             }
             if( isset($rc['customer']) ) {
                 $customer = $rc['customer'];
-                $student_information = $customer['first'] . ' ' . $customer['last'] . "\n";
+                $student_information = $customer['first'] . ' ' . $customer['last'] 
+                    . (isset($reg['new_student']) && $reg['new_student'] == 'yes' ? ' (New Student)' : '')
+                    . "\n";
                 if( isset($customer['phones']) 
                     && isset($courses_settings['templates-attendance-phones']) 
                     && $courses_settings['templates-attendance-phones'] == 'yes'

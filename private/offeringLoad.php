@@ -43,6 +43,7 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
         . "ciniki_course_offerings.name AS offering_name, "
         . "ciniki_course_offerings.code AS offering_code, "
         . "ciniki_course_offerings.permalink, "
+        . "ciniki_course_offerings.start_date, "
         . "ciniki_course_offerings.status, "
         . "ciniki_course_offerings.status AS status_text, "
         . "ciniki_course_offerings.webflags, "
@@ -67,7 +68,7 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'offerings', 'fname'=>'id', 'name'=>'offering',
             'fields'=>array('id', 'offering_name', 'offering_code', 'permalink', 'status', 'status_text', 
-                'reg_flags', 'num_seats',
+                'reg_flags', 'num_seats', 'start_date',
                 'webflags', 'web_visible', 
                 'primary_image_id', 'course_id', 'course_name', 'course_code', 'level', 'type', 
                 'category', 'flags', 'short_description', 'long_description'),
@@ -344,6 +345,41 @@ function ciniki_courses_offeringLoad($ciniki, $tnid, $offering_id, $args) {
                 $offering['registrations'] = array();
             } else {
                 $offering['registrations'] = $rc['registrations'];
+            }
+        }
+
+        $student_ids = array();
+        foreach($offering['registrations'] as $reg) {
+            if( $reg['student_id'] > 0 ) {
+                $student_ids[] = $reg['student_id'];
+            }
+        }
+        if( count($student_ids) > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+            $strsql = "SELECT registrations.student_id, "
+                . "offerings.start_date "
+                . "FROM ciniki_course_offering_registrations AS registrations "
+                . "INNER JOIN ciniki_course_offerings AS offerings ON ("
+                    . "registrations.offering_id = offerings.id "
+                    . "AND offerings.start_date < '" . ciniki_core_dbQuote($ciniki, $offering['start_date']) . "' "
+                    . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "WHERE registrations.student_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $student_ids) . ") "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "ORDER BY registrations.student_id, offerings.start_date "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
+                array('container'=>'registrations', 'fname'=>'student_id', 'fields'=>array('student_id', 'start_date')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.284', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+            }
+            $last_classes = isset($rc['registrations']) ? $rc['registrations'] : array();
+            foreach($offering['registrations'] as $rid => $reg) {
+                if( !isset($last_classes[$reg['student_id']]) ) {
+                    $offering['registrations'][$rid]['new_student'] = 'yes';
+                }
             }
         }
     }
