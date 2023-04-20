@@ -92,7 +92,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.9', 'msg'=>'You already have an course with this name, please choose another name.'));
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.courses.9', 'msg'=>'You already have an course with this name, please choose another name.'));
         }
     }
     
