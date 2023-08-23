@@ -65,6 +65,7 @@ function ciniki_courses_reportStudents($ciniki) {
         . "customers.display_name, "
         . "DATE_FORMAT(offerings.start_date, '%b %d, %Y') AS start_date, "
         . "DATE_FORMAT(offerings.end_date, '%b %d, %Y') AS end_date, "
+        . "IFNULL(prices.unit_amount, 0) AS price_amount, "
         . "IFNULL(prices.name, '') AS price_name, "
         . "emails.email AS emails "
         . "FROM ciniki_course_offering_classes AS classes "
@@ -165,7 +166,11 @@ function ciniki_courses_reportStudents($ciniki) {
         foreach($customers as $student) {
             $col = 0;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $student['display_name'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $student['emails'], false);
+            if( isset($student['emails']) ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $student['emails'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $student['offering_code'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $student['course_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $student['offering_name'], false);

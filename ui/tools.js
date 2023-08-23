@@ -115,7 +115,7 @@ function ciniki_courses_tools() {
             case 1: return d.course_name;
             case 2: return d.start_date;
             case 3: return d.end_date;
-            case 4: return M.formatDollar(d.price_name);
+            case 4: return d.price_name;
         }
     }
     this.students.fieldValue = function(s, i, d) {
