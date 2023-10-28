@@ -31,7 +31,7 @@ function ciniki_courses_flags($ciniki, $modules) {
         array('flag'=>array('bit'=>'13', 'name'=>'Course Mediums')),
         array('flag'=>array('bit'=>'14', 'name'=>'Course Ages')),
         array('flag'=>array('bit'=>'15', 'name'=>'Course Categories')),
-//        array('flag'=>array('bit'=>'16', 'name'=>'')),
+        array('flag'=>array('bit'=>'16', 'name'=>'Course Levels')),
 //      0x010000
         array('flag'=>array('bit'=>'17', 'name'=>'Timeless Courses')),
         array('flag'=>array('bit'=>'18', 'name'=>'Session Details')),

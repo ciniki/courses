@@ -1245,6 +1245,7 @@ function ciniki_courses_main() {
         'statuses':{'label':'Status', 'type':'simplegrid', 'num_cols':1, 'aside':'yes', 'selected':'30',
             },
         'levels':{'label':'Levels', 'type':'simplegrid', 'num_cols':1, 'aside':'yes', 'selected':'__',
+            'visible':function() { return M.modFlagSet('ciniki.courses', 0x8000);},
             'collapsable':'yes', 'collapse':'all',
             },
         'types':{'label':'Types', 'type':'simplegrid', 'num_cols':1, 'aside':'yes', 'selected':'__',
