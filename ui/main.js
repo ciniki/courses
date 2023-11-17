@@ -519,7 +519,10 @@ function ciniki_courses_main() {
             return 'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.notification.open(\'M.ciniki_courses_main.offering.open();\',\'' + d.id + '\',M.ciniki_courses_main.offering.offering_id);");';
         }
         if( s == 'sponsorships' ) {
-            return 'event.stopPropagation();M.startApp(\'ciniki.sponsors.main\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'sponsorship_id\':\'' + d.id + '\'});';
+            if( d.sponsor_id > 0 ) {
+                return 'event.stopPropagation();M.startApp(\'ciniki.sponsors.main\',null,\'M.ciniki_events_main.event.open();\',\'mc\',{\'sponsor_id\':\'' + d.sponsor_id + '\'});';
+            }
+            return '';
         }
         if( s == 'sponsorshippackages' ) {
             return 'event.stopPropagation();M.startApp(\'ciniki.sponsors.settings\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'package_id\':\'' + d.id + '\'});';
