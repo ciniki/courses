@@ -126,9 +126,11 @@ function ciniki_courses_wng_accountRegistrationsProcess(&$ciniki, $tnid, &$reque
     $current_registrations = array();
     $past_registrations = array();
     foreach($registrations AS $registration) {
-        
         $registration['name'] = $registration['course_name'] . ' - ' . $registration['offering_name'];
-        if( $registration['student_id'] != $request['session']['customer']['id'] ) {
+        if( $registration['student_id'] > 0 
+            && $registration['student_id'] != $request['session']['customer']['id'] 
+            && $registration['student_name'] != '' 
+            ) {
             $registration['name'] .= ' - ' . $registration['student_name'];
         }
         if( ($registration['course_flags']&0x10) == 0x10 ) {
