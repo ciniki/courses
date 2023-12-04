@@ -23,7 +23,7 @@ function ciniki_courses_offeringPriceAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course Offering'),
-        'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
+        'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'available_to'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'1', 'name'=>'Available To'),
         'valid_from'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'type'=>'datetimetoutc',
             'name'=>'Valid From'),
