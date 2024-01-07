@@ -51,7 +51,6 @@ function ciniki_courses_courseHistory($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBit');
         return ciniki_core_dbGetModuleHistoryFlagBit($ciniki, 'ciniki.courses', 'ciniki_course_history', 
             $args['tnid'], 'ciniki_courses', $args['course_id'], 'flags', pow(2, ($m[1]-1)), 'No', 'Yes');
-
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
