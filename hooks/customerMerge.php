@@ -55,6 +55,31 @@ function ciniki_courses_hooks_customerMerge($ciniki, $tnid, $args) {
         $updated++;
     }
 
+    //
+    // Get the list of instructors
+    //
+    $strsql = "SELECT id, customer_id "
+        . "FROM ciniki_course_instructors "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'items');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.290', 'msg'=>'Unable to find course instructors', 'err'=>$rc['err']));
+    }
+    $items = $rc['rows'];
+    foreach($items as $i => $row) {
+        $update_args = array();
+        if( $row['customer_id'] == $args['secondary_customer_id'] ) {
+            $update_args['customer_id'] = $args['primary_customer_id'];
+        }
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.courses.instructor', $row['id'], $update_args, 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.122', 'msg'=>'Unable to update instructor.', 'err'=>$rc['err']));
+        }
+        $updated++;
+    }
+
     if( $updated > 0 ) {
         //
         // Update the last_change date in the tenant modules
