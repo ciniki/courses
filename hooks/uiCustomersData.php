@@ -120,6 +120,7 @@ function ciniki_courses_hooks_uiCustomersData($ciniki, $tnid, $args) {
     $rsp['tabs'][] = array(
         'id' => 'ciniki.courses.registrations',
         'label' => 'Programs',
+        'priority' => 3000,
         'sections' => $sections,
         );
     $sections = array();
