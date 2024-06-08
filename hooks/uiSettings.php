@@ -24,7 +24,7 @@ function ciniki_courses_hooks_uiSettings($ciniki, $tnid, $args) {
     //
     if( isset($ciniki['tenant']['modules']['ciniki.courses'])
         && (isset($args['permissions']['owners'])
-            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['ciniki.courses'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
