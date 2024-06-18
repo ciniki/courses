@@ -41,8 +41,11 @@ function ciniki_courses_main() {
             'sortTypes':[],
             'dataMaps':[],
             'noData':'No sessions',
-            'addTxt':'Add Session',
-            'addFn':'M.ciniki_courses_main.offering.open(\'M.ciniki_courses_main.offerings.open();\',0,0);'
+//            'topbuttons':{
+//                'add':{
+//                    'label':'Add Session',
+//                    'fn':'M.ciniki_courses_main.offering.open(\'M.ciniki_courses_main.offerings.open();\',0,0);'
+//                    }},
             },
     }
     this.offerings.liveSearchCb = function(s, i, v) {
@@ -208,14 +211,20 @@ function ciniki_courses_main() {
         'prices':{'label':'Prices', 'type':'simplegrid', 'num_cols':3, 'aside':'yes',
             'cellClasses':['multiline', 'alignright', 'alignright'],
             'noData':'No prices added',
-            'addTxt':'Add Price',
-            'addTopFn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.price.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);");',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Price',
+                    'fn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.price.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);");',
+                }},
             },
         'instructors':{'label':'Instructors', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
             'cellClasses':['multiline', 'alignright'],
             'noData':'No instructors added',
-            'addTxt':'Add Instructor',
-            'addTopFn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.oinstructor.open(\'M.ciniki_courses_main.offering.open();\',M.ciniki_courses_main.offering.offering_id,M.ciniki_courses_main.offering.course_id);");',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Instructor',
+                    'fn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.oinstructor.open(\'M.ciniki_courses_main.offering.open();\',M.ciniki_courses_main.offering.offering_id,M.ciniki_courses_main.offering.course_id);");',
+                    }},
             },
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'registrations', 'tabs':{
             'content':{'label':'Details', 
@@ -276,8 +285,11 @@ function ciniki_courses_main() {
             'headerValues':['Date', 'Start Time', 'End Time'],
             'sortable':'yes',
             'sortTypes':['date','number', 'number'],
-            'addTxt':'Add Class',
-            'addFn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.cclass.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id,M.ciniki_courses_main.offering.course_id);");',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Class',
+                    'fn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.cclass.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id,M.ciniki_courses_main.offering.course_id);");',
+                    }},
             },
         '_synopsis':{'label':'Synopsis', 
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'content' ? 'yes' : 'hidden'; },
@@ -311,23 +323,32 @@ function ciniki_courses_main() {
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'files' ? 'yes' : 'hidden'; },
             'headerValues':['File', 'Visible', 'Paid'],
             'noData':'No files',
-            'addTxt':'Add Session File',
-            'addFn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.offeringfile.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);");',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Session File',
+                    'fn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.offeringfile.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);");',
+                    }},
             },
         'images':{'label':'Gallery', 'type':'simplethumbs',
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'images' ? 'yes' : 'hidden';},
             },
         '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'images' ? 'yes' : 'hidden';},
-            'addTxt':'Add Image',
-            'addFn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.offeringimage.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);");',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Image',
+                    'fn':'M.ciniki_courses_main.offering.save("M.ciniki_courses_main.offeringimage.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);");',
+                    }},
             },
         'notifications':{'label':'Notifications', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'notifications' ? 'yes' : 'hidden';},
             'headerValues':['Name', 'Trigger', 'Offset', 'Time', 'Subject'],
             'noData':'No notifications setup',
-            'addTxt':'Add Notification',
-            'addFn':'M.ciniki_courses_main.notification.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Notification',
+                    'fn':'M.ciniki_courses_main.notification.open(\'M.ciniki_courses_main.offering.open();\',0,M.ciniki_courses_main.offering.offering_id);',
+                    }},
             },
         'nqueue':{'label':'Notification Queue', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'notifications' ? 'yes' : 'hidden';},
@@ -350,16 +371,22 @@ function ciniki_courses_main() {
             'headerValues':['Name', 'Category', 'Visible'],
             'cellClasses':['', '', ''],
             'noData':'No sponsorship packages',
-            'addTxt':'Add Sponsorship Package',
-            'addTopFn':'M.startApp(\'ciniki.sponsors.settings\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'package_id\':0,\'object\':\'ciniki.courses.offering\',\'object_id\':M.ciniki_courses_main.offering.offering_id});',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Sponsorship Package',
+                    'fn':'M.startApp(\'ciniki.sponsors.settings\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'package_id\':0,\'object\':\'ciniki.courses.offering\',\'object_id\':M.ciniki_courses_main.offering.offering_id});',
+                    }},
             },
         'expenses':{'label':'Expenses', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_courses_main.offering.sections._tabs.selected == 'expenses' ? 'yes' : 'hidden';},
             'headerValues':['Date', 'Expense', 'Amount'],
             'cellClasses':['', 'multiline', ''],
             'noData':'No expenses',
-            'addTxt':'Add Expenses',
-            'addTopFn':'M.startApp(\'ciniki.sapos.main\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'expense_id\':0,\'object\':\'ciniki.courses.offering\',\'object_id\':M.ciniki_courses_main.offering.offering_id});',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Expenses',
+                    'fn':'M.startApp(\'ciniki.sapos.main\',null,\'M.ciniki_courses_main.offering.open();\',\'mc\',{\'expense_id\':0,\'object\':\'ciniki.courses.offering\',\'object_id\':M.ciniki_courses_main.offering.offering_id});',
+                    }},
             },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_courses_main.offering.save();'},
@@ -1273,14 +1300,18 @@ function ciniki_courses_main() {
             'hint':'Search programs',
             'noData':'No programs found',
             },
-        'courses':{'label':'Program', 'type':'simplegrid', 'num_cols':1,
+        'courses':{'label':'Programs', 'type':'simplegrid', 'num_cols':1,
             'headerValues':[],
-            'noData':'No program',
+            'noData':'No programs',
             'sortable':'yes',
             'sortTypes':[],
             'dataMaps':[],
-            'addTxt':'Add Program',
-            'addFn':'M.ciniki_courses_main.course.open(\'M.ciniki_courses_main.courses.open();\',0,null,0);'
+            'topbuttons':{
+                'add':{
+                    'label':'Add Program',
+                    'fn':'M.ciniki_courses_main.course.open(\'M.ciniki_courses_main.courses.open();\',0,null,0);',
+                    },
+                },
             },
     }
     this.courses.liveSearchCb = function(s, i, v) {
@@ -1492,16 +1523,22 @@ function ciniki_courses_main() {
             'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'files' ? 'yes' : 'hidden'; },
             'headerValues':['File', 'Visible', 'Paid'],
             'noData':'No files',
-            'addTxt':'Add File',
-            'addFn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.coursefile.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
+            'topbuttons':{
+                'add':{
+                    'label':'Add File',
+                    'fn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.coursefile.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
+                    }},
             },
         'images':{'label':'Gallery', 'type':'simplethumbs',
             'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'images' ? 'yes' : 'hidden';},
             },
         '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
             'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'images' ? 'yes' : 'hidden';},
-            'addTxt':'Add Image',
-            'addFn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.courseimage.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Image',
+                    'fn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.courseimage.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
+                    }},
             },
         'offerings':{'label':'Active Sessions', 'type':'simplegrid', 'num_cols':7,
             'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'offerings' ? 'yes' : 'hidden';},
@@ -1510,8 +1547,11 @@ function ciniki_courses_main() {
             'sortable':'yes',
             'sortTypes':[],
             'dataMaps':[],
-            'addTxt':'Add Session',
-            'addFn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.offering.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Session',
+                    'fn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.offering.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
+                    }},
             },
         'archived':{'label':'Archived Sessions', 'type':'simplegrid', 'num_cols':7,
             'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'offerings' && M.ciniki_courses_main.course.data.archived != null ? 'yes' : 'hidden';},
@@ -1520,8 +1560,8 @@ function ciniki_courses_main() {
             'sortable':'yes',
             'sortTypes':[],
             'dataMaps':[],
-            'addTxt':'Add Session',
-            'addFn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.offering.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
+//            'addTxt':'Add Session',
+//            'addFn':'M.ciniki_courses_main.course.save("M.ciniki_courses_main.offering.open(\'M.ciniki_courses_main.course.open();\',0,M.ciniki_courses_main.course.course_id);");',
             },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_courses_main.course.save();'},
@@ -1897,8 +1937,11 @@ function ciniki_courses_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'date'],
             'cellClasses':['', '', 'aligncenter', 'alignright'],
-            'addTxt':'Add Instructor',
-            'addFn':'M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.instructors.open();\',0,0);',
+            'topbuttons':{
+                'add':{
+                    'label':'Add Instructor',
+                    'fn':'M.ciniki_courses_main.instructor.open(\'M.ciniki_courses_main.instructors.open();\',0,0);',
+                    }},
             },
     };
     this.instructors.sectionData = function(s) {
@@ -1994,19 +2037,17 @@ function ciniki_courses_main() {
     this.instructor.offering_instructor_id = 0;
     this.instructor.instructor_id = 0;
     this.instructor.form_submission_id = 0;
-    this.instructor.customer_id = 0;
     this.instructor.sections = {
         '_image':{'label':'', 'type':'imageform', 'aside':'yes', 'fields':{
             'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
         }},
-        'customer_details':{'label':'Instructor', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
+        'customer_details':{'label':'Customer', 'type':'customer', 'num_cols':2, 'aside':'yes',
+            'customer_id':0,
+            'customer_field':'customer_id',
             'cellClasses':['label', ''],
-            'addTxt':'Edit',
-            'addFn':'M.ciniki_courses_main.instructor.editCustomer();',
-            'changeTxt':'Change Customer',
-            'changeFn':'M.ciniki_courses_main.instructor.changeCustomer();',
+            'noData':'No Customer Attached',
             },
-        'instructor':{'label':'', 'aside':'yes', 'fields':{
+        'instructor':{'label':'Instructor Details', 'aside':'yes', 'fields':{
             'first':{'label':'First', 'type':'text',
                 'visible':function() { return M.ciniki_courses_main.instructor.data.customer_id > 0 ? 'no' : 'yes'; },
                 },
@@ -2100,21 +2141,6 @@ function ciniki_courses_main() {
     this.instructor.rowFn = function() {
         return '';
     }
-    this.instructor.editCustomer = function() {
-        this.save("M.startApp('ciniki.customers.edit',null,'M.ciniki_courses_main.instructor.open();','mc',{'next':'M.ciniki_courses_main.instructor.updateCustomer', 'action':'edit', 'customer_id':M.ciniki_courses_main.instructor.data.customer_id});");
-    }
-    this.instructor.changeCustomer = function() {
-        this.save("M.startApp('ciniki.customers.edit',null,'M.ciniki_courses_main.instructor.open();','mc',{'next':'M.ciniki_courses_main.instructor.updateCustomer', 'action':'change', 'current_id':M.ciniki_courses_main.instructor.data.customer_id,'customer_id':0});");
-    }
-    this.instructor.updateCustomer = function(cid) {
-        M.api.getJSONCb('ciniki.courses.instructorUpdate', {'tnid':M.curTenantID, 'instructor_id':this.instructor_id, 'customer_id':cid}, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                } 
-                M.ciniki_courses_main.instructor.open();
-            });
-    }
     this.instructor.switchTab = function(t) {
         this.sections._tabs.selected = t;
         this.refreshSection('_tabs');
@@ -2130,18 +2156,10 @@ function ciniki_courses_main() {
             }
             var p = M.ciniki_courses_main.instructor;
             p.data = rsp.instructor;
+            p.sections.customer_details.customer_id = rsp.instructor.customer_id;
             p.sections._levels.fields.levels.tags = rsp.levels;
             p.sections._mediums.fields.mediums.tags = rsp.mediums;
             p.sections._types.fields.types.tags = rsp.types;
-            if( rsp.instructor.customer_id > 0 ) {
-                p.customer_id = rsp.instructor.customer_id;
-                p.sections.customer_details.addTxt = 'Edit Customer';
-                p.sections.customer_details.changeTxt = 'Change Customer';
-            } else {
-                p.customer_id = 0;
-                p.sections.customer_details.addTxt = 'Add Customer';
-                p.sections.customer_details.changeTxt = '';
-            }
             p.refresh();
             p.show(cb);
             if( rsp.form_instructor != null ) {
