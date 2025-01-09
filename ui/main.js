@@ -1531,9 +1531,9 @@ function ciniki_courses_main() {
             },
         'images':{'label':'Gallery', 'type':'simplethumbs',
             'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'images' ? 'yes' : 'hidden';},
-            },
-        '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
-            'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'images' ? 'yes' : 'hidden';},
+//            },
+//        '_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
+//            'visible':function() { return M.ciniki_courses_main.course.sections._tabs.selected == 'images' ? 'yes' : 'hidden';},
             'topbuttons':{
                 'add':{
                     'label':'Add Image',
