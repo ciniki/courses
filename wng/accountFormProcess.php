@@ -168,7 +168,7 @@ function ciniki_courses_wng_accountFormProcess(&$ciniki, $tnid, &$request, $item
     //
     // Apply defaults if no submission
     //
-    if( $form['submission_id'] == 0 ) {
+    if( $form['submission_id'] == 0 || $form['submission_id'] == 'new' ) {
         //
         // Create new submission
         //
@@ -225,7 +225,7 @@ function ciniki_courses_wng_accountFormProcess(&$ciniki, $tnid, &$request, $item
             return array('stat'=>'ok', 'blocks'=>array(array(
                 'type' => 'msg', 
                 'level' => 'error',
-                'content' => "Error, unable to save form."
+                'content' => "Error, unable to parse form."
                 )));
         }
 
