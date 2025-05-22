@@ -166,7 +166,7 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
         $height = $pdf->header_image->getImageHeight();
         $width = $pdf->header_image->getImageWidth();
         $image_ratio = $width/$height;
-        $img_width = 70;
+        $img_width = 50;
         $available_ratio = $img_width/40;
         // Check if the ratio of the image will make it too large for the height,
         // and scaled based on either height or width.
@@ -182,10 +182,10 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
     //
     // Add the information to the first page
     //
-    $w = array(25, 75);
+    $w = array(25, 95);
     foreach($pdf->header_details as $detail) {
         $pdf->SetFillColor(224);
-        $pdf->SetX($pdf->left_margin + 80);
+        $pdf->SetX($pdf->left_margin + 60);
         $pdf->SetFont('', 'B');
         $pdf->Cell($w[0], 6, $detail['label'], 1, 0, 'L', 1);
         $pdf->SetFillColor(255);
@@ -240,7 +240,10 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
                 $student_information = $customer['first'] . ' ' . $customer['last'] 
                     . (isset($reg['new_student']) && $reg['new_student'] == 'yes' ? ' (New Student)' : '')
                     . "\n";
-                if( isset($customer['phones']) ) {
+                if( isset($customer['phones']) 
+                    && isset($courses_settings['templates-classlist-phones']) 
+                    && $courses_settings['templates-classlist-phones'] == 'yes'
+                    ) {
                     $phones = "";
                     foreach($customer['phones'] as $phone) {
                         if( count($customer['phones']) > 1 ) {
@@ -260,7 +263,10 @@ function ciniki_courses_templates_offeringRegistrationsPDF(&$ciniki, $tnid, $off
                         $student_information .= "Phone: \n";
                     }
                 }
-                if( isset($customer['emails']) ) {
+                if( isset($customer['emails']) 
+                    && isset($courses_settings['templates-classlist-emails']) 
+                    && $courses_settings['templates-classlist-emails'] == 'yes'
+                    ) {
                     $emails = '';
                     $comma = '';
                     foreach($customer['emails'] as $e => $email) {

@@ -91,7 +91,7 @@ function ciniki_courses_offeringRegistrations($ciniki) {
 
         $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
         if( isset($rc['pdf']) ) {
-            $rc['pdf']->Output($filename . '.pdf', 'D');
+            $rc['pdf']->Output($filename . '.pdf', 'I');
         }
     }
 

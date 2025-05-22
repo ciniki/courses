@@ -70,6 +70,8 @@ function ciniki_courses_settingsUpdate(&$ciniki) {
         'course-registration-details',
         'course-registration-more-details',
         'default-header-image',
+        'templates-classlist-phones',
+        'templates-classlist-emails',
         'templates-attendance-phones',
         'templates-attendance-emails',
         );
