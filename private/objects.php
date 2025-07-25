@@ -231,7 +231,7 @@ function ciniki_courses_objects($ciniki) {
         'table'=>'ciniki_course_offering_prices',
         'fields'=>array(
             'offering_id'=>array('name'=>'Offering', 'ref'=>'ciniki.courses.offering'),
-            'name'=>array('name'=>'Name'),
+            'name'=>array('name'=>'Name', 'default'=>''),
             'available_to'=>array('name'=>'Available To', 'default'=>'1'),
             'valid_from'=>array('name'=>'Valid From', 'default'=>''),
             'valid_to'=>array('name'=>'Valid To', 'default'=>''),

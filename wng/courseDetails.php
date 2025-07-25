@@ -39,6 +39,7 @@ function ciniki_courses_wng_courseDetails($ciniki, $tnid, $request, $permalink) 
         . "if( (ciniki_courses.flags&0x10) = 0x10, 'yes', 'no') AS timeless, "
         . "ciniki_courses.level, "
         . "ciniki_courses.type, "
+        . "ciniki_courses.category, "
         . "ciniki_courses.category AS medium, "
         . "ciniki_courses.short_description AS synopsis, "
         . "ciniki_courses.long_description, "
