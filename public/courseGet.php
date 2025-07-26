@@ -60,6 +60,7 @@ function ciniki_courses_courseGet($ciniki) {
             'code' => '',
             'status' => 10,
             'primary_image_id' => isset($form_course['primary_image_id']) ? $form_course['primary_image_id'] : 0,
+            'subcategory_id' => isset($form_course['subcategory_id']) ? $form_course['subcategory_id'] : '',
             'level' => isset($form_course['level']) ? $form_course['level'] : '',
             'type' => isset($form_course['type']) ? $form_course['type'] : '',
             'category' => isset($form_course['category']) ? $form_course['category'] : '',
@@ -82,6 +83,7 @@ function ciniki_courses_courseGet($ciniki) {
             . "ciniki_courses.code, "
             . "ciniki_courses.status, "
             . "ciniki_courses.primary_image_id, "
+            . "ciniki_courses.subcategory_id, "
             . "ciniki_courses.level, "
             . "ciniki_courses.type, "
             . "ciniki_courses.category, "
@@ -99,7 +101,7 @@ function ciniki_courses_courseGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-                'fields'=>array('id', 'name', 'code', 'status', 'primary_image_id', 
+                'fields'=>array('id', 'name', 'code', 'status', 'primary_image_id', 'subcategory_id',
                     'level', 'type', 'category', 'medium', 'ages',
                     'flags', 'short_description', 'long_description', 'materials_list', 'paid_content',
                     )),
