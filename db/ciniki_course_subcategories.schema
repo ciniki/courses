@@ -1,0 +1,33 @@
+#
+# Description
+# -----------
+# The sub categories.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_course_subcategories (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    category_id int not null,
+    name varchar(250) not null,
+    permalink varchar(250) not null,
+    sequence int not null,
+    image_id int not null,
+    synopsis varchar(2000) not null,
+    description text not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

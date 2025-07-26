@@ -225,6 +225,32 @@ function ciniki_courses_courseGet($ciniki) {
         }
     }
 
-    return array('stat'=>'ok', 'course'=>$course);
+    $rsp = array('stat'=>'ok', 'course'=>$course);
+
+    //
+    // Get the list of subcategories
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x100000) ) {
+        $strsql = "SELECT subcategories.id, "
+            . "CONCAT_WS(' - ', categories.name, subcategories.name) AS name "
+            . "FROM ciniki_course_categories AS categories "
+            . "INNER JOIN ciniki_course_subcategories AS subcategories ON ("
+                . "categories.id = subcategories.category_id "
+                . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+            array('container'=>'org_subcategories', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.288', 'msg'=>'Unable to load org_subcategories', 'err'=>$rc['err']));
+        }
+        $rsp['org_subcategories'] = isset($rc['org_subcategories']) ? $rc['org_subcategories'] : array();
+    }
+
+    return $rsp;
 }
 ?>

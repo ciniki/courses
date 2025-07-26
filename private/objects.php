@@ -23,6 +23,7 @@ function ciniki_courses_objects($ciniki) {
             'permalink'=>array('name'=>'Permalink'),
             'status'=>array('name'=>'Status', 'default'=>'10'),
             'primary_image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
+            'subcategory_id'=>array('name'=>'Subcategeory', 'default'=>'0'),
             'level'=>array('name'=>'Level', 'default'=>''),
             'type'=>array('name'=>'Type', 'default'=>''),
             'category'=>array('name'=>'Category', 'default'=>''),
@@ -33,6 +34,39 @@ function ciniki_courses_objects($ciniki) {
             'long_description'=>array('name'=>'Description', 'default'=>''),
             'materials_list'=>array('name'=>'Materials List', 'default'=>''),
             'paid_content'=>array('name'=>'Paid Content', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_course_history',
+        );
+    $objects['category'] = array(
+        'name'=>'Category',
+        'sync'=>'yes',
+        'o_name' => 'category',
+        'o_container' => 'categories',
+        'table'=>'ciniki_course_categories',
+        'fields'=>array(
+            'name'=>array('name'=>'Name'),
+            'permalink'=>array('name'=>'Permalink'),
+            'sequence'=>array('name'=>'Order', 'default'=>'1'),
+            'image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
+            'synopsis'=>array('name'=>'Synopsis', 'default'=>''),
+            'description'=>array('name'=>'Description', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_course_history',
+        );
+    $objects['subcategory'] = array(
+        'name'=>'Subcategory',
+        'sync'=>'yes',
+        'o_name' => 'subcategory',
+        'o_container' => 'subcategories',
+        'table'=>'ciniki_course_subcategories',
+        'fields'=>array(
+            'category_id'=>array('name'=>'Category', 'ref'=>'ciniki.courses.category'),
+            'name'=>array('name'=>'Name'),
+            'permalink'=>array('name'=>'Permalink'),
+            'sequence'=>array('name'=>'Order', 'default'=>'1'),
+            'image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
+            'synopsis'=>array('name'=>'Synopsis', 'default'=>''),
+            'description'=>array('name'=>'Description', 'default'=>''),
             ),
         'history_table'=>'ciniki_course_history',
         );
