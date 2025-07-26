@@ -34,6 +34,7 @@ function ciniki_courses_courseAdd(&$ciniki) {
         'code'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'yes', 'name'=>'Status'), 
         'primary_image_id'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Image'), 
+        'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Subcategory'), 
         'level'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Level'), 
         'type'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Type'), 
         'category'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'), 
