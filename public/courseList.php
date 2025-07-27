@@ -73,7 +73,9 @@ function ciniki_courses_courseList($ciniki) {
     // Setup the filter sql
     //
     $filter_sql = '';
-    if( isset($args['status']) && $args['status'] != '__' ) {
+    if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x100000)
+        && isset($args['status']) && $args['status'] != '__' 
+        ) {
         $filter_sql .= "AND courses.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' ";
     }
     if( isset($args['level']) && $args['level'] != '__' ) {
