@@ -2809,17 +2809,21 @@ function ciniki_courses_main() {
         this.offerings.sections.offerings.dataMaps.push('status_text');
         this.offerings.sections.offerings.headerValues.push('Status');
         this.offerings.sections.offerings.sortTypes.push('text');
-        this.courses.sections.courses.dataMaps.push('level');
-        this.courses.sections.courses.headerValues.push('Level');
-        this.courses.sections.courses.sortTypes.push('text');
+        if( M.modFlagOn('ciniki.courses', 0x8000) ) {
+            this.courses.sections.courses.dataMaps.push('level');
+            this.courses.sections.courses.headerValues.push('Level');
+            this.courses.sections.courses.sortTypes.push('text');
+        }
         if( M.modFlagOn('ciniki.courses', 0x10) ) {
             this.courses.sections.courses.dataMaps.push('type');
             this.courses.sections.courses.headerValues.push('Type');
             this.courses.sections.courses.sortTypes.push('text');
         }
-        this.courses.sections.courses.dataMaps.push('category');
-        this.courses.sections.courses.headerValues.push('Category');
-        this.courses.sections.courses.sortTypes.push('text');
+        if( M.modFlagOn('ciniki.courses', 0x4000) ) {
+            this.courses.sections.courses.dataMaps.push('category');
+            this.courses.sections.courses.headerValues.push('Category');
+            this.courses.sections.courses.sortTypes.push('text');
+        }
         if( M.modFlagOn('ciniki.courses', 0x1000) ) {
             this.courses.sections.courses.dataMaps.push('medium');
             this.courses.sections.courses.headerValues.push('Medium');
