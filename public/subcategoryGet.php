@@ -22,6 +22,7 @@ function ciniki_courses_subcategoryGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'subcategory_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Subcategory'),
+        'category_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -59,11 +60,21 @@ function ciniki_courses_subcategoryGet($ciniki) {
             'category_id'=>'',
             'name'=>'',
             'permalink'=>'',
+            'category_id' => (isset($args['category_id']) && $args['category_id'] > 0 ? $args['category_id'] : 0),
             'sequence'=>'1',
             'image_id'=>'0',
             'synopsis'=>'',
             'description'=>'',
         );
+
+        if( isset($args['category_id']) && $args['category_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesNext');
+            $rc = ciniki_core_sequencesNext($ciniki, $args['tnid'], 'ciniki.courses.subcategory', 'category_id', $args['category_id']);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $subcategory['sequence'] = $rc['sequence'];
+        }
     }
 
     //

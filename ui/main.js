@@ -2551,6 +2551,7 @@ function ciniki_courses_main() {
     //
     this.subcategory = new M.panel('Category', 'ciniki_courses_main', 'subcategory', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.courses.main.subcategory');
     this.subcategory.data = null;
+    this.subcategory.category_id = 0;
     this.subcategory.subcategory_id = 0;
     this.subcategory.nplist = [];
     this.subcategory.sections = {
@@ -2585,10 +2586,11 @@ function ciniki_courses_main() {
     this.subcategory.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.courses.subcategoryHistory', 'args':{'tnid':M.curTenantID, 'subcategory_id':this.subcategory_id, 'field':i}};
     }
-    this.subcategory.open = function(cb, cid, list) {
-        if( cid != null ) { this.subcategory_id = cid; }
+    this.subcategory.open = function(cb, scid, cid, list) {
+        if( scid != null ) { this.subcategory_id = scid; }
+        if( cid != null ) { this.category_id = cid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.courses.subcategoryGet', {'tnid':M.curTenantID, 'subcategory_id':this.subcategory_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.courses.subcategoryGet', {'tnid':M.curTenantID, 'category_id':this.category_id, 'subcategory_id':this.subcategory_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
