@@ -92,7 +92,7 @@ function ciniki_courses_wng_courseDetails($ciniki, $tnid, $request, $permalink) 
         . "AND offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $course['id']) . "' "
         . "AND offerings.status = 10 "    // Active offering
         . "AND (offerings.webflags&0x01) = 0 "    // Visible
-        . "ORDER BY offerings.start_date, offerings.code, offerings.name "
+        . "ORDER BY offerings.sequence, offerings.start_date, offerings.code, offerings.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
