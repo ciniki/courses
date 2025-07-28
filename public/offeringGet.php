@@ -81,12 +81,22 @@ function ciniki_courses_offeringGet($ciniki) {
 
 
     if( $args['offering_id'] == 0 ) {
+        $sequence = 1;
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x100000) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesNext');
+            $rc = ciniki_core_sequencesNext($ciniki, $args['tnid'], 'ciniki.courses.offering', 'course_id', $args['course_id']);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $sequence = $rc['sequence'];
+        }
         $offering = array(
             'course_id' => isset($args['course_id']) ? $args['course_id'] : 0,
             'name' => '',
             'code' => '',
             'permalink' => '',
             'status' => 10,
+            'sequence' => $sequence,
             'webflags' => 0,
             'start_date' => '',
             'end_date' => '',
@@ -150,6 +160,7 @@ function ciniki_courses_offeringGet($ciniki) {
             . "ciniki_course_offerings.permalink, "
             . "ciniki_course_offerings.status, "
             . "ciniki_course_offerings.status AS status_text, "
+            . "ciniki_course_offerings.sequence, "
             . "ciniki_course_offerings.webflags, "
             . "ciniki_course_offerings.reg_flags, "
             . "ciniki_course_offerings.num_seats, "
@@ -188,7 +199,7 @@ function ciniki_courses_offeringGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'offerings', 'fname'=>'id',
-                'fields'=>array('id', 'name', 'code', 'permalink', 'status', 'status_text', 
+                'fields'=>array('id', 'name', 'code', 'permalink', 'status', 'status_text', 'sequence',
                     'reg_flags', 'num_seats', 'start_date', 'start_date_unformatted', 'end_date', 'dt_end_reg', 
                     'condensed_date', 'webflags', 'web_visible', 
                     'primary_image_id', 'synopsis', 'content', 'materials_list', 'paid_content', 'dt_end_paid', 'form_id',

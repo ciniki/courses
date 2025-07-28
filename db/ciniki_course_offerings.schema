@@ -21,6 +21,8 @@
 #                       60 - Cancelled
 #                       90 - Archived
 #               
+# sequence:         The order to display the offering, used when in hierachy structure
+#
 # webflags:         The webflags for each offering.
 #
 #                       0x01 - Hidden, do not display on website.
@@ -68,6 +70,7 @@ CREATE TABLE ciniki_course_offerings (
     code varchar(50) not null,
     permalink varchar(150) not null,
     status tinyint unsigned not null,
+    sequence tinyint unsigned not null,
     webflags tinyint unsigned not null,
     start_date date not null,
     end_date date not null,
@@ -88,4 +91,4 @@ CREATE TABLE ciniki_course_offerings (
     primary key (id),
     index (course_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.09';
+) ENGINE='InnoDB', COMMENT='v1.10';

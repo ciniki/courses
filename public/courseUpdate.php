@@ -25,6 +25,7 @@ function ciniki_courses_courseUpdate(&$ciniki) {
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'), 
         'code'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'), 
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'), 
         'primary_image_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Image'), 
         'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Subcategory'), 
         'level'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Level'), 
@@ -53,24 +54,36 @@ function ciniki_courses_courseUpdate(&$ciniki) {
         return $rc;
     }
 
+    //
+    // Load the subcategory
+    //
+    $strsql = "SELECT courses.id, "
+        . "courses.subcategory_id, "
+        . "courses.code, "
+        . "courses.name, "
+        . "courses.sequence "
+        . "FROM ciniki_courses AS courses "
+        . "WHERE courses.id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
+        . "AND courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'course');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.305', 'msg'=>'Unable to load course', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['course']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.307', 'msg'=>'Unable to find requested course'));
+    }
+    $course = $rc['course'];
+
+    //
+    // Check permalink
+    //
     if( (isset($args['code']) || isset($args['name'])) && (!isset($args['permalink']) || $args['permalink'] == '') ) {
         if( !isset($args['code']) || !isset($args['name']) ) {  
-            //
-            // Get original
-            //
-            $strsql = "SELECT code, name "
-                . "FROM ciniki_courses "
-                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['course_id']) . "' "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'course');
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
             if( !isset($args['code']) ) {
-                $name = $args['name'] . ($rc['course']['code'] != '' ? '-' . $rc['course']['code'] : '');
+                $name = $args['name'] . ($course['code'] != '' ? '-' . $course['code'] : '');
             } else {
-                $name = $rc['course']['name'] . ($args['code'] != '' ? '-' . $args['code'] : '');
+                $name = $course['name'] . ($args['code'] != '' ? '-' . $args['code'] : '');
             }
         } else {
             $name = $args['name'] . ($args['code'] != '' ? '-' . $args['code'] : '');
@@ -104,6 +117,19 @@ function ciniki_courses_courseUpdate(&$ciniki) {
     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.courses.course', $args['course_id'], $args, 0x07);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.110', 'msg'=>'Unable to update course', 'err'=>$rc['err']));
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.courses.course', 
+            'subcategory_id', $course['subcategory_id'], $args['sequence'], $course['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //

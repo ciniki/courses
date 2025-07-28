@@ -39,6 +39,25 @@ function ciniki_courses_categoryUpdate(&$ciniki) {
         return $rc;
     }
 
+    //
+    // Load the category
+    //
+    $strsql = "SELECT categories.id, "
+        . "categories.name, "
+        . "categories.sequence "
+        . "FROM ciniki_course_categories AS categories "
+        . "WHERE categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'category');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.305', 'msg'=>'Unable to load category', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['category']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.306', 'msg'=>'Unable to find requested category'));
+    }
+    $category = $rc['category'];
+
     if( isset($args['name']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
         $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
@@ -80,6 +99,19 @@ function ciniki_courses_categoryUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
         return $rc;
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.courses.category', 
+            null, null, $args['sequence'], $category['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+            return $rc;
+        }
     }
 
     //

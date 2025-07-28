@@ -109,6 +109,7 @@ function ciniki_courses_courseList($ciniki) {
         . "courses.permalink, "
         . "courses.status, "
         . "courses.status AS status_text, "
+        . "courses.sequence, "
         . "courses.level, "
         . "courses.type, "
         . "courses.category, "
@@ -125,12 +126,12 @@ function ciniki_courses_courseList($ciniki) {
         . "WHERE courses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . $filter_sql
         . "GROUP BY courses.id "
-        . "ORDER BY courses.name, courses.code "
+        . "ORDER BY courses.sequence, courses.name, courses.code "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'courses', 'fname'=>'id', 
-            'fields'=>array('id', 'course_name', 'course_code', 'permalink', 'status', 'status_text', 
+            'fields'=>array('id', 'course_name', 'course_code', 'permalink', 'status', 'status_text', 'sequence',
                 'level', 'type', 'category', 'medium', 'ages', 'flags',
                 'start_date', 'end_date',
                 ),
@@ -222,6 +223,7 @@ function ciniki_courses_courseList($ciniki) {
 
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x100000) ) {
         $strsql = "SELECT categories.id, "
+            . "categories.sequence, "
             . "categories.name "
             . "FROM ciniki_course_categories AS categories "
             . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -229,7 +231,7 @@ function ciniki_courses_courseList($ciniki) {
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
-            array('container'=>'org_categories', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            array('container'=>'org_categories', 'fname'=>'id', 'fields'=>array('id', 'name', 'sequence')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.288', 'msg'=>'Unable to load org_categories', 'err'=>$rc['err']));
@@ -238,6 +240,7 @@ function ciniki_courses_courseList($ciniki) {
 
         if( isset($args['category_id']) && $args['category_id'] > 0 ) {
             $strsql = "SELECT subcategories.id, "
+                . "subcategories.sequence, "
                 . "subcategories.name "
                 . "FROM ciniki_course_subcategories AS subcategories "
                 . "WHERE subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -246,7 +249,7 @@ function ciniki_courses_courseList($ciniki) {
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
-                array('container'=>'org_subcategories', 'fname'=>'id', 'fields'=>array('id', 'name')),
+                array('container'=>'org_subcategories', 'fname'=>'id', 'fields'=>array('id', 'name', 'sequence')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.288', 'msg'=>'Unable to load org_subcategories', 'err'=>$rc['err']));

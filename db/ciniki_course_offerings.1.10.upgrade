@@ -1,0 +1,3 @@
+ALTER TABLE ciniki_course_offerings ADD COLUMN sequence tinyint unsigned not null after status;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.10';
+UPDATE ciniki_course_offerings SET sequence = 1;

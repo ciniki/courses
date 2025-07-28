@@ -21,6 +21,7 @@ function ciniki_courses_courseGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'),
+        'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subcategory'),
         'form_submission_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Form Submission'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -54,13 +55,23 @@ function ciniki_courses_courseGet($ciniki) {
             }
             $form_course = isset($rc['course']) ? $rc['course'] : array();
         }
+        $sequence = 1;
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x100000) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesNext');
+            $rc = ciniki_core_sequencesNext($ciniki, $args['tnid'], 'ciniki.courses.course', 'subcategory_id', $args['subcategory_id']);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $sequence = $rc['sequence'];
+        }
         $course = array(
             'id' => 0,
             'name' => isset($form_course['name']) ? $form_course['name'] : '',
             'code' => '',
             'status' => 10,
+            'sequence' => $sequence,
             'primary_image_id' => isset($form_course['primary_image_id']) ? $form_course['primary_image_id'] : 0,
-            'subcategory_id' => isset($form_course['subcategory_id']) ? $form_course['subcategory_id'] : '',
+            'subcategory_id' => isset($args['subcategory_id']) ? $args['subcategory_id'] : 0,
             'level' => isset($form_course['level']) ? $form_course['level'] : '',
             'type' => isset($form_course['type']) ? $form_course['type'] : '',
             'category' => isset($form_course['category']) ? $form_course['category'] : '',
@@ -82,6 +93,7 @@ function ciniki_courses_courseGet($ciniki) {
             . "ciniki_courses.name, "
             . "ciniki_courses.code, "
             . "ciniki_courses.status, "
+            . "ciniki_courses.sequence, "
             . "ciniki_courses.primary_image_id, "
             . "ciniki_courses.subcategory_id, "
             . "ciniki_courses.level, "
@@ -101,7 +113,7 @@ function ciniki_courses_courseGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'courses', 'fname'=>'id', 'name'=>'course',
-                'fields'=>array('id', 'name', 'code', 'status', 'primary_image_id', 'subcategory_id',
+                'fields'=>array('id', 'name', 'code', 'status', 'sequence', 'primary_image_id', 'subcategory_id',
                     'level', 'type', 'category', 'medium', 'ages',
                     'flags', 'short_description', 'long_description', 'materials_list', 'paid_content',
                     )),
@@ -195,9 +207,12 @@ function ciniki_courses_courseGet($ciniki) {
                 . ") "
             . "WHERE offerings.course_id = '" . ciniki_core_dbQuote($ciniki, $course['id']) . "' "
             . "AND offerings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "GROUP BY offerings.id "
-            . "ORDER BY offerings.status, offerings.start_date, courses.code, courses.name, offerings.code, offerings.name "
-            . "";
+            . "GROUP BY offerings.id ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x100000) ) {
+            $strsql .= "ORDER BY offerings.sequence, courses.code, courses.name, offerings.code, offerings.name ";
+        } else {
+            $strsql .= "ORDER BY offerings.status, offerings.start_date, courses.code, courses.name, offerings.code, offerings.name ";
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'status', 'fname'=>'status', 'fields'=>array('status')),

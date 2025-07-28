@@ -26,6 +26,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'name'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Name'), 
         'code'=>array('required'=>'no', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'blank'=>'no', 'validlist'=>array('10', '60', '90'), 'name'=>'Status'), 
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'), 
         'webflags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Web Flags'), 
         'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start Date'), 
         'end_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'End Date'), 
@@ -56,7 +57,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         return $rc;
     }
 
-    $strsql = "SELECT id, uuid, course_id, name, code "
+    $strsql = "SELECT id, uuid, course_id, name, code, sequence "
         . "FROM ciniki_course_offerings "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_id']) . "' "
@@ -121,6 +122,19 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
     $rc = ciniki_courses_offeringNQueueUpdate($ciniki, $args['tnid'], $args['offering_id']);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.258', 'msg'=>'Unable to update notification queue', 'err'=>$rc['err']));
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.courses.offering', 
+            'course_id', $offering['course_id'], $args['sequence'], $offering['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //

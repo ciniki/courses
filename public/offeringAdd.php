@@ -34,6 +34,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'name'=>array('required'=>'yes', 'blank'=>'no', 'trimblanks'=>'yes', 'name'=>'Name'), 
         'code'=>array('required'=>'no', 'blank'=>'yes', 'trimblanks'=>'yes', 'name'=>'Code'), 
         'status'=>array('required'=>'no', 'default'=>'10', 'blank'=>'no', 'validlist'=>array('10', '60', '90'), 'name'=>'Status'), 
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'), 
         'webflags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Web Flags'), 
         'class_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start Date'),
         'end_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'End Date'),
@@ -295,6 +296,19 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         return $rc;
     }
     $offering_id = $rc['id'];
+
+    //
+    // Update sequences
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x100000) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.courses.offering', 
+            'course_id', $args['course_id'], $args['sequence'], -1);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+            return $rc;
+        }
+    }
 
     //
     // Check if we should add some dates

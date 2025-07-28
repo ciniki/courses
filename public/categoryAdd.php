@@ -89,6 +89,19 @@ function ciniki_courses_categoryAdd(&$ciniki) {
     $category_id = $rc['id'];
 
     //
+    // Update sequences
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x100000) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.courses.category', 
+            null, null, $args['sequence'], -1);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
+            return $rc;
+        }
+    }
+
+    //
     // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.courses');

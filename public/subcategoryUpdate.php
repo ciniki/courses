@@ -40,6 +40,29 @@ function ciniki_courses_subcategoryUpdate(&$ciniki) {
         return $rc;
     }
 
+    //
+    // Load the subcategory
+    //
+    $strsql = "SELECT subcategories.id, "
+        . "subcategories.category_id, "
+        . "subcategories.name, "
+        . "subcategories.sequence "
+        . "FROM ciniki_course_subcategories AS subcategories "
+        . "WHERE subcategories.id = '" . ciniki_core_dbQuote($ciniki, $args['subcategory_id']) . "' "
+        . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'subcategory');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.305', 'msg'=>'Unable to load subcategory', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['subcategory']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.306', 'msg'=>'Unable to find requested subcategory'));
+    }
+    $subcategory = $rc['subcategory'];
+
+    //
+    // Check permalink
+    //
     if( isset($args['name']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
         $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
@@ -81,6 +104,19 @@ function ciniki_courses_subcategoryUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.courses');
         return $rc;
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.courses.subcategory', 
+            'category_id', $subcategory['category_id'], $args['sequence'], $subcategory['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //
