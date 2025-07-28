@@ -192,6 +192,7 @@ function ciniki_courses_courseGet($ciniki) {
             . "offerings.code AS offering_code, "
             . "offerings.name AS offering_name, "
             . "offerings.status, "
+            . "offerings.sequence, "
             . "offerings.start_date, "
             . "offerings.end_date, "
             . "offerings.num_seats, "
@@ -218,7 +219,7 @@ function ciniki_courses_courseGet($ciniki) {
             array('container'=>'status', 'fname'=>'status', 'fields'=>array('status')),
             array('container'=>'offerings', 'fname'=>'id', 
                 'fields'=>array('id', 'course_id', 'course_code', 'course_name', 
-                    'offering_id'=>'id', 'offering_code', 'offering_name',
+                    'offering_id'=>'id', 'offering_code', 'offering_name', 'sequence',
                     'start_date', 'end_date', 'num_seats', 'num_registrations',
                     ),
                 'dtformat'=>array(
