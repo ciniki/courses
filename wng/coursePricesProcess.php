@@ -61,9 +61,15 @@ function ciniki_courses_wng_coursePricesProcess(&$ciniki, $tnid, &$request, $sec
     }
 
     if( count($prices) > 0 ) {
+        if( isset($s['title']) && $s['title'] != '' ) {
+            $blocks[] = [
+                'type' => 'title',
+                'level' => $section['title_sequence'] > 1 ? 2 : 1,
+                'title' => $s['title'],
+                ];
+        }
         $blocks[] = [
             'type' => 'pricelist',
-            'title' => isset($s['title']) ? $s['title'] : '',
             'prices' => $prices,
             ];
     }
