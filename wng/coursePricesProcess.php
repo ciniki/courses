@@ -63,6 +63,7 @@ function ciniki_courses_wng_coursePricesProcess(&$ciniki, $tnid, &$request, $sec
     if( count($prices) > 0 ) {
         $blocks[] = [
             'type' => 'pricelist',
+            'title' => isset($s['title']) ? $s['title'] : '',
             'prices' => $prices,
             ];
     }

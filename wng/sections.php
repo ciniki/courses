@@ -63,6 +63,7 @@ function ciniki_courses_wng_sections(&$ciniki, $tnid, $args) {
         'name' => 'Program Price List',
         'module' => 'Programs',
         'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
             'course-id' => array('label'=>'Program', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$courses,
