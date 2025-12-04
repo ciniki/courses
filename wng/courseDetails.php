@@ -45,9 +45,13 @@ function ciniki_courses_wng_courseDetails($ciniki, $tnid, $request, $permalink) 
         . "ciniki_courses.long_description, "
         . "ciniki_courses.materials_list, "
         . "ciniki_courses.paid_content "
-        . "FROM ciniki_courses "
-        . "WHERE permalink = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' "
-        . "AND ciniki_courses.status = 30 "     // Active
+        . "FROM ciniki_courses ";
+    if( $permalink != '' && is_numeric($permalink) ) {
+        $strsql .= "WHERE id = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' ";
+    } else {
+        $strsql .= "WHERE permalink = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' ";
+    }
+    $strsql .= "AND ciniki_courses.status = 30 "     // Active
         . "AND ciniki_courses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'course');
