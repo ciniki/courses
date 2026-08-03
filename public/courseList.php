@@ -117,7 +117,7 @@ function ciniki_courses_courseList($ciniki) {
         . "courses.medium, "
         . "courses.ages, "
         . "IFNULL(MIN(offerings.start_date), '') AS start_date, "
-        . "IFNULL(MAX(offerings.start_date), '') AS end_date "
+        . "IFNULL(MAX(offerings.end_date), '') AS end_date "
         . "FROM ciniki_courses AS courses "
         . "LEFT JOIN ciniki_course_offerings AS offerings ON ("
             . "courses.id = offerings.course_id "
