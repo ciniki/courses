@@ -19,12 +19,12 @@ function ciniki_courses_sapos_itemInvoiceMerge($ciniki, $tnid, $item, $primary_i
         //
         // Check the course registration
         //
-        $strsql = "SELECT id, uuid, festival_id, invoice_id "
+        $strsql = "SELECT id, uuid, invoice_id "
             . "FROM ciniki_courses_offering_registration "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'itemsale');
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'registration');
         if( $rc['stat'] != 'ok' ) { 
             return $rc;
         }
