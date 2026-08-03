@@ -1557,6 +1557,10 @@ function ciniki_courses_main() {
                     return true;
                     },
                 'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_courses_main.course.setFieldValue('primary_image_id', 0);
+                    return true;
+                    },
              },
         }},
         'general':{'label':'Program', 'aside':'yes', 'fields':{
