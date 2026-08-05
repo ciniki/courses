@@ -30,7 +30,13 @@ function ciniki_courses_wng_process(&$ciniki, $tnid, &$request, $section) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.310', 'msg'=>"No section specified."));
     }
 
-    if( $section['ref'] == 'ciniki.courses.courseprices' ) {
+    if( $section['ref'] == 'ciniki.courses.upcoming' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'wng', 'upcomingProcess');
+        return ciniki_courses_wng_upcomingProcess($ciniki, $tnid, $request, $section);
+    } elseif( $section['ref'] == 'ciniki.courses.instructors' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'wng', 'instructorsProcess');
+        return ciniki_courses_wng_instructorsProcess($ciniki, $tnid, $request, $section);
+    } elseif( $section['ref'] == 'ciniki.courses.courseprices' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'courses', 'wng', 'coursePricesProcess');
         return ciniki_courses_wng_coursePricesProcess($ciniki, $tnid, $request, $section);
     }
