@@ -220,11 +220,18 @@ function ciniki_courses_wng_offeringLoad($ciniki, $tnid, $request, $offering_id)
                 //
                 // Check if online registrations enabled
                 //
-                if( $reg == 'yes' && ($price['available_to']&$price_flags) > 0 ) {
-                    $offering['prices'][$pid]['cart'] = 'yes';
+                if( $reg == 'yes' ) {
+                    if( ($price['available_to']&$price_flags) > 0 ) {
+                        $offering['prices'][$pid]['cart'] = 'yes';
+                    } else {
+                        $offering['prices'][$pid]['cart'] = 'no';
+                        $offering['prices'][$pid]['no-cart-msg'] = '&nbsp;';
+                    }
                 } else {
                     $offering['prices'][$pid]['cart'] = 'no';
+                    $offering['prices'][$pid]['no-cart-msg'] = 'Registration closed';
                 }
+
                 $offering['prices'][$pid]['object'] = 'ciniki.courses.offering';
                 $offering['prices'][$pid]['object_id'] = $offering['id'];
                 if( $offering['num_seats'] > 0 ) {
