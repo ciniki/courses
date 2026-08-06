@@ -131,6 +131,7 @@ function ciniki_courses_wng_instructorsProcess(&$ciniki, $tnid, &$request, $sect
                 'type' => 'tradingcards',
                 'class' => 'courses-instructors',
                 'size' => '25',
+                'image-ratio' => isset($s['image-ratio']) ? $s['image-ratio'] : '1-1',
                 'items' => $instructors,
                 );
         } 
