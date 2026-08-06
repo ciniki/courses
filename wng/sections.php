@@ -149,6 +149,7 @@ function ciniki_courses_wng_sections(&$ciniki, $tnid, $args) {
                 'contentphoto' => 'Content + Photo',
                 'imagebuttons' => 'Image Buttons',
                 'tradingcards' => 'Trading Cards',
+                'flexcards' => 'Flex Cards',
                 ]],
             'image-ratio' => ['label' => 'Image Ratio', 
                 'type'=>'select', 
