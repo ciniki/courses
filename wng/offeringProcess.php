@@ -67,6 +67,10 @@ function ciniki_courses_wng_offeringProcess(&$ciniki, $tnid, &$request, $section
         $offering['name'] = $offering['course_name'] . ' - ' . $offering['offering_name'];
     } 
 
+    if( $offering['course_content'] != '' && $offering['content'] != '' ) {
+        $offering['content'] = $offering['course_content'] . $offering['content'];
+    }
+
     $blocks[] = array(
         'type' => 'contentphoto', 
         'level' => 1,
@@ -82,6 +86,19 @@ function ciniki_courses_wng_offeringProcess(&$ciniki, $tnid, &$request, $section
             'type' => 'pricelist',
             'prices' => $offering['prices'],
             ];
+    }
+
+    if( isset($offering['instructors']) && count($offering['instructors']) > 0 ) {
+        foreach($offering['instructors'] as $instructor) {
+            $blocks[] = [
+                'type' => 'contentphoto',
+                'title' => $instructor['name'],
+                'image-id' => $instructor['image-id'],
+                'image-position' => (isset($s['instructor-image-position']) && $s['instructor-image-position'] != '' ? $s['instructor-image-position'] : ''),
+                'image-size' => (isset($s['instructor-image-size']) && $s['instructor-image-size'] != '' ? $s['instructor-image-size'] : ''),
+                'content' => $instructor['full_bio'],
+                ];
+        }
     }
 
     //

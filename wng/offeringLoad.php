@@ -244,6 +244,32 @@ function ciniki_courses_wng_offeringLoad($ciniki, $tnid, $request, $offering_id)
             $offering['prices'] = array();
         }
     }
+    
+    //
+    // Load the instructors
+    //
+    $strsql = "SELECT instructors.id, "
+        . "CONCAT_WS(' ', instructors.first, instructors.last) AS name, "
+        . "instructors.primary_image_id, "
+        . "instructors.full_bio "
+        . "FROM ciniki_course_offering_instructors AS oi "
+        . "LEFT JOIN ciniki_course_instructors AS instructors ON ("
+            . "oi.instructor_id = instructors.id "
+            . "AND instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE oi.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND oi.offering_id = '" . ciniki_core_dbQuote($ciniki, $offering['id']) . "' "
+        . "ORDER BY instructors.first, instructors.last "
+        . "";
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+        array('container'=>'instructors', 'fname'=>'id',
+            'fields'=>array('id', 'name', 'image-id'=>'primary_image_id', 'full_bio')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $offering['instructors'] = isset($rc['instructors']) ? $rc['instructors'] : array();
+
 
     return array('stat'=>'ok', 'offering'=>$offering);
 }

@@ -118,6 +118,21 @@ function ciniki_courses_wng_sections(&$ciniki, $tnid, $args) {
                 'yes'=>'Yes',
                 ]],
             'button-text' => ['label'=>'Button Text', 'type'=>'text'],
+            'instructor-image-position'=>['label'=>'Instructor Image Position', 'type'=>'select', 'default'=>'top-right', 'separator'=>'yes', 'options'=>[
+                'top-left' => 'Top Left',
+                'top-left-inline' => 'Top Left Inline',
+                'bottom-left' => 'Bottom Left',
+                'top-right' => 'Top Right',
+                'top-right-inline' => 'Top Right Inline',
+                'bottom-right' => 'Bottom Right',
+                ]],
+            'instructor-image-size'=>['label'=>'Instructor Image Size', 'type'=>'toggle', 'default'=>'half', 'toggles'=>[
+                'half' => 'Full',
+                'large' => 'Large',
+                'medium' => 'Medium',
+                'small' => 'Small',
+                'tiny' => 'Tiny',
+                ]],
             ],
         ];
 
