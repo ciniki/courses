@@ -81,18 +81,36 @@ function ciniki_courses_wng_offeringProcess(&$ciniki, $tnid, &$request, $section
         );
   
     if( isset($offering['prices']) && count($offering['prices']) > 0 ) {
-//    error_log(print_r($offering['prices'],true));
         $blocks[] = [
             'type' => 'pricelist',
             'prices' => $offering['prices'],
             ];
     }
 
+    if( isset($offering['images']) && count($offering['images']) > 0 ) {
+        $blocks[] = [
+            'type' => 'title',
+            'level' => 2,
+            'title' => 'Instructors',
+            ];
+        $blocks[] = [
+            'type' => 'gallery',
+            'layout' => 'originals',
+            'items' => $offering['images'],
+            ];
+    }
+
     if( isset($offering['instructors']) && count($offering['instructors']) > 0 ) {
+        $blocks[] = [
+            'type' => 'title',
+            'level' => 2,
+            'title' => 'Instructors',
+            ];
         foreach($offering['instructors'] as $instructor) {
             $blocks[] = [
                 'type' => 'contentphoto',
                 'title' => $instructor['name'],
+                'level' => 3,
                 'image-id' => $instructor['image-id'],
                 'image-position' => (isset($s['instructor-image-position']) && $s['instructor-image-position'] != '' ? $s['instructor-image-position'] : ''),
                 'image-size' => (isset($s['instructor-image-size']) && $s['instructor-image-size'] != '' ? $s['instructor-image-size'] : ''),

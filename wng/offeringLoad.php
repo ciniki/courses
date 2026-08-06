@@ -135,21 +135,29 @@ function ciniki_courses_wng_offeringLoad($ciniki, $tnid, $request, $offering_id)
     } */
 
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.courses', 0x0200) ) {
-        $strsql = "SELECT id, "
-            . "name, "
-            . "permalink, "
-            . "flags, "
-            . "image_id, "
-            . "description, "
-            . "UNIX_TIMESTAMP(last_updated) AS last_updated "
-            . "FROM ciniki_course_images "
-            . "WHERE course_id = '" . ciniki_core_dbQuote($ciniki, $offering['course_id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        $strsql = "SELECT cimgs.id, "
+            . "cimgs.name, "
+            . "cimgs.permalink, "
+            . "cimgs.flags, "
+            . "cimgs.image_id, "
+            . "cimgs.description, "
+            . "images.uuid AS image_uuid, "
+            . "images.type AS image_type, "
+            . "UNIX_TIMESTAMP(images.last_updated) AS last_updated "
+            . "FROM ciniki_course_images AS cimgs "
+            . "INNER JOIN ciniki_images AS images ON ("
+                . "cimgs.image_id = images.id "
+                . "AND images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE cimgs.course_id = '" . ciniki_core_dbQuote($ciniki, $offering['course_id']) . "' "
+            . "AND cimgs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.lapt', array(
             array('container'=>'images', 'fname'=>'id', 
-                'fields'=>array('id', 'title'=>'name', 'permalink', 'flags', 'image_id', 'description', 'last_updated')),
+                'fields'=>array('id', 'title'=>'name', 'permalink', 'flags', 'image-id'=>'image_id', 'description', 
+                    'image-uuid'=>'image_uuid', 'image-type'=>'image_type', 'image-last-updated'=>'last_updated',
+                    )),
         ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -244,7 +252,7 @@ function ciniki_courses_wng_offeringLoad($ciniki, $tnid, $request, $offering_id)
             $offering['prices'] = array();
         }
     }
-    
+
     //
     // Load the instructors
     //
