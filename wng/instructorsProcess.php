@@ -116,6 +116,7 @@ function ciniki_courses_wng_instructorsProcess(&$ciniki, $tnid, &$request, $sect
             $blocks[] = array(
                 'type' => 'flexcards',
                 'class' => 'courses-instructors',
+                'image-ratio' => isset($s['image-ratio']) ? $s['image-ratio'] : '1-1',
                 'items' => $instructors,
                 );
         } 
