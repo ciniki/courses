@@ -78,6 +78,8 @@ function ciniki_courses_wng_offeringProcess(&$ciniki, $tnid, &$request, $section
         'subtitle' => $offering['condensed_date'],
         'content' => $offering['content'],
         'image-id' => $offering['image-id'],
+        'image-position' => isset($s['offering-image-position']) ? $s['offering-image-position'] : 'top-right',
+        'image-size' => isset($s['offering-image-size']) ? $s['offering-image-size'] : 'half',
         );
   
     if( isset($offering['prices']) && count($offering['prices']) > 0 ) {
