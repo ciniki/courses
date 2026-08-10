@@ -258,6 +258,8 @@ function ciniki_courses_wng_offeringLoad($ciniki, $tnid, $request, $offering_id)
     //
     $strsql = "SELECT instructors.id, "
         . "CONCAT_WS(' ', instructors.first, instructors.last) AS name, "
+        . "oi.prefix, "
+        . "oi.suffix, "
         . "instructors.primary_image_id, "
         . "instructors.full_bio "
         . "FROM ciniki_course_offering_instructors AS oi "
@@ -271,13 +273,21 @@ function ciniki_courses_wng_offeringLoad($ciniki, $tnid, $request, $offering_id)
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'instructors', 'fname'=>'id',
-            'fields'=>array('id', 'name', 'image-id'=>'primary_image_id', 'full_bio')),
+            'fields'=>array('id', 'name', 'prefix', 'suffix', 'image-id'=>'primary_image_id', 'full_bio')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     $offering['instructors'] = isset($rc['instructors']) ? $rc['instructors'] : array();
 
+    foreach($offering['instructors'] as $iid => $instructor) {
+        if( $instructor['prefix'] != '' ) {
+            $offering['instructors'][$iid]['name'] = $instructor['prefix'] . ' - ' . $instructor['name'];
+        }
+        if( $instructor['suffix'] != '' ) {
+            $offering['instructors'][$iid]['name'] .= ' - ' . $instructor['suffix'];
+        }
+    }
 
     return array('stat'=>'ok', 'offering'=>$offering);
 }

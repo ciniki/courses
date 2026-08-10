@@ -24,6 +24,8 @@ function ciniki_courses_offeringInstructorAdd(&$ciniki) {
         'course_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Course'), 
         'offering_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Offering'), 
         'instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'), 
+        'prefix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Prefix'), 
+        'suffix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Suffix'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

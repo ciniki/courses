@@ -279,6 +279,8 @@ function ciniki_courses_offeringGet($ciniki) {
         // Get the list of instructors for a course, if requested
         //
         $strsql = "SELECT ciniki_course_offering_instructors.id, "
+            . "ciniki_course_offering_instructors.prefix, "
+            . "ciniki_course_offering_instructors.suffix, "
             . "ciniki_course_instructors.customer_id, "
             . "ciniki_course_instructors.id AS instructor_id, "
             . "IFNULL(customers.display_name, CONCAT_WS(' ', ciniki_course_instructors.first, ciniki_course_instructors.last)) AS name "
@@ -298,12 +300,21 @@ function ciniki_courses_offeringGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
             array('container'=>'instructors', 'fname'=>'id',
-                'fields'=>array('id', 'instructor_id', 'customer_id', 'name')),
+                'fields'=>array('id', 'instructor_id', 'customer_id', 'prefix', 'name', 'suffix')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
         $offering['instructors'] = isset($rc['instructors']) ? $rc['instructors'] : array();
+
+        foreach($offering['instructors'] as $iid => $instructor) {
+            if( $instructor['prefix'] != '' ) {
+                $offering['instructors'][$iid]['name'] = $instructor['prefix'] . ' - ' . $instructor['name'];
+            }
+            if( $instructor['suffix'] != '' ) {
+                $offering['instructors'][$iid]['name'] .= ' - ' . $instructor['suffix'];
+            }
+        }
 
         //
         // Load the offering files

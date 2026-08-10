@@ -16,6 +16,12 @@
 # first:            The first name of the instructor.
 # last:             The last name of the instructor.
 # permalink:        The permalink for the instructor webpage.
+#
+# status:           The status of the instructor.
+#
+#                       10 - Active
+#                       90 - Archive
+#
 # primary_image_id: The ID of the image for the instructor.
 #
 # webflags:         The flags for displaying on the website.  
@@ -42,6 +48,7 @@ CREATE TABLE ciniki_course_instructors (
     first varchar(150) not null,
     last varchar(150) not null,
     permalink varchar(150) not null,
+    status tinyint unsigned not null,
     primary_image_id int not null,
     webflags tinyint unsigned not null,
     short_bio varchar(6000) not null,

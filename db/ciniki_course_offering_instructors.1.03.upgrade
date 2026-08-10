@@ -1,0 +1,5 @@
+#
+#
+ALTER TABLE ciniki_course_offering_instructors ADD COLUMN prefix varchar(150) not null AFTER instructor_id;
+ALTER TABLE ciniki_course_offering_instructors ADD COLUMN suffix varchar(150) not null AFTER prefix;
+ALTER TABLE ciniki_course_offering_instructors COMMENT='v1.03';

@@ -289,6 +289,8 @@ function ciniki_courses_objects($ciniki) {
             'course_id'=>array('name'=>'Course', 'ref'=>'ciniki.courses.course'),
             'offering_id'=>array('name'=>'Offering', 'ref'=>'ciniki.courses.offering'),
             'instructor_id'=>array('name'=>'Instructor', 'ref'=>'ciniki.courses.instructor'),
+            'prefix'=>array('name'=>'Prefix', 'default'=>''),
+            'suffix'=>array('name'=>'Suffix', 'default'=>''),
             ),
         'history_table'=>'ciniki_course_history',
         );
