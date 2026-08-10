@@ -94,7 +94,7 @@ function ciniki_courses_wng_offeringProcess(&$ciniki, $tnid, &$request, $section
         $blocks[] = [
             'type' => 'title',
             'level' => 2,
-            'title' => 'Instructors',
+            'title' => 'Gallery',
             ];
         $blocks[] = [
             'type' => 'gallery',
