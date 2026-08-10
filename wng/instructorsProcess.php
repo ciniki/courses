@@ -37,8 +37,15 @@ function ciniki_courses_wng_instructorsProcess(&$ciniki, $tnid, &$request, $sect
         . "instructors.webflags, "
         . "instructors.short_bio AS synopsis, "
         . "instructors.full_bio AS description "
-        . "FROM ciniki_course_instructors AS instructors "
-        . "WHERE (instructors.webflags&0x01) = 0 " // Visible
+        . "FROM ciniki_course_instructors AS instructors ";
+    if( isset($s['instructor-type']) && $s['instructor-type'] != 'All' && $s['instructor-type'] != '' ) {
+        $strsql .= "INNER JOIN ciniki_course_instructor_tags AS tags ON ("
+            . "instructors.id = tags.instructor_id "
+            . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $s['instructor-type']) . "' "
+            . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") ";
+    }
+    $strsql .= "WHERE (instructors.webflags&0x01) = 0 " // Visible
         . "AND instructors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY instructors.first, instructors.last "
         . "";

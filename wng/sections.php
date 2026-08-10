@@ -59,6 +59,25 @@ function ciniki_courses_wng_sections(&$ciniki, $tnid, $args) {
     $courses = isset($rc['courses']) ? $rc['courses'] : array();
 
     //
+    // Get the list of instructor types
+    //
+    $strsql = "SELECT DISTINCT ciniki_course_instructor_tags.tag_name "
+        . "FROM ciniki_course_instructor_tags "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND tag_type = 30 "
+        . "ORDER BY tag_name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.courses', array(
+        array('container'=>'types', 'fname'=>'tag_name', 'fields'=>array('type'=>'tag_name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.309', 'msg'=>'Unable to load courses', 'err'=>$rc['err']));
+    }
+    $instructor_types = isset($rc['types']) ? $rc['types'] : array();
+    array_unshift($instructor_types, ['type'=>'All']);
+
+    //
     // Section to display a course
     //
     // NOTE: Future
@@ -160,6 +179,7 @@ function ciniki_courses_wng_sections(&$ciniki, $tnid, $args) {
         'settings' => [
             'title' => ['label'=>'Title', 'type'=>'text'],
             'content' => ['label'=>'Intro', 'type'=>'htmlarea'],
+            'instructor-type' => ['label'=>'Instructor Type', 'type'=>'select', 'options'=>$instructor_types, 'complex_options'=>['value'=>'type', 'name'=>'type']],
             'layout' => ['label'=>'Format', 'type'=>'select', 'options'=>[
                 'contentphoto' => 'Content + Photo',
                 'imagebuttons' => 'Image Buttons',
