@@ -76,6 +76,7 @@ function ciniki_courses_wng_offeringProcess(&$ciniki, $tnid, &$request, $section
         'level' => 1,
         'title' => $offering['name'],
         'subtitle' => $offering['condensed_date'],
+        'subsubtitle' => isset($offering['location']) ? preg_replace("/\n/", "<br>", $offering['location']) : '',
         'content' => $offering['content'],
         'image-id' => $offering['image-id'],
         'image-position' => isset($s['offering-image-position']) ? $s['offering-image-position'] : 'top-right',

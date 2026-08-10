@@ -37,6 +37,8 @@
 #
 # condensed_date:   The single string describing the dates for the course.
 #
+# location:         The location details.
+#
 # num_seats:        The number of total seats for the course.
 #
 # reg_flags:        The flags to control how registrations are handled.
@@ -76,6 +78,7 @@ CREATE TABLE ciniki_course_offerings (
     end_date date not null,
     dt_end_reg datetime not null,
     condensed_date varchar(150) not null,
+    location text not null,
     num_seats int not null,
     reg_flags tinyint unsigned not null,
     primary_image_id int not null,
@@ -91,4 +94,4 @@ CREATE TABLE ciniki_course_offerings (
     primary key (id),
     index (course_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.10';
+) ENGINE='InnoDB', COMMENT='v1.11';

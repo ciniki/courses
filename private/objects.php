@@ -180,6 +180,7 @@ function ciniki_courses_objects($ciniki) {
             'end_date'=>array('name'=>'End Date', 'default'=>''),
             'dt_end_reg'=>array('name'=>'Registration End Date', 'default'=>''),
             'condensed_date'=>array('name'=>'Condensed Text Date'),
+            'location'=>array('name'=>'Location', 'default'=>''),
             'num_seats'=>array('name'=>'Number of Seats', 'default'=>0),
             'reg_flags'=>array('name'=>'Registration Options', 'default'=>0),
             'primary_image_id'=>array('name'=>'Image', 'default'=>0, 'ref'=>'ciniki.images.image'),

@@ -169,6 +169,7 @@ function ciniki_courses_offeringGet($ciniki) {
             . "ciniki_course_offerings.end_date, "
             . "ciniki_course_offerings.dt_end_reg, "
             . "ciniki_course_offerings.condensed_date, "
+            . "ciniki_course_offerings.location, "
             . "ciniki_course_offerings.primary_image_id, "
             . "ciniki_course_offerings.synopsis, "
             . "ciniki_course_offerings.content, "
@@ -201,7 +202,7 @@ function ciniki_courses_offeringGet($ciniki) {
             array('container'=>'offerings', 'fname'=>'id',
                 'fields'=>array('id', 'name', 'code', 'permalink', 'status', 'status_text', 'sequence',
                     'reg_flags', 'num_seats', 'start_date', 'start_date_unformatted', 'end_date', 'dt_end_reg', 
-                    'condensed_date', 'webflags', 'web_visible', 
+                    'condensed_date', 'location', 'webflags', 'web_visible', 
                     'primary_image_id', 'synopsis', 'content', 'materials_list', 'paid_content', 'dt_end_paid', 'form_id',
                     'course_id', 'course_status', 'course_name', 'course_code', 'course_flags',
                     'level', 'type', 'category', 'flags', 'short_description', 'long_description',

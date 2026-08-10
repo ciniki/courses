@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_course_offerings ADD COLUMN location text not null after condensed_date;
+ALTER TABLE ciniki_course_offerings COMMENT='v1.11';

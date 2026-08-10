@@ -30,6 +30,7 @@ function ciniki_courses_wng_offeringLoad($ciniki, $tnid, $request, $offering_id)
         . "ciniki_course_offerings.webflags, "
         . "ciniki_course_offerings.code AS offering_code, "
         . "ciniki_course_offerings.condensed_date, "
+        . "ciniki_course_offerings.location, "
         . "ciniki_course_offerings.num_seats, "
         . "ciniki_course_offerings.reg_flags, "
         . "ciniki_course_offerings.dt_end_reg, "
@@ -71,7 +72,9 @@ function ciniki_courses_wng_offeringLoad($ciniki, $tnid, $request, $offering_id)
         array('container'=>'offerings', 'fname'=>'id', 
             'fields'=>array('id', 'webflags', 'status', 'course_id', 'course_name', 'offering_name', 'code', 'offering_code', 'level', 'permalink', 
                 'image_id'=>'primary_image_id', 'num_seats', 'reg_flags', 'dt_end_reg',
-                'level', 'type', 'category', 'image-id'=>'image_id', 'synopsis', 'content', 'course_synopsis', 'course_content', 'course_image_id', 'condensed_date')),
+                'level', 'type', 'category', 'image-id'=>'image_id', 'synopsis', 'content', 'course_synopsis', 'course_content', 'course_image_id', 
+                'condensed_date', 'location',
+                )),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'class_date', 'start_time', 'end_time')),
         ));

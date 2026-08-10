@@ -181,6 +181,7 @@ function ciniki_courses_main() {
             'condensed_date':{'label':'Dates', 'type':'text', 'editable':'no',
                 'visible':function() { return (M.ciniki_courses_main.offering.data.course_flags&0x10) == 0x10 ? 'no' : 'yes'; },
                 },
+            'location':{'label':'Location', 'type':'textarea', 'size':'small'},
             }},
         '_reg':{'label':'Registration Options', 'aside':'yes', 'fields':{
             'reg_flags':{'label':'Options', 'type':'flags', 'flags':{

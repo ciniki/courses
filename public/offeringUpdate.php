@@ -34,6 +34,7 @@ function ciniki_courses_offeringUpdate(&$ciniki) {
         'num_seats'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Number of Seats'),
         'reg_flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration Flags'),
         'condensed_date'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Dates'),
+        'location'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
         'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),

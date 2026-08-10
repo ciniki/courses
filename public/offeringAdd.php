@@ -46,6 +46,7 @@ function ciniki_courses_offeringAdd(&$ciniki) {
         'num_weeks'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Num Weeks'),
         'num_seats'=>array('required'=>'no', 'default'=>'0', 'blank'=>'yes', 'name'=>'Number of Seats'),
         'reg_flags'=>array('required'=>'no', 'default'=>'0', 'blank'=>'no', 'name'=>'Registration Flags'),
+        'location'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
         'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
