@@ -53,7 +53,7 @@ function ciniki_courses_wng_instructorsProcess(&$ciniki, $tnid, &$request, $sect
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.courses', array(
         array('container'=>'instructors', 'fname'=>'permalink', 
             'fields'=>array('id', 'first', 'last', 'permalink', 'webflags', 
-                'image-id'=>'primary_image_id', 'description', 'permalink',
+                'image-id'=>'primary_image_id', 'description', 'permalink', 'synopsis',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
