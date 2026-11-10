@@ -17,7 +17,7 @@ function ciniki_courses_offeringInstructorDelete(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
-        'offering_instructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'),
+        'offeringinstructor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Instructor'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -39,7 +39,7 @@ function ciniki_courses_offeringInstructorDelete(&$ciniki) {
     //
     $strsql = "SELECT id, uuid FROM ciniki_course_offering_instructors "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offering_instructor_id']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['offeringinstructor_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.courses', 'instructor');
     if( $rc['stat'] != 'ok' ) {
@@ -55,6 +55,6 @@ function ciniki_courses_offeringInstructorDelete(&$ciniki) {
     // Delete the instructor from the offering.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-    return ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering_instructor', $args['offering_instructor_id'], $instructor['uuid'], 0x07);
+    return ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.courses.offering_instructor', $args['offeringinstructor_id'], $instructor['uuid'], 0x07);
 }
 ?>
